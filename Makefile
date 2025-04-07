@@ -21,7 +21,7 @@ $(SCANNER_EXE): $(SCANNER_SRC)
 run-lex: build-lex
 	@mkdir -p $(OUT_DIR)
 	@if [ -f $(TEST_DIR)/$(TEST).cm ]; then \
-			echo "> Testing: $(TEST).cm - Outputs put into :/outputs/"; \
+			echo "> Testing: $(TEST).cm - (Outputs put into /outputs/)"; \
 			$(SCANNER_EXE) < $(TEST_DIR)/$(TEST).cm | tee $(OUT_DIR)/$(TEST).out; \
 		else \
 			echo "> Error: $(TEST_DIR)/$(TEST).cm not found."; \
