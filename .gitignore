@@ -1,13 +1,12 @@
 # Flex generated file
-lex.yy.c
+src/lex.yy.c
+src/scanner
 
-# Scanner executable
-scanner
+# Outputs folder and files
+/outputs/
 
-# Test input/output files
-*.out
-*.log
-
-# Backup or temporary
+# Backup or temporary files
 *~
 *.swp
+*.bak
+.DS_Store
