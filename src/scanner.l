@@ -4,11 +4,11 @@
  *  File: scanner.l
  *---------------------------------*/
 
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-  int lineno = 1;
+int lineno = 1;
 
 %}
 
@@ -58,7 +58,7 @@ newline       \n
 
 "/*"            { BEGIN(COMMENT); }
 
-<COMMENT> {
+<COMMENT>{
   "*/"        { BEGIN(INITIAL); }
   \n          { lineno++; }
   .           { /* skip content */ }
@@ -67,8 +67,8 @@ newline       \n
 {whitespace}    { /* skip whitespace */ }
 {newline}       { lineno++; }
 
-{digit}+        { printf("TOKEN: ID (%s)\n", yytext); }
-{letter}+ 		  { printf("TOKEN: NUMBER (%s)\n", yytext); }
+{digit}+        { printf("TOKEN: NUMBER (%s)\n", yytext); }
+{letter}+ 		  { printf("TOKEN: ID (%s)\n", yytext); }
 
 .               { printf("ERROR - TOKEN DESCONHECIDO: (%s)\n", yytext); }
 <<EOF>>         return 0;
