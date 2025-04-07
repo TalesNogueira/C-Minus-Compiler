@@ -4,11 +4,9 @@
  *  File: scanner.l
  *---------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "globals"
 
-int lineno = 1;
+int yylineno = 1;
 
 %}
 
@@ -60,17 +58,17 @@ newline       \n
 
 <COMMENT>{
   "*/"        { BEGIN(INITIAL); }
-  \n          { lineno++; }
+  \n          { yylineno++; }
   .           { /* skip content */ }
 }
 
 {whitespace}    { /* skip whitespace */ }
-{newline}       { lineno++; }
+{newline}       { yylineno++; }
 
 {digit}+        { printf("TOKEN: NUMBER (%s)\n", yytext); }
 {letter}+ 		  { printf("TOKEN: ID (%s)\n", yytext); }
 
-.               { printf("ERROR - TOKEN DESCONHECIDO: (%s)\n", yytext); }
+.               { printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token \[ %s \]\n", yylineno, yytext); }
 <<EOF>>         return 0;
 
 %%
