@@ -1,6 +1,0 @@
-/* a standard algorithm to be constantly modified and updated for the sake of testing the compiler. */
-
-void main(void)
-{	int x;
-    x = 10 + 5;
-}
