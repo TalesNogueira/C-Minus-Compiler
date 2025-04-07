@@ -1,0 +1,13 @@
+# Flex generated file
+lex.yy.c
+
+# Scanner executable
+scanner
+
+# Test input/output files
+*.out
+*.log
+
+# Backup or temporary
+*~
+*.swp
