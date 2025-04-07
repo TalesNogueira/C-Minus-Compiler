@@ -1,3 +1,6 @@
+# Volatile test case files
+tests/default.cm
+
 # Flex generated file
 src/lex.yy.c
 src/scanner
