@@ -3,36 +3,38 @@ BUILD_DIR := build
 INPUT_DIR := inputs
 OUT_DIR := outputs
 
-SCANNER := scanner
+MAIN_SRC := $(SRC_DIR)/main.c
+UTILS_SRC := $(SRC_DIR)/utils.c
 SCANNER_SRC := $(SRC_DIR)/scanner.l
-SCANNER_EXE := $(BUILD_DIR)/$(SCANNER)
+
+LEX_C := $(BUILD_DIR)/lex.yy.c
+EXEC := $(BUILD_DIR)/compiler
 
 INPUT ?= default
 
+.PHONY: all clean run build
 
-.PHONY: all clean run-lex build-lex
+build: $(EXEC)
 
-build-lex: $(SCANNER_EXE)
-
-$(SCANNER_EXE): $(SCANNER_SRC)
+$(LEX_C): $(SCANNER_SRC)
 	@echo "> Compiling Lexical Analizer..."
 	@mkdir -p $(BUILD_DIR)
-	flex -o $(BUILD_DIR)/lex.yy.c $(SCANNER_SRC)
-	gcc -I$(SRC_DIR) $(BUILD_DIR)/lex.yy.c -o $(SCANNER_EXE) -lfl
-	@echo "> Finished: $(SCANNER_EXE)"
+	@flex -o $@ $<
 
-run-lex: build-lex
+$(EXEC): $(LEX_C) $(MAIN_SRC) $(UTILS_SRC)
+	@echo "> Compiling Compiler Executable..."
+	@gcc -I$(SRC_DIR) $^ -o $@ -lfl
+	@echo "> Generated: $(EXEC)"
+
+run: build
 	@mkdir -p $(OUT_DIR)
-	@if [ -f $(INPUT_DIR)/$(INPUT).cm ]; then \
-			echo "> Testing: $(INPUT).cm - (Outputs put into /outputs/)"; \
-			$(SCANNER_EXE) < $(INPUT_DIR)/$(INPUT).cm | tee $(OUT_DIR)/$(INPUT).out; \
-		else \
-			echo "> Error: $(INPUT_DIR)/$(INPUT).cm not found."; \
-		fi
+	@echo "> Running compiler..."
+	@script -q -c "$(EXEC)" $(OUT_DIR)/default.out
 
-all: run-lex
+all: run
 
 clean:
 	@echo "> Cleaning build and output files..."
 	rm -rf $(BUILD_DIR)/*
 	rm -rf $(OUT_DIR)/*
+	clear
