@@ -9,6 +9,8 @@
 
 #include "globals.h"
 
+#include "parser.tab.h"
+
 %}
 
 digit       	[0-9]
@@ -24,36 +26,36 @@ newline       \n
 
 %%
 
-"int"           { printf("TOKEN: INT\n"); }
-"void"		      { printf("TOKEN: VOID\n"); }
+"void"		      return VOID;
+"int"           return INT;
 
-"if"            { printf("TOKEN: IF\n"); }
-"else"          { printf("TOKEN: ELSE\n"); }
-"while"         { printf("TOKEN: WHILE\n"); }
-"return"        { printf("TOKEN: RETURN\n"); }
+"if"            return IF;
+"else"          return ELSE;
+"while"         return WHILE;
+"return"        return RETURN;
 
-"+"             { printf("TOKEN: SUM (+)\n"); }
-"-"             { printf("TOKEN: SUB (-)\n"); }
-"*"             { printf("TOKEN: MUL (*)\n"); }
-"/"             { printf("TOKEN: DIV (/)\n"); }
+"+"             return SUM;
+"-"             return SUB;
+"*"             return MUL;
+"/"             return DIV;
 
-"="             { printf("TOKEN: GET (=)\n"); }
-">"	            { printf("TOKEN: MORE (>)\n"); }
-"<"             { printf("TOKEN: LESS (>)\n"); }
-">="	          { printf("TOKEN: EQUALMORE (>=)\n"); }
-"<="	          { printf("TOKEN: EQUALLESS (<=)\n"); }
-"=="            { printf("TOKEN: EQUAL (==)\n"); }
-"!="            { printf("TOKEN: DIFER (!=)\n"); }
+"="             return GET;
+">"	            return MORE;
+"<"             return LESS;
+">="	          return EQUALMORE;
+"<="	          return EQUALLESS;
+"=="            return EQUAL;
+"!="            return DIFER;
 
-","             { printf("TOKEN: COMMA (,)\n"); }
-";"             { printf("TOKEN: SEMICOLON (;)\n"); }
+","             return COMMA;
+";"             return SEMI;
 
-"("             { printf("TOKEN: OPARENTHESIS\n"); }
-")"             { printf("TOKEN: CPARENTHESIS\n"); }
-"["             { printf("TOKEN: OBRACKETS\n"); }
-"]"             { printf("TOKEN: CBRACKETS\n"); }
-"{"             { printf("TOKEN: OKEYS\n"); }
-"}"             { printf("TOKEN: CKEYS\n"); }
+"("             return OPARENTHESIS;
+")"             return CPARENTHESIS;
+"["             return OBRACKETS;
+"]"             return CBRACKETS;
+"{"             return OKEYS;
+"}"             return CKEYS;
 
 "/*"            { BEGIN(COMMENT); }
 
@@ -66,10 +68,14 @@ newline       \n
 {whitespace}    { /* skip whitespace */ }
 {newline}       { /* skip but count newline */ }
 
-{digit}+        { printf("TOKEN: NUMBER (%s)\n", yytext); }
-{letter}+ 		  { printf("TOKEN: ID (%s)\n", yytext); }
+{digit}+        { yylval.num = atoi(yytext); return NUM; }
+{letter}+ 		  { yylval.id = strdup(yytext); return ID; }
 
-.               { printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token [ %s ]\n", yylineno, yytext); }
+.               {
+                  printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token [ %s ]\n", yylineno, yytext);
+                  return ERROR;
+                }
+
 <<EOF>>         return 0;
 
 %%
