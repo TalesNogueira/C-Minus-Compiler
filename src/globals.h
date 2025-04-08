@@ -9,7 +9,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
+#define INPUT_DIR "inputs"
+extern char source[512];
+
+extern FILE* yyin;
 extern int yylineno;
+extern int yylex(void);
 
 #endif
