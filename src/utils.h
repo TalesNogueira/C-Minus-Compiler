@@ -6,8 +6,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-void inputSelect(void);
+void newLine(void);
 
-void openInput(void);
+void inputSelect(void);
 
 #endif

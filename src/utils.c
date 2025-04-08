@@ -8,12 +8,20 @@
 #include "utils.h"
 #include "globals.h"
 
+char source[512];
+
 #define MAX_FILES 100
 #define MAX_NAME 256
+
+void newLine(void) {
+    printf("\n");
+}
 
 void inputSelect(void) {
     char files[MAX_FILES][MAX_NAME];
     int count = 0;
+
+    newLine();
 
     const char* folder = INPUT_DIR;
     DIR *dir = opendir(folder);
@@ -49,13 +57,13 @@ void inputSelect(void) {
     }
 
     snprintf(source, sizeof(source), "%s/%s", folder, files[choice]);
-}
 
-void openInput(void) {
     yyin = fopen(source, "r");
 
     if (!yyin) {
         perror("> Error [ Misc ]:\n    Invalid file.\n");
         exit(EXIT_FAILURE);
     }
+
+    newLine();
 }
