@@ -1,12 +1,12 @@
 # Volatile test case files
-tests/default.cm
-
-# Flex generated file
-src/lex.yy.c
-src/scanner
+inputs/default.cm
 
 # Outputs folder and files
 /outputs/
+
+# Build files
+# Examples: Flex generated files
+/build/*
 
 # Backup or temporary files
 *~
