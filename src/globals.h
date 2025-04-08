@@ -10,4 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern int yylineno;
+
 #endif

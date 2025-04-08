@@ -1,12 +1,13 @@
-%{
 /*-------------------------------------------------------------------------------------------------/
  *  Lex Specifications & Scanner for a C- Compiler
  *  File: scanner.l
  *---------------------------------*/
 
-#include "globals"
+%option noyywrap yylineno
 
-int yylineno = 1;
+%{
+
+#include "globals.h"
 
 %}
 
@@ -58,12 +59,12 @@ newline       \n
 
 <COMMENT>{
   "*/"        { BEGIN(INITIAL); }
-  \n          { yylineno++; }
+  \n          { /* skip but count newline */ }
   .           { /* skip content */ }
 }
 
 {whitespace}    { /* skip whitespace */ }
-{newline}       { yylineno++; }
+{newline}       { /* skip but count newline */ }
 
 {digit}+        { printf("TOKEN: NUMBER (%s)\n", yytext); }
 {letter}+ 		  { printf("TOKEN: ID (%s)\n", yytext); }
@@ -72,7 +73,3 @@ newline       \n
 <<EOF>>         return 0;
 
 %%
-
-int yywrap() {
-    return 1;
-}
