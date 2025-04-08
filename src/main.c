@@ -6,12 +6,13 @@
 #include "globals.h"
 
 #include "utils.h"
-
-char source[512];
+#include "parser.tab.h"
 
 int main(void) {
     inputSelect();
-    openInput();
+    
+    // yydebug = 1;
+    yyparse();
 
     return 0;
 }

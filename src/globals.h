@@ -12,10 +12,13 @@
 #include <dirent.h>
 
 #define INPUT_DIR "inputs"
-extern char source[512];
 
 extern FILE* yyin;
 extern int yylineno;
+extern char* yytext;
 extern int yylex(void);
+
+extern int yydebug;
+extern int yyparse(void);
 
 #endif

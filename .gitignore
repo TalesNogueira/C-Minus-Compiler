@@ -5,8 +5,12 @@ inputs/default.cm
 /outputs/
 
 # Build files
-# Examples: Flex generated files
 /build/*
+
+# Flex/YACC-Bison generated files
+/src/lex.yy.c
+/src/parser.tab.c
+/src/parser.tab.h
 
 # Backup or temporary files
 *~
