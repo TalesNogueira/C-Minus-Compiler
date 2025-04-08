@@ -59,7 +59,7 @@ newline       \n
 
 <COMMENT>{
   "*/"        { BEGIN(INITIAL); }
-  \n          { /* skip but count newline */ }
+  {newline}   { /* skip but count newline */ }
   .           { /* skip content */ }
 }
 
@@ -69,7 +69,7 @@ newline       \n
 {digit}+        { printf("TOKEN: NUMBER (%s)\n", yytext); }
 {letter}+ 		  { printf("TOKEN: ID (%s)\n", yytext); }
 
-.               { printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token \[ %s \]\n", yylineno, yytext); }
+.               { printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token [ %s ]\n", yylineno, yytext); }
 <<EOF>>         return 0;
 
 %%
