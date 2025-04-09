@@ -1,9 +1,6 @@
 # Volatile test case files
 inputs/default.cm
 
-# Outputs folder and files
-/outputs/
-
 # Build files
 /build/*
 
@@ -11,6 +8,9 @@ inputs/default.cm
 /src/lex.yy.c
 /src/parser.tab.c
 /src/parser.tab.h
+
+# Outputs folder and files
+/outputs/
 
 # Backup or temporary files
 *~
