@@ -9,6 +9,8 @@
 
 #include "globals.h"
 
+bool firstExecution = true;
+
 void yyerror(const char* s);
 
 %}
@@ -188,7 +190,11 @@ void yyerror(const char *msg) {
     if (yychar == ERROR) {
         // exit(EXIT_FAILURE);
     } else {
-        fprintf(stderr, "> Error [ Syntax ]:\n    Line (%d) - %s.\n", yylineno, msg);
+        if (firstExecution == true) {
+          firstExecution = false;
+          printf("> Error [ Syntax ]:\n");
+        }
+        printf("    Line (%d) - %s.\n", yylineno, msg);
     }
 }
 

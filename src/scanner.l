@@ -82,5 +82,5 @@ newline       \n
 %%
 
 void lexicalError(const char* msg) {
-    printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token [ %s ]\n", yylineno, msg);
+    printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token. [ %s ]\n", yylineno, msg);
 }
