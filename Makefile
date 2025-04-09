@@ -21,31 +21,28 @@ INPUT ?= default
 build: $(EXEC)
 
 $(PARSER_C) $(PARSER_H): $(PARSER_SRC)
-	@echo "> Compiling Syntax Analyzer (YACC-Bison)..."
+	@echo "> Compiling Syntax Analyzer (YACC-Bison)..."	
 	@bison -d -o $(PARSER_C) $(PARSER_SRC)
 
 $(LEX_C): $(SCANNER_SRC) $(PARSER_H)
 	@echo "> Compiling Lexical Analyzer (Flex)..."
-	@mkdir -p $(BUILD_DIR)
 	@flex -o $@ $<
 
 $(EXEC): $(PARSER_C) $(PARSER_H) $(LEX_C) $(MAIN_SRC) $(UTILS_SRC)
 	@echo "> Linking final executable..."
-	@gcc -I$(SRC_DIR) -I$(BUILD_DIR) $^ -o $@ -lfl
+	@mkdir -p $(BUILD_DIR)
+	@gcc -I$(SRC_DIR) $^ -o $@ -lfl
 	@chmod +x $@
 	@echo "> Built: $(EXEC)"
 
 run: build
-	@mkdir -p $(OUT_DIR)
 	@echo "> Running compiler..."
-	@script -q -c "$(EXEC)" $(OUT_DIR)/default.out
+	@script -q -c "$(EXEC)" $(OUT_DIR)/$(INPUT).out
 
 all: run
 
 clean:
-	rm -rf $(BUILD_DIR)/*
-	rm -rf $(OUT_DIR)/*
-	rm -f $(SRC_DIR)/parser.tab.c
-	rm -f $(SRC_DIR)/parser.tab.h
-	rm -f $(SRC_DIR)/lex.yy.c
-	clear
+	@rm -rf $(BUILD_DIR)/*
+	@rm -rf $(OUT_DIR)/*
+	@rm -f $(LEX_C) $(PARSER_C) $(PARSER_H)
+	@echo "> Cleanup complete."
