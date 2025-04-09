@@ -8,8 +8,9 @@
 %{
 
 #include "globals.h"
-
 #include "parser.tab.h"
+
+void lexicalError(const char* msg);
 
 %}
 
@@ -72,10 +73,14 @@ newline       \n
 {letter}+ 		  { yylval.id = strdup(yytext); return ID; }
 
 .               {
-                  printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token [ %s ]\n", yylineno, yytext);
+                  lexicalError(yytext);
                   return ERROR;
                 }
 
 <<EOF>>         return 0;
 
 %%
+
+void lexicalError(const char* msg) {
+    printf("> Error [ Lexical ]:\n    Line (%d) - Unidentified token [ %s ]\n", yylineno, msg);
+}
