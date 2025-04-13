@@ -74,7 +74,6 @@ newline       \n
 
 .               {
                   lexicalError(yytext);
-                  return ERROR;
                 }
 
 <<EOF>>         return 0;

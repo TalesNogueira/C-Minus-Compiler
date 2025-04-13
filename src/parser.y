@@ -35,8 +35,6 @@ void yyerror(const char* s);
 %token <num> NUM
 %token <id> ID
 
-%token ERROR
-
 %%
 
 program:
@@ -82,7 +80,6 @@ parameter:
 
 compound_stmt:
     OKEYS local_declarations statement_list CKEYS
-  | OKEYS error CKEYS { yyerror("Recovered from lexical error in an compound statement"); yyerrok; }
 ;
 
 local_declarations:
@@ -187,14 +184,10 @@ argument_list:
 %%
 
 void yyerror(const char *msg) {
-    if (yychar == ERROR) {
-        // exit(EXIT_FAILURE);
-    } else {
-        if (firstExecution == true) {
-          firstExecution = false;
-          printf("> Error [ Syntax ]:\n");
-        }
-        printf("    Line (%d) - %s.\n", yylineno, msg);
-    }
+  if (firstExecution == true) {
+    firstExecution = false;
+    printf("> Error [ Syntax ]:\n");
+  }
+  printf("    Line (%d) - %s.\n", yylineno, msg);
 }
 
