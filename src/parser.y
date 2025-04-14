@@ -8,6 +8,7 @@
 %{
 
 #include "globals.h"
+#include "utils.h"
 
 bool firstExecution = true;
 
@@ -15,9 +16,17 @@ void yyerror(const char* s);
 
 %}
 
+%code requires {
+  #include "globals.h"
+}
+
 %define parse.error verbose
 
-%start program
+%union {
+    int num;
+    char* id;
+    TreeNode *tree;
+}
 
 %token INT VOID
 %token IF ELSE WHILE RETURN
@@ -27,27 +36,28 @@ void yyerror(const char* s);
 %token COMMA SEMI
 %token OPARENTHESIS CPARENTHESIS OBRACKETS CBRACKETS OKEYS CKEYS
 
-%union {
-    int num;
-    char* id;
-}
-
 %token <num> NUM
 %token <id> ID
+
+%type <tree> declaration_list declaration
+%type <tree> variable_declaration function_declaration
+%type <tree> statement expression
+
+%start program
 
 %%
 
 program:
-    declaration_list
-;
+    declaration_list 
+    ;
 
 declaration_list:
     declaration_list declaration | declaration
-;
+    ;
 
 declaration:
     variable_declaration | function_declaration | error SEMI { yyerror("Recovered from lexical error in an declatarion"); yyerrok; }
-;
+    ;
 
 variable_declaration:
     type ID SEMI

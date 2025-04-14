@@ -13,5 +13,6 @@ int main(void) {
     // yydebug = 1;
     yyparse();
 
+    printf("> End of compilation.\n");
     return 0;
 }
