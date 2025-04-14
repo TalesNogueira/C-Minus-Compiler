@@ -37,6 +37,7 @@ $(EXEC): $(PARSER_C) $(PARSER_H) $(LEX_C) $(MAIN_SRC) $(UTILS_SRC)
 
 run: build
 	@echo "> Running compiler..."
+	@mkdir -p $(OUT_DIR)
 	@script -q -c "$(EXEC)" $(OUT_DIR)/$(INPUT).out
 
 all: run
