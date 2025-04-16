@@ -1,8 +1,8 @@
 # Volatile test case files
 inputs/default.cm
 
-# Build files
-/build/*
+# Build folder and files
+/build/
 
 # Flex/YACC-Bison generated files
 /src/lex.yy.c
