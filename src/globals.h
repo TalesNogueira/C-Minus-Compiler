@@ -12,16 +12,39 @@
 #include <stdbool.h>
 #include <dirent.h>
 
-#define INPUT_DIR "inputs"
+/*--------------------------------------------/
+ *  Flex Variables
+ *---------------------------------*/
 
-// Flex Variables
+/*  yyin → Flex's input filepath  */
 extern FILE* yyin;
+/*  yylineno → Real time Flex's line number   */
 extern int yylineno;
-extern int yylex(void);
+/* getToken() → Call yylex(), treat the TOKEN and then return ---> Traceable   */
+extern int getToken(void);
+ 
+/*--------------------------------------------/
+  *  YACC-Bison Variables
+  *---------------------------------*/
 
-// YACC-Bison Variables
-extern int yydebug;
-extern int yyparse(void);
+/*  parse() → Call yyparse() - Syntax Analysis - and build the AST ---> Traceable    */
+extern void parse(void);
+
+/*--------------------------------------------/
+ *  Global Significant Variables
+ *---------------------------------*/
+
+/*  INPUT_DIR → Inputs folder name */
+extern char *INPUT_DIR;
+
+/*--------------------------------------------/
+ *  Tracing Flags
+ *---------------------------------*/
+
+/* TraceScan → Trace Flex's scanner getToken() - yylex() - executions and prints it out   */
+extern bool TraceScan;
+/* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST) and prints it out   */
+extern bool TraceParse;
 
 /*--------------------------------------------/
  *  Abstract Syntax Tree (AST) structures
@@ -49,6 +72,7 @@ typedef enum {
     Void, Integer, Boolean
 } ExpType;
 
+/*  (struct treeNode) TreeNode → Standard tree node structure for constructing the Abstract Syntax Tree   */
 typedef struct treeNode {
     struct treeNode *child[MAXCHILDREN];
     struct treeNode *sibling;
@@ -72,6 +96,7 @@ typedef struct treeNode {
     ExpType type;
 } TreeNode;
 
-extern TreeNode *savedTree;
+/*  AbstractSyntaxTree → Pointer to TreeNode base of Abstract Syntax Tree   */
+extern TreeNode *AbstractSyntaxTree;
 
 #endif

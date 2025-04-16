@@ -7,12 +7,27 @@
 #include "utils.h"
 #include "parser.tab.h"
 
+/*--------------------------------------------/
+ *  Allocate and Set → Global Significant Variables
+ *---------------------------------*/
+
+ /* INPUT_DIR → Inputs folder name  */
+ char *INPUT_DIR = "inputs";
+
+/*--------------------------------------------/
+ *  Allocate and Set → Tracing Flags
+ *---------------------------------*/
+
+ /* TraceScan → Trace Flex's scanner getToken() - yylex() - executions and prints it out   */
+ bool TraceScan = false;
+ /* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST) and prints it out   */
+ bool TraceParse = true;
+
 int main(void) {
     inputSelect();
     
-    // yydebug = 1;
-    yyparse();
+    parse();
 
-    printf("> End of compilation.\n");
+    printf("\n> End of compilation.\n");
     return 0;
 }

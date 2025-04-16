@@ -10,9 +10,14 @@
 #include "globals.h"
 #include "utils.h"
 
-bool firstExecution = true;
+/*  yylex() → Call getToken()  */
+static int yylex(void);
 
-void yyerror(const char* s);
+/*  yyerror() → Print Syntax error messages  */
+static void yyerror(const char *msg);
+
+/*  AbstractSyntaxTree → Pointer to TreeNode base of Abstract Syntax Tree    */
+TreeNode *AbstractSyntaxTree;
 
 %}
 
@@ -90,6 +95,7 @@ parameter:
 
 compound_stmt:
     OKEYS local_declarations statement_list CKEYS
+  | OKEYS error CKEYS { yyerror("Recovered from error in an compound statement"); yyerrok; }
   ;
 
 local_declarations:
@@ -193,11 +199,28 @@ argument_list:
 
 %%
 
-void yyerror(const char *msg) {
-  if (firstExecution == true) {
-    firstExecution = false;
-    printf("> Error [ Syntax ]:\n");
+/*  traceParser() → Check TraceParse and print out the AST  */
+static void traceParser(void) {
+  if (TraceParse) {
+    printTree(AbstractSyntaxTree);
   }
-  printf("    Line (%d) - %s.\n", yylineno, msg);
 }
 
+ /*  parse() → Call yyparse() - Syntax Analysis - and build the AST ---> Traceable    */
+void parse(void) {
+  yyparse();
+  traceParser();
+}
+
+/*  yylex() → Call getToken()  */
+static int yylex(void) {
+  return getToken();
+}
+
+/*  yyerror() → Print Syntax error messages  */
+static void yyerror(const char *msg) {
+  printBars(); 
+  printf("> Syntax Error\n     Line %d - %s.", yylineno, msg);
+  printBars();
+  newLine();
+}
