@@ -15,6 +15,7 @@ PARSER_H := $(SRC_DIR)/parser.tab.h
 EXEC := $(BUILD_DIR)/compiler
 
 INPUT ?= default
+OUTPUT ?= output
 
 .PHONY: all clean run build
 
@@ -38,7 +39,8 @@ $(EXEC): $(PARSER_C) $(PARSER_H) $(LEX_C) $(MAIN_SRC) $(UTILS_SRC)
 run: build
 	@echo "> Running compiler..."
 	@mkdir -p $(OUT_DIR)
-	@script -q -c "$(EXEC)" $(OUT_DIR)/$(INPUT).out
+	@echo	"/------------------------------------------------------------------------\n>		    C- Compiler by Tales C. Nogueira\n------------------------------------------------------------------------/"
+	@script -q -c "$(EXEC)" $(OUT_DIR)/$(OUTPUT).out
 
 all: run
 
@@ -46,4 +48,5 @@ clean:
 	@rm -rf $(BUILD_DIR)/*
 	@#	@rm -rf $(OUT_DIR)/* Use only if you want to delete outputs when cleaning
 	@rm -f $(LEX_C) $(PARSER_C) $(PARSER_H)
+	@clear
 	@echo "> Cleanup complete."

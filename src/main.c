@@ -19,7 +19,7 @@
  *---------------------------------*/
 
  /* TraceScan → Trace Flex's scanner getToken() - yylex() - executions and prints it out   */
- bool TraceScan = false;
+ bool TraceScan = true;
  /* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST) and prints it out   */
  bool TraceParse = true;
 

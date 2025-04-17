@@ -52,6 +52,7 @@ newline       \n
 "/"           return DIV;
 
 "="           return GET;
+
 ">"           return MORE;
 "<"           return LESS;
 ">="          return EQUALMORE;
@@ -102,7 +103,7 @@ static void traceScanner() {
     if (firstExecution) {
       firstExecution = false;
       newLine();
-      printf("> Tracing Scanner ---------------------------------------------\n");
+      printf("> Lexical Analysis --------------------------------------------\n");
       newLine();
       printf("--- Line %d\n", yylineno);
     }
