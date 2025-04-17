@@ -16,8 +16,6 @@ void newLine(void);
 
 void printBars(void);
 
-void printSpace(void);
-
 /*--------------------------------------------/
  *  Utility functions
  *---------------------------------*/
