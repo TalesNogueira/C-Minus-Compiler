@@ -50,27 +50,25 @@ extern bool TraceParse;
  *  Abstract Syntax Tree (AST) structures
  *---------------------------------*/
 
+ typedef enum { 
+    Void, Integer, Boolean
+} ExpType;
+
 #define MAXCHILDREN 3
 
-typedef enum { 
-    DeclarationK, StatementK, ExpressionK
-} NodeKind;
+typedef enum { DeclarationK, StatementK, ExpressionK } NodeKind;
 
 typedef enum { 
     VariableK, FunctionK, ParameterK 
 } DeclKind;
 
 typedef enum { 
-    IfK, WhileK, AssignK, ReturnK, CompoundK 
+    AssignK, CompoundK, IfK, WhileK, ReturnK
 } StmtKind;
 
 typedef enum { 
     OperatorK, ConstK, IdK, CallK 
 } ExpKind;
-
-typedef enum { 
-    Void, Integer, Boolean
-} ExpType;
 
 /*  (struct treeNode) TreeNode → Standard tree node structure for constructing the Abstract Syntax Tree   */
 typedef struct treeNode {
@@ -91,12 +89,21 @@ typedef struct treeNode {
         char *name;
         int value;
         int operator;
+
+        struct {
+            char *name;
+            int size;
+        }arrayAttr;
     } attr;
+
+    struct {
+        bool isArray;
+    } flags;
 
     ExpType type;
 } TreeNode;
 
 /*  AbstractSyntaxTree → Pointer to TreeNode base of Abstract Syntax Tree   */
-extern TreeNode *AbstractSyntaxTree;
+extern TreeNode *abstractSyntaxTree;
 
 #endif
