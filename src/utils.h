@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------------------------------/
- *  Utils Header functions for a C- Compiler
+ *  Utils functions interface for a C- Compiler
  *  File: utils.h
  *---------------------------------*/
 

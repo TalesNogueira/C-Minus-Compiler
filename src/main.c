@@ -5,7 +5,6 @@
 
 #include "globals.h"
 #include "utils.h"
-#include "parser.tab.h"
 
 /*--------------------------------------------/
  *  Allocate and Set → Global Significant Variables

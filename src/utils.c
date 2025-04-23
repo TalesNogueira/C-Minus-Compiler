@@ -6,7 +6,6 @@
 #define _DEFAULT_SOURCE
 
 #include "utils.h"
-#include "globals.h"
 #include "parser.tab.h"
 
 char source[512];
@@ -129,7 +128,7 @@ const char* tokenToString(int token) {
   }
 }
 
-/*  TODO   */
+/*  tokenToSymbol() → Transforms a numeric token of an symbol into a string refered to that symbol   */
 static const char* tokenToSymbol(int token) {
   switch (token) {
     case SUM: return "+";
@@ -217,6 +216,7 @@ TreeNode *addSibling(TreeNode *t, TreeNode *sibling) {
     return t;
 }
 
+/*  expTokenToString() → Transforms a Expression Type enum into a string refered to that expression type   */
 static char* expTypeToString(ExpType expType) {
   switch (expType) {
     case Void: return "void";
@@ -227,6 +227,7 @@ static char* expTypeToString(ExpType expType) {
   }
 } 
 
+/*  printIndent() → Prints out indentation using the "indent" variable   */
 static void printIndent(void) {
     for (int i = 0; i < indent; i++) printf(" ");
 }

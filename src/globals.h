@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------------------------------/
- *  Global Header for a C- Compiler
+ *  Global interface for a C- Compiler
  *  File: globals.h
  *---------------------------------*/
 
@@ -47,7 +47,7 @@ extern bool TraceScan;
 extern bool TraceParse;
 
 /*--------------------------------------------/
- *  Abstract Syntax Tree (AST) structures
+ *  Abstract Syntax Tree (AST) and related structures
  *---------------------------------*/
 
  typedef enum { 
