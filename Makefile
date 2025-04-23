@@ -7,8 +7,6 @@ MAIN_SRC := $(SRC_DIR)/main.c
 UTILS_SRC := $(SRC_DIR)/utils.c
 SCANNER_SRC := $(SRC_DIR)/scanner.l
 PARSER_SRC := $(SRC_DIR)/parser.y
-SYMTAB_SRC := src/symtab.c
-SEMANTIC_SRC := src/semantic.c
 
 LEX_C := $(SRC_DIR)/lex.yy.c
 PARSER_C := $(SRC_DIR)/parser.tab.c
@@ -31,7 +29,7 @@ $(LEX_C): $(SCANNER_SRC) $(PARSER_H)
 	@echo "> Compiling Lexical Analyzer (Flex)..."
 	@flex -o $@ $<
 
-$(EXEC): $(PARSER_C) $(PARSER_H) $(LEX_C) $(MAIN_SRC) $(UTILS_SRC) $(SYMTAB_SRC) $(SEMANTIC_SRC)
+$(EXEC): $(PARSER_C) $(PARSER_H) $(LEX_C) $(MAIN_SRC) $(UTILS_SRC)
 	@echo "> Linking final executable..."
 	@mkdir -p $(BUILD_DIR)
 	@gcc -I$(SRC_DIR) $^ -o $@ -lfl
