@@ -17,16 +17,19 @@
  *  Allocate and Set → Tracing Flags
  *---------------------------------*/
 
- /* TraceScan → Trace Flex's scanner getToken() - yylex() - executions and prints it out   */
+ /* TraceScan → Trace Flex's scanner getToken() - yylex() - executions; and prints it out   */
  bool TraceScan = true;
- /* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST) and prints it out   */
+ /* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST); and prints it out   */
  bool TraceParse = true;
+ /* TraceSemantic → Trace Semantic's Analyzer and its Symbol Table; and prints it out   */
+ bool TraceSemantic = true;
 
 int main(void) {
     inputSelect();
     
-    parse();
+    syntaxAnalysis();
+    semanticAnalysis(abstractSyntaxTree);
 
-    printf("\n> End of compilation.\n");
+    printf("\n> End of compilation → %s\n", source);
     return 0;
 }

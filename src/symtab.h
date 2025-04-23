@@ -9,6 +9,24 @@
 #include "globals.h"
 
 /*--------------------------------------------/
+ *  Symbol Table structure
+ *---------------------------------*/
+
+/*  LineList → Linked list containing all lines of code where the symbol was used  */
+typedef struct LineListRec {
+    int lineno;
+    struct LineListRec *next;
+} *LineList;
+
+/*  BucketList → Bucket list that stores a symbol, its scope, usage lines, AST node, and points to the next symbol in case of a hash table collision  */
+typedef struct BucketListRec {
+    char *name;
+    LineList lines;
+    TreeNode *treeNode;
+    struct BucketListRec *next;
+} *BucketList;
+
+/*--------------------------------------------/
  *  Symbol Table functions
  *---------------------------------*/
 
@@ -19,6 +37,6 @@ void st_insert(char *name, int lineno, TreeNode *t);
 TreeNode *st_lookup(char *name);
 
 /*  printSymbolTable() → Prints the Symbol Table for debugging and/or viewing*/
-void printSymbolTable();
+void printSymbolTable(void);
 
 #endif

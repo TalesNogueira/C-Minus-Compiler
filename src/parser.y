@@ -446,13 +446,13 @@ argument_list:
 static void traceParser(void) {
   if (TraceParse) {
     newLine();
-    printf("> Syntax Analysis ----------------------------------------------\n");    
+    printf("> Syntax Analysis ------------------------------------------------------\n");    
     printTree(abstractSyntaxTree);
   }
 }
 
- /*  parse() → Call yyparse() - Syntax Analysis - and build the AST ---> Traceable    */
-void parse(void) {
+ /*  syntaxAnalysis() → Call yyparse() and build the AST ---> Traceable    */
+void syntaxAnalysis(void) {
   yyparse();
   traceParser();
 }

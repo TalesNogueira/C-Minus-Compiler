@@ -149,6 +149,17 @@ static const char* tokenToSymbol(int token) {
   }
 }
 
+/*  expTokenToString() → Transforms a Expression Type enum into a string refered to that expression type   */
+const char* expTypeToString(ExpType expType) {
+  switch (expType) {
+    case Void: return "void";
+    case Integer: return "int";
+    case Boolean: return "bool";
+
+    default: return "UNKNOWN";
+  }
+} 
+
 /*--------------------------------------------/
  *  Abstract Syntax Tree (AST) functions
  *---------------------------------*/
@@ -216,22 +227,12 @@ TreeNode *addSibling(TreeNode *t, TreeNode *sibling) {
     return t;
 }
 
-/*  expTokenToString() → Transforms a Expression Type enum into a string refered to that expression type   */
-static char* expTypeToString(ExpType expType) {
-  switch (expType) {
-    case Void: return "void";
-    case Integer: return "int";
-    case Boolean: return "bool";
-
-    default: return "UNKNOWN";
-  }
-} 
-
 /*  printIndent() → Prints out indentation using the "indent" variable   */
 static void printIndent(void) {
     for (int i = 0; i < indent; i++) printf(" ");
 }
 
+/*  printTree() → TODO   */
 void printTree(TreeNode *tree) {
   INDENT;
   while (tree != NULL) {

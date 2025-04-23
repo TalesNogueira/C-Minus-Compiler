@@ -1,22 +1,10 @@
 /*-------------------------------------------------------------------------------------------------/
  *  Symbol Table structure and functions related for a C- Compiler
- *  File: semantic.c
+ *  File: symtab.c
  *---------------------------------*/
 
 #include "symtab.h"
 #include "utils.h"
-
-typedef struct LineListRec {
-    int lineno;
-    struct LineListRec *next;
-} *LineList;
-
-typedef struct BucketListRec {
-    char *name;
-    LineList lines;
-    TreeNode *treeNode;
-    struct BucketListRec *next;
-} *BucketList;
 
 #define HASH_SIZE 211
 #define SHIFT 4
@@ -26,7 +14,7 @@ static BucketList hashTable[HASH_SIZE];
 /*  hash() → transforms a string (identifier name) into a numeric table (to Symbol Table) index  */
 static int hash(char *key) {
     int temp = 0;
-    for (; *key != NULL; key++)
+    for (; *key != '\0'; key++)
         temp = ((temp << SHIFT) + *key) % HASH_SIZE;
     return temp;
 }
@@ -79,27 +67,31 @@ TreeNode *st_lookup(char *name) {
     return (l == NULL) ? NULL : l->treeNode;
 }
 
-/*  printSymbolTable() → Prints the Symbol Table for debugging and/or viewing*/
+/*  printSymbolTable() → Prints the Symbol Table for debugging and/or viewing   */
 void printSymbolTable() {
-    printf("Tabela de Símbolos:\n");
-    printf("Nome\t\tTipo\t\tEscopo\n");
-    printf("----------------------------------------------------\n");
+    newLine();
+    printf("> Semantic Analysis ----------------------------------------------------\n");
+    printf("\t\t\t    Symbol Table");
+    printBars();
+    printf("\t\t↓ Name\t\t↓ Type\t\t↓ Scope");
+    printBars();
 
     for (int i = 0; i < HASH_SIZE; i++) {
         BucketList l = hashTable[i];
 
         while (l != NULL) {
-            printf("%s", l->name);
-            printf("\t\tTipo");
-            printf("\t\t%s", (l->treeNode != NULL ? "Local" : "Global"));
-            newLine();
+            printf("\t\t%s", l->name);
+            printf("\t\t%s", expTypeToString(l->treeNode->type));
+            printf("\t\t%s\n", (l->treeNode != NULL ? "Local" : "Global"));
 
             LineList lines = l->lines;
             while (lines != NULL) {
-                printf("  Used at line %d\n", lines->lineno);
+                printf("    > Used at line %d\n", lines->lineno);
                 lines = lines->next;
             }
 
+            newLine();
+            
             l = l->next;
         }
     }

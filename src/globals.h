@@ -13,7 +13,7 @@
 #include <dirent.h>
 
 /*--------------------------------------------/
- *  Flex Variables
+ *  Lexical Analysis → Flex variables & functions
  *---------------------------------*/
 
 /*  yyin → Flex's input filepath  */
@@ -24,18 +24,21 @@ extern int yylineno;
 extern int getToken(void);
  
 /*--------------------------------------------/
-  *  YACC-Bison Variables
+  *  Syntax Analysis → YACC-Bison variables & functions
   *---------------------------------*/
 
-/*  parse() → Call yyparse() - Syntax Analysis - and build the AST ---> Traceable    */
-extern void parse(void);
+/*  syntaxAnalysis() → Call yyparse() and build the AST ---> Traceable    */
+extern void syntaxAnalysis(void);
 
 /*--------------------------------------------/
- *  Global Significant Variables
+ *  Global significant variables
  *---------------------------------*/
 
 /*  INPUT_DIR → Inputs folder name */
 extern char *INPUT_DIR;
+
+/*  source[] → Source filepath */
+extern char source[512];
 
 /*--------------------------------------------/
  *  Tracing Flags
@@ -45,6 +48,8 @@ extern char *INPUT_DIR;
 extern bool TraceScan;
 /* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST) and prints it out   */
 extern bool TraceParse;
+/* TraceSemantic → Trace Semantic's Analyzer and its Symbol Table; and prints it out   */
+extern bool TraceSemantic;
 
 /*--------------------------------------------/
  *  Abstract Syntax Tree (AST) and related structures
@@ -105,5 +110,15 @@ typedef struct treeNode {
 
 /*  AbstractSyntaxTree → Pointer to TreeNode base of Abstract Syntax Tree   */
 extern TreeNode *abstractSyntaxTree;
+
+/*--------------------------------------------/
+  *  Semantic Analysis variables & functions
+  *---------------------------------*/
+
+/*  semanticAnalysis() → Traverses the entire Abstract Syntax Tree and performs the Semantic Analysis  */
+extern void semanticAnalysis(TreeNode *tree);
+
+/*  currentScope → Current scope of analyzed tree node  */
+extern char *currentScope;
 
 #endif
