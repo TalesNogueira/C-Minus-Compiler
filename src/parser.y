@@ -446,9 +446,10 @@ argument_list:
 static void traceParser(void) {
   if (TraceParse) {
     newLine();
-    printf("> Syntax Analysis ------------------------------------------------------\n");    
+    printf("> Syntax Analysis ----------------------------------------------------------\n");    
     printTree(abstractSyntaxTree);
   }
+  printf("\n> END OF FILE → (EOF)\n");
 }
 
  /*  syntaxAnalysis() → Call yyparse() and build the AST ---> Traceable    */

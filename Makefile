@@ -41,7 +41,7 @@ $(EXEC): $(PARSER_C) $(PARSER_H) $(LEX_C) $(MAIN_SRC) $(UTILS_SRC) $(SYMTAB_SRC)
 run: build
 	@echo "> Running compiler..."
 	@mkdir -p $(OUT_DIR)
-	@echo	"/------------------------------------------------------------------------\n>		    C- Compiler by Tales C. Nogueira\n------------------------------------------------------------------------/"
+	@echo	"/---------------------------------------------------------------------------\n>		    C- Compiler by Tales C. Nogueira\n---------------------------------------------------------------------------/"
 	@script -q -c "$(EXEC)" $(OUT_DIR)/$(OUTPUT).out
 
 all: run
