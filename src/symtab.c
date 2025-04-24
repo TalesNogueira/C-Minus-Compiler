@@ -24,7 +24,10 @@ void st_insert(char *name, int lineno, TreeNode *t) {
     int h = hash(name);
     BucketList l = hashTable[h];
 
-    while ((l != NULL) && (strcmp(name, l->name) != 0)) {
+    while (l != NULL) {
+        if (strcmp(name, l->name) == 0 && strcmp(currentScope, l->scope) == 0) {
+            break;
+        }
         l = l->next;
     }
 
@@ -32,13 +35,14 @@ void st_insert(char *name, int lineno, TreeNode *t) {
         l = malloc(sizeof(struct BucketListRec));
 
         l->name = strdup(name);
+        l->scope = strdup(currentScope);
 
         l->lines = malloc(sizeof(struct LineListRec));
         l->lines->lineno = lineno;
         l->lines->next = NULL;
 
         l->treeNode = t;
-
+        
         l->next = hashTable[h];
 
         hashTable[h] = l;
@@ -60,33 +64,48 @@ TreeNode *st_lookup(char *name) {
     int h = hash(name);
     BucketList l = hashTable[h];
 
-    while ((l != NULL) && (strcmp(name, l->name) != 0)) {
+    while (l != NULL) {
+        if (strcmp(name, l->name) == 0) {
+            if (strcmp(l->scope, currentScope) == 0 || strcmp(l->scope, "global") == 0) {
+                return l->treeNode;
+            }
+        }
         l = l->next;
     }
 
-    return (l == NULL) ? NULL : l->treeNode;
+    return NULL;
 }
 
 /*  printSymbolTable() → Prints the Symbol Table for debugging and/or viewing   */
 void printSymbolTable() {
     newLine();
-    printf("> Semantic Analysis ----------------------------------------------------\n");
+    printf("> Semantic Analysis --------------------------------------------------------\n");
     printf("\t\t\t    Symbol Table");
     printBars();
-    printf("\t\t↓ Name\t\t↓ Type\t\t↓ Scope");
+    printf("↓ Kind");
+    printf("\t\t↓ Type");
+    printf("\t\t↓ Name");
+    printf("\t\t↓ Scope");
+    printf("\t\t↓ At line(s)");
     printBars();
 
     for (int i = 0; i < HASH_SIZE; i++) {
         BucketList l = hashTable[i];
 
         while (l != NULL) {
+            printf("%s", declKindToString(l->treeNode->kind.decl));
+            printf("\t%s", expTypeToString(l->treeNode->type));
             printf("\t\t%s", l->name);
-            printf("\t\t%s", expTypeToString(l->treeNode->type));
-            printf("\t\t%s\n", (l->treeNode != NULL ? "Local" : "Global"));
+            printf("\t\t%s\t\t", l->scope);
 
             LineList lines = l->lines;
             while (lines != NULL) {
-                printf("    > Used at line %d\n", lines->lineno);
+                printf("%d", lines->lineno);
+                
+                if(lines->next != NULL) {
+                    printf(", ");
+                }
+
                 lines = lines->next;
             }
 

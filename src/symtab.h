@@ -21,6 +21,7 @@ typedef struct LineListRec {
 /*  BucketList → Bucket list that stores a symbol, its scope, usage lines, AST node, and points to the next symbol in case of a hash table collision  */
 typedef struct BucketListRec {
     char *name;
+    char *scope;
     LineList lines;
     TreeNode *treeNode;
     struct BucketListRec *next;
