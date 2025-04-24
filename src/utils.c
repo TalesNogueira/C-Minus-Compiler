@@ -27,7 +27,7 @@ void newLine(void) {
 }
 
 void printBars(void) {
-    printf("\n------------------------------------------------------------------------\n");
+    printf("\n----------------------------------------------------------------------------\n");
 }
 
 /*--------------------------------------------/
@@ -159,6 +159,18 @@ const char* expTypeToString(ExpType expType) {
     default: return "UNKNOWN";
   }
 } 
+
+/*  declKindToString() → Transforms a Declaration Kind enum into a string refered to that declaration type   */
+const char* declKindToString(DeclKind declKind) {
+  switch (declKind)
+  {
+  case VariableK: return "Variable";
+  case FunctionK: return "Function";
+  case ParameterK: return "Parameter";
+
+  default: return "UNKNOWN";
+  }
+}
 
 /*--------------------------------------------/
  *  Abstract Syntax Tree (AST) functions

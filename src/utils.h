@@ -29,6 +29,9 @@ const char* tokenToString(int token);
 /*  expTokenToString() → Transforms a Expression Type enum into a string refered to that expression type   */
 const char* expTypeToString(ExpType expType);
 
+/*  declKindToString() → Transforms a Declaration Kind enum into a string refered to that declaration type   */
+const char* declKindToString(DeclKind declKind);
+
 /*--------------------------------------------/
  *  Abstract Syntax Tree (AST) functions
  *---------------------------------*/
