@@ -46,7 +46,7 @@ newline       \n
 "while"       return WHILE;
 "return"      return RETURN;
 
-"+"           return SUM;
+"+"           return ADD;
 "-"           return SUB;
 "*"           return MUL;
 "/"           return DIV;

@@ -96,7 +96,7 @@ const char* tokenToString(int token) {
     case WHILE: return "WHILE";
     case RETURN: return "RETURN";
 
-    case SUM: return "SUM";
+    case ADD: return "ADD";
     case SUB: return "SUB";
     case MUL: return "MUL";
     case DIV: return "DIV";
@@ -131,7 +131,7 @@ const char* tokenToString(int token) {
 /*  tokenToSymbol() → Transforms a numeric token of an symbol into a string refered to that symbol   */
 static const char* tokenToSymbol(int token) {
   switch (token) {
-    case SUM: return "+";
+    case ADD: return "+";
     case SUB: return "-";
     case MUL: return "*";
     case DIV: return "/";

@@ -39,7 +39,7 @@ TreeNode *abstractSyntaxTree;
 
 %token IF ELSE WHILE RETURN
 
-%left  <op> SUM SUB
+%left  <op> ADD SUB
 %left  <op> MUL DIV
 
 %token <op> GET
@@ -372,7 +372,7 @@ add_expression:
 ;
 
 sum_sub:
-  SUM { $$ = SUM; }
+  ADD { $$ = ADD; }
 | SUB { $$ = SUB; }
 ;
 
