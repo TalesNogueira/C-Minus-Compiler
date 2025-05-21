@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------------------------------/
- *  Symbol Table structure and functions related for a C- Compiler
+ *  Symbol Table structure and functions for a C- Compiler
  *  File: symbol_table.c
  *---------------------------------*/
 

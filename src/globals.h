@@ -3,8 +3,8 @@
  *  File: globals.h
  *---------------------------------*/
 
-#ifndef _GLOBALS_H_
-#define _GLOBALS_H_
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
 #include <stdio.h>
 #include <stdlib.h>
