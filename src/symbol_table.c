@@ -1,9 +1,9 @@
 /*-------------------------------------------------------------------------------------------------/
  *  Symbol Table structure and functions related for a C- Compiler
- *  File: symtab.c
+ *  File: symbol_table.c
  *---------------------------------*/
 
-#include "symtab.h"
+#include "symbol_table.h"
 #include "utils.h"
 
 #define HASH_SIZE 211

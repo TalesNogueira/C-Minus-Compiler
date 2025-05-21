@@ -4,7 +4,7 @@
  *---------------------------------*/
 
 #include "globals.h"
-#include "symtab.h"
+#include "symbol_table.h"
 #include "utils.h"
 
 /*  mainDeclared → Flag to catch if main() was declared into code compiled  */

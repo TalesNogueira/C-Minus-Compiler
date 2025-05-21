@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------------------------------/
  *  Symbol Table interface for a C- Compiler
- *  File: symtab.h
+ *  File: symbol_table.h
  *---------------------------------*/
 
 #ifndef SYMTAB_H
