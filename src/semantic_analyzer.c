@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------------------------------/
  *  Semantic Analysis functions for a C- Compiler
- *  File: utils.c
+ *  File: semantic_analyzer.c
  *---------------------------------*/
 
 #include "globals.h"

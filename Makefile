@@ -8,7 +8,7 @@ UTILS_SRC := $(SRC_DIR)/utils.c
 SCANNER_SRC := $(SRC_DIR)/scanner.l
 PARSER_SRC := $(SRC_DIR)/parser.y
 SYMTAB_SRC := src/symbol_table.c
-SEMANTIC_SRC := src/semantic.c
+SEMANTIC_SRC := src/semantic_analyzer.c
 
 LEX_C := $(SRC_DIR)/lex.yy.c
 PARSER_C := $(SRC_DIR)/parser.tab.c
