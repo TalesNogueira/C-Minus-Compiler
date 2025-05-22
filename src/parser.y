@@ -100,14 +100,14 @@ declaration:
 
 variable_declaration:
   type ID SEMI {
-    TreeNode *t = newDeclNode(VariableK);
+    TreeNode *t = newDeclNode(DeclVariable);
     t->type = $1;
     t->flags.isArray = false;
     t->attr.name = strdup($2);
     $$ = t;
   }
 | type ID OBRACKETS NUM CBRACKETS SEMI {
-    TreeNode *t = newDeclNode(VariableK);
+    TreeNode *t = newDeclNode(DeclArray);
     t->type = $1;
     t->flags.isArray = true;
     t->attr.arrayAttr.name = strdup($2);
@@ -128,7 +128,7 @@ type:
 
 function_declaration:
   type ID OPARENTHESIS function_params CPARENTHESIS compound_stmt {
-    TreeNode *t = newDeclNode(FunctionK);
+    TreeNode *t = newDeclNode(DeclFunction);
     t->type = $1;
     t->attr.name = strdup($2);
     t->child[0] = $4;
@@ -163,13 +163,13 @@ parameter_list:
 
 parameter:
   type ID {
-    TreeNode *t = newDeclNode(ParameterK);
+    TreeNode *t = newDeclNode(DeclParameter);
     t->type = $1;
     t->attr.name = strdup($2);
     $$ = t;
   }
 | type ID OBRACKETS CBRACKETS {
-    TreeNode *t = newDeclNode(ParameterK);
+    TreeNode *t = newDeclNode(DeclParameter);
     t->type = $1;
     t->flags.isArray = true;
     t->attr.arrayAttr.name = strdup($2);
@@ -179,7 +179,7 @@ parameter:
 
 compound_stmt:
   OKEYS local_declarations statement_list CKEYS {
-    TreeNode *t = newStmtNode(CompoundK);
+    TreeNode *t = newStmtNode(StmtCompound);
     t->child[0] = $2;
     t->child[1] = $3;
     $$ = t;
@@ -246,14 +246,14 @@ expression_stmt:
 
 selection_stmt:
   IF OPARENTHESIS expression CPARENTHESIS statement {
-    TreeNode *t = newStmtNode(IfK);
+    TreeNode *t = newStmtNode(StmtIf);
     t->child[0] = $3;   // if   → ( Expression )
     t->child[1] = $5;   // if   → { Statement }
     t->child[2] = NULL; // else → NULL
     $$ = t;
   }
 | IF OPARENTHESIS expression CPARENTHESIS statement ELSE statement {
-    TreeNode *t = newStmtNode(IfK);
+    TreeNode *t = newStmtNode(StmtIf);
     t->child[0] = $3;   // if   → ( Expression )
     t->child[1] = $5;   // if   → { Statement }
     t->child[2] = $7;   // else → { Statement }
@@ -268,7 +268,7 @@ selection_stmt:
 
 iteration_stmt:
   WHILE OPARENTHESIS expression CPARENTHESIS statement {
-    TreeNode *t = newStmtNode(WhileK);
+    TreeNode *t = newStmtNode(StmtWhile);
     t->child[0] = $3;   // while → ( Expression )
     t->child[1] = $5;   // while → { Statement }
     $$ = t;
@@ -282,12 +282,12 @@ iteration_stmt:
 
 return_stmt:
   RETURN SEMI {
-    TreeNode *t = newStmtNode(ReturnK);
+    TreeNode *t = newStmtNode(StmtReturn);
     t->child[0] = NULL; // return → NULL
     $$ = t;
   }
 | RETURN expression SEMI {
-    TreeNode *t = newStmtNode(ReturnK);
+    TreeNode *t = newStmtNode(StmtReturn);
     t->child[0] = $2;   // return → Expression
     $$ = t;
   }
@@ -300,7 +300,7 @@ return_stmt:
 
 expression:
   variable GET expression {
-    TreeNode *t = newStmtNode(AssignK);
+    TreeNode *t = newStmtNode(StmtAssign);
     t->child[0] = $1;       // Expression → Variable
     t->attr.operator = GET; // Expression → Operator (=)
     t->child[1] = $3;       // Expression → Expression
@@ -318,14 +318,14 @@ expression:
 
 variable:
   ID {
-    TreeNode *t = newExpNode(IdK);
+    TreeNode *t = newExpNode( ExpID);
     t->type = Integer;
     t->flags.isArray = false;
     t->attr.name = strdup($1);  // Variable → <id> (Name)
     $$ = t;
   }
 | ID OBRACKETS expression CBRACKETS {
-    TreeNode *t = newExpNode(IdK);
+    TreeNode *t = newExpNode( ExpID);
     t->type = Integer;
     t->flags.isArray = true;
     t->attr.arrayAttr.name = strdup($1);  // Variable → <id> (Name)
@@ -336,7 +336,7 @@ variable:
 
 simple_expression:
   add_expression relational add_expression {
-    TreeNode *t = newExpNode(OperatorK);
+    TreeNode *t = newExpNode( ExpOperator);
     t->type = Boolean;
     t->child[0] = $1;       // Simple Expression → Expression
     t->attr.operator = $2;  // Simple Expression → Relational Symbol
@@ -359,7 +359,7 @@ relational:
 
 add_expression:
   add_expression sum_sub term {
-    TreeNode *t = newExpNode(OperatorK);
+    TreeNode *t = newExpNode( ExpOperator);
     t->type = Integer;
     t->child[0] = $1;       // Add Expression → Add Expression
     t->attr.operator = $2;  // Add Expression → Operator (+ or -)
@@ -378,7 +378,7 @@ sum_sub:
 
 term:
   term mul_div factor {
-    TreeNode *t = newExpNode(OperatorK);
+    TreeNode *t = newExpNode( ExpOperator);
     t->type = Integer;
     t->child[0] = $1;       // Term → Term
     t->attr.operator = $2;  // Term → Operator (* or /)
@@ -406,7 +406,7 @@ factor:
     $$ = $1;
   }
 | NUM {
-    TreeNode *t = newExpNode(ConstK);
+    TreeNode *t = newExpNode(ExpConst);
     t->type = Integer;
     t->attr.value = $1;
     $$ = t;
@@ -415,7 +415,7 @@ factor:
 
 call:
   ID OPARENTHESIS args CPARENTHESIS {
-    TreeNode *t = newExpNode(CallK);
+    TreeNode *t = newExpNode(ExpCall);
     t->attr.name = strdup($1);
     t->child[0] = $3; // Call → Arguments
     $$ = t;

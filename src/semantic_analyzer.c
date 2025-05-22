@@ -3,7 +3,6 @@
  *  File: semantic_analyzer.c
  *---------------------------------*/
 
-#include "globals.h"
 #include "symbol_table.h"
 #include "utils.h"
 
@@ -35,20 +34,20 @@ static void insertNode(TreeNode *t) {
     switch (t->nodekind) {
         case DeclarationK:
             switch (t->kind.decl) {
-                case VariableK:
+                case DeclVariable:
                     if (t->type == Void) {
                         printBars();
                         printf("> Semantic Error\n     Line %d - Invalid Declaration: variable '%s' cannot be of type 'void'.", t->lineno, t->attr.name);
                         printBars();
                     } else if (st_lookup(t->attr.name) == NULL) {
                         st_insert(t->attr.name, t->lineno, t);
-                    } else if (st_lookup(t->attr.name)->kind.decl != FunctionK){
+                    } else if (st_lookup(t->attr.name)->kind.decl != DeclFunction){
                         printBars(); 
                         printf("> Semantic Error\n     Line %d - Redeclaration: variable '%s' was already declared.\n", t->lineno, t->attr.name);
                         printBars();
                     }
                     break;
-                case FunctionK:
+                case DeclFunction:
                     if (strcmp(t->attr.name, "main") == 0) mainDeclared = true;
 
                     if (st_lookup(t->attr.name) == NULL) {
@@ -62,12 +61,21 @@ static void insertNode(TreeNode *t) {
                         printBars();
                     }
                     break;
-                case ParameterK:
+                case DeclParameter:
                     if (st_lookup(t->attr.name) == NULL) {
                         st_insert(t->attr.name, t->lineno, t);
                     } else {
                         printBars(); 
                         printf("> Semantic Error\n     Line %d - Redeclaration: parameter '%s' was already declared.", t->lineno, t->attr.name);
+                        printBars();
+                    }
+                    break;
+                case DeclArray:
+                    if (st_lookup(t->attr.name) == NULL) {
+                        st_insert(t->attr.name, t->lineno, t);
+                    } else {
+                        printBars(); 
+                        printf("> Semantic Error\n     Line %d - Redeclaration: array '%s' was already declared.", t->lineno, t->attr.name);
                         printBars();
                     }
                     break;
@@ -83,7 +91,7 @@ static void checkNode(TreeNode *t) {
     switch (t->nodekind) {
         case ExpressionK:
             switch (t->kind.exp) {
-                case IdK:
+                case  ExpID:
                     if (st_lookup(t->attr.name) == NULL) {
                         printBars(); 
                         printf("> Semantic Error\n     Line %d - Not Declared: variable '%s' was not declared.", t->lineno, t->attr.name);
@@ -91,7 +99,7 @@ static void checkNode(TreeNode *t) {
                     }
                     break;
 
-                case CallK:
+                case ExpCall:
                     TreeNode *func = st_lookup(t->attr.name);
 
                     if (st_lookup(t->attr.name) == NULL) {
@@ -110,12 +118,12 @@ static void checkNode(TreeNode *t) {
 
         case StatementK:
             switch (t->kind.stmt) {
-                case AssignK:
+                case StmtAssign:
                     if (t->child[0] == NULL || t->child[1] == NULL) {
                         printBars();
                         printf("> Semantic Error\n     Line %d - Incomplete Assignment: missing operand(s).", t->lineno);
                         printBars();
-                    } else if (t->child[1]->kind.exp == CallK) {
+                    } else if (t->child[1]->kind.exp == ExpCall) {
                         if (t->child[0]->type != t->child[1]->type) {
                             printBars();
                             printf("> Semantic Error\n     Line %d - Mismatch Type: variable '%s' (%s) cannot receive return value\n from function '%s' (%s).", 
@@ -133,7 +141,7 @@ static void checkNode(TreeNode *t) {
                     }
                     break;
 
-                case ReturnK:
+                case StmtReturn:
                     if (currentFunctionType == Void && t->child[0] != NULL) {
                         printBars();
                         printf("> Semantic Error\n     Line %d - Invalid Return: cannot return a value from a void function.", t->lineno);
@@ -155,9 +163,9 @@ static void checkNode(TreeNode *t) {
             break;
     }
 
-    if (t->nodekind == DeclarationK && t->kind.decl == VariableK) {
+    if (t->nodekind == DeclarationK && t->kind.decl == DeclVariable) {
         TreeNode *lookup = st_lookup(t->attr.name);
-        if (lookup != NULL && lookup->kind.decl == FunctionK) {
+        if (lookup != NULL && lookup->kind.decl == DeclFunction) {
             printBars();
             printf("> Semantic Error\n     Line %d - Conflict: variable '%s' collided with a function with same\n name.", t->lineno, t->attr.name);
             printBars();
@@ -167,12 +175,12 @@ static void checkNode(TreeNode *t) {
 
 /*  initiPredefinedFunctions() → TODO  */
 static void initPredefinedFunctions() {
-    TreeNode *inputFunc = newDeclNode(FunctionK);
+    TreeNode *inputFunc = newDeclNode(DeclFunction);
     inputFunc->attr.name = "input";
     inputFunc->type = Integer;
     st_insert("input", 0, inputFunc);
     
-    TreeNode *outputFunc = newDeclNode(FunctionK);
+    TreeNode *outputFunc = newDeclNode(DeclFunction);
     outputFunc->attr.name = "output";
     outputFunc->type = Void;
     st_insert("output", 0, outputFunc);

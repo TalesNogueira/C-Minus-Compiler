@@ -80,7 +80,7 @@ TreeNode *st_lookup(char *name) {
 void printSymbolTable() {
     newLine();
     printf("> Semantic Analysis --------------------------------------------------------\n");
-    printf("\t\t\t    Symbol Table");
+    printf("\t\t\t    Symbol Table                 [%s]", source);
     printBars();
     printf("↓ Kind");
     printf("\t\t↓ Type");
@@ -93,7 +93,9 @@ void printSymbolTable() {
         BucketList l = hashTable[i];
 
         while (l != NULL) {
-            printf("%s", declKindToString(l->treeNode->kind.decl));
+            if(l->treeNode->kind.decl == DeclArray) printf("%s[%d]", declKindToString(l->treeNode->kind.decl), l->treeNode->attr.arrayAttr.size);
+            else printf("%s", declKindToString(l->treeNode->kind.decl));
+
             printf("\t%s", expTypeToString(l->treeNode->type));
             printf("\t\t%s", l->name);
             printf("\t\t%s\t\t", l->scope);

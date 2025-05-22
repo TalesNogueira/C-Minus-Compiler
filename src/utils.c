@@ -8,10 +8,10 @@
 #include "utils.h"
 #include "parser.tab.h"
 
-char source[512];
-
-#define MAX_FILES 100
 #define MAX_NAME 256
+#define MAX_FILES 100
+
+char source[512];
 
 static int indent = 0;
 
@@ -75,6 +75,8 @@ void inputSelect(void) {
       printf("> Misc Error\n     Invalid choice.\n");
       exit(EXIT_FAILURE);
   }
+
+  printf("\n> Chosen file: [%s]\n", files[choice]);
 
   snprintf(source, sizeof(source), "%s/%s", folder, files[choice]);
   yyin = fopen(source, "r");
@@ -164,10 +166,10 @@ const char* expTypeToString(ExpType expType) {
 const char* declKindToString(DeclKind declKind) {
   switch (declKind)
   {
-  case VariableK: return "Variable";
-  case FunctionK: return "Function";
-  case ParameterK: return "Parameter";
-
+  case DeclVariable: return "Variable";
+  case DeclFunction: return "Function";
+  case DeclParameter: return "Parameter";
+  case DeclArray: return "Array";
   default: return "UNKNOWN";
   }
 }
@@ -251,22 +253,17 @@ void printTree(TreeNode *tree) {
     switch (tree->nodekind) {
       case DeclarationK:
         switch (tree->kind.decl) {
-          case VariableK:
+          case DeclVariable:
             printIndent();
-            if (tree->flags.isArray) {
-              printf("%s %s[%d];", expTypeToString(tree->type), tree->attr.arrayAttr.name, tree->attr.arrayAttr.size);
-              printf(" → Variable [Array] declaration at line %d\n", tree->lineno);
-            } else {
-              printf("%s %s;", expTypeToString(tree->type), tree->attr.name);
-              printf(" → Variable declaration at line %d\n", tree->lineno);
-            }
+            printf("%s %s;", expTypeToString(tree->type), tree->attr.name);
+            printf(" → Variable declaration at line %d\n", tree->lineno);
             break;
-          case FunctionK:
+          case DeclFunction:
             printf("\n> Function declaration at line %d:\n", tree->lineno);
             printIndent();
             printf("%s %s (...)\n", expTypeToString(tree->type), tree->attr.name);
             break;
-          case ParameterK:
+          case DeclParameter:
             printIndent();
             if (tree->flags.isArray) {
               printf("%s %s[]", expTypeToString(tree->type), tree->attr.arrayAttr.name);
@@ -276,6 +273,11 @@ void printTree(TreeNode *tree) {
               printf(" → Parameter\n");
             }
             break;
+            case DeclArray:
+              printIndent();
+              printf("%s %s[%d];", expTypeToString(tree->type), tree->attr.arrayAttr.name, tree->attr.arrayAttr.size);
+              printf(" → Variable [Array] declaration at line %d\n", tree->lineno);
+              break;
           default:
             printf("- Unknown Declaration\n");
             break;
@@ -284,27 +286,27 @@ void printTree(TreeNode *tree) {
 
       case StatementK:
         switch (tree->kind.stmt) {
-          case IfK:
+          case StmtIf:
             newLine();
             printIndent();
             printf("If (...)\n");
             break;
-          case WhileK:
+          case StmtWhile:
             newLine();
             printIndent();
             printf("While (...):\n");
             break;
-          case AssignK:
+          case StmtAssign:
             newLine();
             printIndent();
             printf("Assign [=] at line %d:\n", tree->lineno);
             break;
-          case ReturnK:
+          case StmtReturn:
             newLine();
             printIndent();
             printf("Return at line %d:\n", tree->lineno);
             break;
-          case CompoundK:
+          case StmtCompound:
             printIndent();
             printf("{\n");
             break;
@@ -317,14 +319,14 @@ void printTree(TreeNode *tree) {
       case ExpressionK:
         printIndent();
         switch (tree->kind.exp) {
-          case OperatorK:
+          case  ExpOperator:
             printf("Operator [%s] at line %d:\n", tokenToSymbol(tree->attr.operator), tree->lineno);
             break;
-          case ConstK:
+          case ExpConst:
             printf("%d", tree->attr.value);
             printf(" → Constant\n");
             break;
-          case IdK:
+          case  ExpID:
             if (tree->flags.isArray) {
               printf("%s[↓]", tree->attr.arrayAttr.name);
               printf(" → ID [Array]\n");
@@ -333,7 +335,7 @@ void printTree(TreeNode *tree) {
               printf(" → ID\n");
             }
             break;
-          case CallK:
+          case ExpCall:
             printf("%s(...);", tree->attr.name);
             printf(" → Call at line %d\n", tree->lineno);
             break;
