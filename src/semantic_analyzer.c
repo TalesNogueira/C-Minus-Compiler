@@ -12,9 +12,10 @@ static bool mainDeclared = false;
 /*  currentScope → Current scope of analyzed tree node  */
 char* currentScope = "global";
 
+/* currentFunctionType → Type of the current function being analyzed  */
 static ExpType currentFunctionType = Void;
 
-/*  traverse() → TODO */
+/*  traverse() → Traverse the Abstract Syntax Tree (AST) applying pre-order and post-order functions to each node */
 static void traverse(TreeNode *t, void (*preProc)(TreeNode *), void (*postProc)(TreeNode *)) {
     if (t != NULL) {
         preProc(t);
@@ -29,10 +30,10 @@ static void traverse(TreeNode *t, void (*preProc)(TreeNode *), void (*postProc)(
     }
 }
 
-/*  insertNode() → TODO */
+/*  insertNode() → Inserts nodes into the Symbol Table */
 static void insertNode(TreeNode *t) {
     switch (t->nodekind) {
-        case DeclarationK:
+        case NodeDeclaration:
             switch (t->kind.decl) {
                 case DeclVariable:
                     if (t->type == Void) {
@@ -86,10 +87,10 @@ static void insertNode(TreeNode *t) {
     }
 }
 
-/*  checkNode() → TODO */
+/*  checkNode() → Check nodes inserted into the Symbol Table */
 static void checkNode(TreeNode *t) {
     switch (t->nodekind) {
-        case ExpressionK:
+        case NodeExpression:
             switch (t->kind.exp) {
                 case  ExpID:
                     if (st_lookup(t->attr.name) == NULL) {
@@ -116,7 +117,7 @@ static void checkNode(TreeNode *t) {
             }
             break;
 
-        case StatementK:
+        case NodeStatement:
             switch (t->kind.stmt) {
                 case StmtAssign:
                     if (t->child[0] == NULL || t->child[1] == NULL) {
@@ -163,7 +164,7 @@ static void checkNode(TreeNode *t) {
             break;
     }
 
-    if (t->nodekind == DeclarationK && t->kind.decl == DeclVariable) {
+    if (t->nodekind == NodeDeclaration && t->kind.decl == DeclVariable) {
         TreeNode *lookup = st_lookup(t->attr.name);
         if (lookup != NULL && lookup->kind.decl == DeclFunction) {
             printBars();
@@ -173,7 +174,7 @@ static void checkNode(TreeNode *t) {
     }
 }
 
-/*  initiPredefinedFunctions() → TODO  */
+/*  initiPredefinedFunctions() → Inserts predefined functions (input/output) into the Symbol Table  */
 static void initPredefinedFunctions() {
     TreeNode *inputFunc = newDeclNode(DeclFunction);
     inputFunc->attr.name = "input";
@@ -186,11 +187,20 @@ static void initPredefinedFunctions() {
     st_insert("output", 0, outputFunc);
 }
 
-/*  semanticAnalysis() → Traverses the entire Abstract Syntax Tree and performs the Semantic Analysis  */
-void semanticAnalysis(TreeNode *tree) {
-    initPredefinedFunctions();
+/*  traceSemantic() → Check TraceSemantic and print out the Symbol Table  */
+static void traceSemantic(void) {
+  if (TraceSemantic) {
+    printSymbolTable();
+  } else {
+    printf("\n> Semantic Analysis completed.\n");
+  }
+}
 
-    traverse(tree, insertNode, checkNode);
+/*  semanticAnalysis() → Traverses the entire Abstract Syntax Tree and performs the Semantic Analysis  */
+void semanticAnalysis(TreeNode *AST) {
+    // initPredefinedFunctions(); // [TODO]: Add a bool in main to config this
+
+    traverse(AST, insertNode, checkNode);
 
     if (!mainDeclared) {
         printBars(); 
@@ -198,7 +208,5 @@ void semanticAnalysis(TreeNode *tree) {
         printBars();
     }
     
-    if(TraceSemantic) {
-        printSymbolTable();
-    }
+    traceSemantic();
 }

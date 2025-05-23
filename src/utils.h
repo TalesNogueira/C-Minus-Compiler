@@ -44,6 +44,6 @@ TreeNode *newExpNode(ExpKind kind);
 
 TreeNode *addSibling(TreeNode *t, TreeNode *sibling);
 
-void printTree(TreeNode *tree);
+void printTree(TreeNode *t);
 
 #endif

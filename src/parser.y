@@ -26,6 +26,7 @@ TreeNode *abstractSyntaxTree;
 }
 
 %define parse.error verbose
+%expect 1
 
 %union {
   int op;
@@ -37,13 +38,16 @@ TreeNode *abstractSyntaxTree;
 
 %token <type> INT VOID
 
-%token IF ELSE WHILE RETURN
+%token IF WHILE RETURN
 
-%left  <op> ADD SUB
-%left  <op> MUL DIV
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
-%token <op> GET
-%token <op> MORE LESS EQUALMORE EQUALLESS EQUAL DIFER
+%left ADD SUB
+%left MUL DIV
+
+%right GET
+%nonassoc MORE LESS EQUALMORE EQUALLESS EQUAL DIFER
 
 %token COMMA SEMI
 %token OPARENTHESIS CPARENTHESIS
@@ -135,11 +139,6 @@ function_declaration:
     t->child[1] = $6;
     $$ = t;
   }
-| type ID OPARENTHESIS error CPARENTHESIS compound_stmt {
-    yyerror("Invalid function declaration");
-    yyerrok;
-    $$ = NULL;
-  }
 ;
 
 function_params:
@@ -153,11 +152,6 @@ parameter_list:
   }
 | parameter {
     $$ = $1;
-  }
-| error {
-    yyerror("Invalid parameter(s) → Used in error recover");
-    yyerrok;
-    $$ = NULL;
   }
 ;
 
@@ -178,16 +172,21 @@ parameter:
 ;
 
 compound_stmt:
-  OKEYS local_declarations statement_list CKEYS {
+OKEYS local_declarations statement_list CKEYS {
     TreeNode *t = newStmtNode(StmtCompound);
     t->child[0] = $2;
     t->child[1] = $3;
     $$ = t;
   }
+| OKEYS local_declarations error CKEYS {
+      yyerror("Invalid compound statement → error in statements");
+      yyerrok;
+      $$ = NULL;
+  }
 | OKEYS error CKEYS {
-    yyerror("Invalid compound statement → Used in error recover");
-    yyerrok;
-    $$ = NULL;
+      yyerror("Invalid compound statement → error after \'{\'");
+      yyerrok;
+      $$ = NULL;
   }
 ;
 
@@ -223,11 +222,6 @@ statement:
 | selection_stmt  { $$ = $1; }
 | iteration_stmt  { $$ = $1; }
 | return_stmt     { $$ = $1; }
-| error SEMI {
-      yyerror("Invalid statement");
-      yyerrok;
-      $$ = NULL;
-  }
 ;
 
 expression_stmt:
@@ -237,15 +231,10 @@ expression_stmt:
 | SEMI {
     $$ = NULL;
   }
-| error SEMI {
-      yyerror("Invalid expression");
-      yyerrok;
-      $$ = NULL;
-  }
 ;
 
 selection_stmt:
-  IF OPARENTHESIS expression CPARENTHESIS statement {
+  IF OPARENTHESIS expression CPARENTHESIS statement %prec LOWER_THAN_ELSE{
     TreeNode *t = newStmtNode(StmtIf);
     t->child[0] = $3;   // if   → ( Expression )
     t->child[1] = $5;   // if   → { Statement }
@@ -291,11 +280,6 @@ return_stmt:
     t->child[0] = $2;   // return → Expression
     $$ = t;
   }
-| RETURN error SEMI {
-      yyerror("Invalid return");
-      yyerrok;
-      $$ = NULL;
-  }
 ;
 
 expression:
@@ -308,11 +292,6 @@ expression:
   }
 | simple_expression {
     $$ = $1;
-  }
-| error {
-    yyerror("Invalid expression → Used in error recover");
-    yyerrok;
-    $$ = NULL;
   }
 ;
 
@@ -448,8 +427,10 @@ static void traceParser(void) {
     newLine();
     printf("> Syntax Analysis ----------------------------------------------------------\n");    
     printTree(abstractSyntaxTree);
+    printf("\n> END OF FILE → (EOF)\n");
+  } else {
+    printf("\n> Syntax Analysis completed.\n");
   }
-  printf("\n> END OF FILE → (EOF)\n");
 }
 
  /*  syntaxAnalysis() → Call yyparse() and build the AST ---> Traceable    */

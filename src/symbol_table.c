@@ -82,11 +82,7 @@ void printSymbolTable() {
     printf("> Semantic Analysis --------------------------------------------------------\n");
     printf("\t\t\t    Symbol Table                 [%s]", source);
     printBars();
-    printf("↓ Kind");
-    printf("\t\t↓ Type");
-    printf("\t\t↓ Name");
-    printf("\t\t↓ Scope");
-    printf("\t\t↓ At line(s)");
+    printf("↓ Kind\t\t↓ Type\t\t↓ Name\t\t↓ Scope\t\t↓ At line(s)");
     printBars();
 
     for (int i = 0; i < HASH_SIZE; i++) {

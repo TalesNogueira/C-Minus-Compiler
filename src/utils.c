@@ -189,7 +189,7 @@ TreeNode *newDeclNode(DeclKind kind) {
         
         t->lineno = yylineno;
 
-        t->nodekind = DeclarationK;
+        t->nodekind = NodeDeclaration;
         t->kind.decl = kind;
     }
     return t;
@@ -206,7 +206,7 @@ TreeNode *newStmtNode(StmtKind kind) {
         
         t->lineno = yylineno;
 
-        t->nodekind = StatementK;
+        t->nodekind = NodeStatement;
         t->kind.stmt = kind;
     }
     return t;
@@ -223,7 +223,7 @@ TreeNode *newExpNode(ExpKind kind) {
         
         t->lineno = yylineno;
 
-        t->nodekind = ExpressionK;
+        t->nodekind = NodeExpression;
         t->kind.exp = kind;
     }
     return t;
@@ -246,37 +246,37 @@ static void printIndent(void) {
     for (int i = 0; i < indent; i++) printf(" ");
 }
 
-/*  printTree() → TODO   */
-void printTree(TreeNode *tree) {
+/*  printTree() → Prints the Abstract Syntax Tree (AST) in a hierarchical format   */
+void printTree(TreeNode *t) {
   INDENT;
-  while (tree != NULL) {
-    switch (tree->nodekind) {
-      case DeclarationK:
-        switch (tree->kind.decl) {
+  while (t != NULL) {
+    switch (t->nodekind) {
+      case NodeDeclaration:
+        switch (t->kind.decl) {
           case DeclVariable:
             printIndent();
-            printf("%s %s;", expTypeToString(tree->type), tree->attr.name);
-            printf(" → Variable declaration at line %d\n", tree->lineno);
+            printf("%s %s;", expTypeToString(t->type), t->attr.name);
+            printf(" → Variable declaration at line %d\n", t->lineno);
             break;
           case DeclFunction:
-            printf("\n> Function declaration at line %d:\n", tree->lineno);
+            printf("\n> Function declaration at line %d:\n", t->lineno);
             printIndent();
-            printf("%s %s (...)\n", expTypeToString(tree->type), tree->attr.name);
+            printf("%s %s (...)\n", expTypeToString(t->type), t->attr.name);
             break;
           case DeclParameter:
             printIndent();
-            if (tree->flags.isArray) {
-              printf("%s %s[]", expTypeToString(tree->type), tree->attr.arrayAttr.name);
+            if (t->flags.isArray) {
+              printf("%s %s[]", expTypeToString(t->type), t->attr.arrayAttr.name);
               printf(" → Parameter [Array]\n");
             } else {
-              printf("%s %s", expTypeToString(tree->type), tree->attr.name);
+              printf("%s %s", expTypeToString(t->type), t->attr.name);
               printf(" → Parameter\n");
             }
             break;
             case DeclArray:
               printIndent();
-              printf("%s %s[%d];", expTypeToString(tree->type), tree->attr.arrayAttr.name, tree->attr.arrayAttr.size);
-              printf(" → Variable [Array] declaration at line %d\n", tree->lineno);
+              printf("%s %s[%d];", expTypeToString(t->type), t->attr.arrayAttr.name, t->attr.arrayAttr.size);
+              printf(" → Variable [Array] declaration at line %d\n", t->lineno);
               break;
           default:
             printf("- Unknown Declaration\n");
@@ -284,8 +284,8 @@ void printTree(TreeNode *tree) {
           }
           break;
 
-      case StatementK:
-        switch (tree->kind.stmt) {
+      case NodeStatement:
+        switch (t->kind.stmt) {
           case StmtIf:
             newLine();
             printIndent();
@@ -299,12 +299,12 @@ void printTree(TreeNode *tree) {
           case StmtAssign:
             newLine();
             printIndent();
-            printf("Assign [=] at line %d:\n", tree->lineno);
+            printf("Assign [=] at line %d:\n", t->lineno);
             break;
           case StmtReturn:
             newLine();
             printIndent();
-            printf("Return at line %d:\n", tree->lineno);
+            printf("Return at line %d:\n", t->lineno);
             break;
           case StmtCompound:
             printIndent();
@@ -316,28 +316,28 @@ void printTree(TreeNode *tree) {
         }
         break;
 
-      case ExpressionK:
+      case NodeExpression:
         printIndent();
-        switch (tree->kind.exp) {
+        switch (t->kind.exp) {
           case  ExpOperator:
-            printf("Operator [%s] at line %d:\n", tokenToSymbol(tree->attr.operator), tree->lineno);
+            printf("Operator [%s] at line %d:\n", tokenToSymbol(t->attr.operator), t->lineno);
             break;
           case ExpConst:
-            printf("%d", tree->attr.value);
+            printf("%d", t->attr.value);
             printf(" → Constant\n");
             break;
           case  ExpID:
-            if (tree->flags.isArray) {
-              printf("%s[↓]", tree->attr.arrayAttr.name);
+            if (t->flags.isArray) {
+              printf("%s[↓]", t->attr.arrayAttr.name);
               printf(" → ID [Array]\n");
             } else {
-              printf("%s", tree->attr.name);
+              printf("%s", t->attr.name);
               printf(" → ID\n");
             }
             break;
           case ExpCall:
-            printf("%s(...);", tree->attr.name);
-            printf(" → Call at line %d\n", tree->lineno);
+            printf("%s(...);", t->attr.name);
+            printf(" → Call at line %d\n", t->lineno);
             break;
           default:
             printf("Unknown Expression\n");
@@ -351,9 +351,9 @@ void printTree(TreeNode *tree) {
     }
 
     for (int i = 0; i < MAXCHILDREN; i++)
-      printTree(tree->child[i]);
+      printTree(t->child[i]);
 
-    tree = tree->sibling;
+    t = t->sibling;
   }
   UNINDENT;
 }
