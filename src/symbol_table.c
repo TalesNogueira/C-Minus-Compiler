@@ -12,33 +12,41 @@
 static BucketList hashTable[HASH_SIZE];
 
 /*  hash() → transforms a string (identifier name) into a numeric table (to Symbol Table) index  */
-static int hash(char *key) {
+static int hash(char *key, char *salt) {
     int temp = 0;
-    for (; *key != '\0'; key++)
+
+    for (; *key != '\0'; key++) {
         temp = ((temp << SHIFT) + *key) % HASH_SIZE;
+    }
+    
+    for (; *salt != '\0'; salt++) {
+        temp = ((temp << SHIFT) + *salt) % HASH_SIZE;
+    }
+
     return temp;
 }
 
 /*  st_insert() → Inserts or updates an identifier in the Symbol Table  */
-void st_insert(char *name, int lineno, TreeNode *t) {
-    int h = hash(name);
+void st_insert(TreeNode *t) {
+    int h = hash(t->attr.name, t->scope);
     BucketList l = hashTable[h];
 
     while (l != NULL) {
-        if (strcmp(name, l->name) == 0 && strcmp(currentScope, l->scope) == 0) {
+        if (strcmp(t->attr.name, l->name) == 0) {
             break;
         }
         l = l->next;
     }
 
-    if (l == NULL) {        // New Symbol
+    /* New Symbol   */
+    if (l == NULL) {
         l = malloc(sizeof(struct BucketListRec));
 
-        l->name = strdup(name);
-        l->scope = strdup(currentScope);
+        l->name = strdup(t->attr.name);
+        l->scope = strdup(t->scope);
 
         l->lines = malloc(sizeof(struct LineListRec));
-        l->lines->lineno = lineno;
+        l->lines->lineno = t->lineno;
         l->lines->next = NULL;
 
         l->treeNode = t;
@@ -46,7 +54,9 @@ void st_insert(char *name, int lineno, TreeNode *t) {
         l->next = hashTable[h];
 
         hashTable[h] = l;
-    } else {                // Symbol already exists, add a new line
+
+    /* Symbol already exists, add a new line   */
+    } else {
         LineList ll = l->lines;
 
         while (ll->next != NULL) {
@@ -54,21 +64,19 @@ void st_insert(char *name, int lineno, TreeNode *t) {
         }
 
         ll->next = malloc(sizeof(struct LineListRec));
-        ll->next->lineno = lineno;
+        ll->next->lineno = t->lineno;
         ll->next->next = NULL;
     }
 }
 
 /*  st_lookup() → Checks if the identifier is already declared in the Symbol Table and return the result (NULL or treeNode pointer)  */
-TreeNode *st_lookup(char *name) {
-    int h = hash(name);
+TreeNode *st_lookup(TreeNode *t) {
+    int h = hash(t->attr.name, t->scope);
     BucketList l = hashTable[h];
 
     while (l != NULL) {
-        if (strcmp(name, l->name) == 0) {
-            if (strcmp(l->scope, currentScope) == 0 || strcmp(l->scope, "global") == 0) {
-                return l->treeNode;
-            }
+        if (strcmp(t->attr.name, l->name) == 0) {
+            return l->treeNode;
         }
         l = l->next;
     }
@@ -96,9 +104,14 @@ void printSymbolTable() {
             printf("\t\t%s", l->name);
             printf("\t\t%s\t\t", l->scope);
 
+            int firstLoop = 1;
             LineList lines = l->lines;
+
             while (lines != NULL) {
-                printf("%d", lines->lineno);
+                if (firstLoop) {
+                    firstLoop = 0;
+                    printf("~%d", lines->lineno);
+                } else printf("%d", lines->lineno);
                 
                 if(lines->next != NULL) {
                     printf(", ");
@@ -112,4 +125,5 @@ void printSymbolTable() {
             l = l->next;
         }
     }
+    printf("\n*[~line]: \"line\" declaration line.\n");
 }

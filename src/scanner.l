@@ -21,7 +21,7 @@ static int currentToken = 0;
 int getToken(void);
 
 /*  lexicalError() → Print a lexical error message  */
-static void lexicalError(const char* msg);
+static void lexicalError(const char *msg);
 
 %}
 
@@ -89,7 +89,10 @@ newline       \n
               }
 
 {digit}+      { yylval.num = atoi(yytext); return NUM; }
-{letter}+     { yylval.id = strdup(yytext); return ID; }
+{letter}+     { yylval.id.name = strdup(yytext);
+                yylval.id.lineno = yylineno;
+                return ID;
+              }
 
 .             { lexicalError(yytext); }
 
@@ -124,6 +127,6 @@ int getToken(void)
 }
 
 /*  lexicalError() → Print a lexical error message  */
-static void lexicalError(const char* msg) {
+static void lexicalError(const char *msg) {
     printf("> Lexical Error\n     Line %d - Unidentified token. [ %s ]\n", yylineno, msg);
 }

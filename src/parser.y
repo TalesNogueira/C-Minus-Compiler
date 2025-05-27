@@ -16,6 +16,9 @@ static int yylex(void);
 /*  yyerror() → Print Syntax error messages  */
 static void yyerror(const char *msg);
 
+/*  currentScope → Current scope of analyzed tree node  */
+char *currentScope = "global";
+
 /*  AbstractSyntaxTree → Pointer to TreeNode base of Abstract Syntax Tree    */
 TreeNode *abstractSyntaxTree;
 
@@ -31,7 +34,12 @@ TreeNode *abstractSyntaxTree;
 %union {
   int op;
   int num;
-  char* id;
+
+  struct {
+    char *name;
+    int lineno;
+  } id;
+  
   TreeNode *node;
   ExpType type;
 }
@@ -107,15 +115,17 @@ variable_declaration:
     TreeNode *t = newDeclNode(DeclVariable);
     t->type = $1;
     t->flags.isArray = false;
-    t->attr.name = strdup($2);
+    t->attr.name = strdup($2.name);
+    t->scope = strdup(currentScope);
     $$ = t;
   }
 | type ID OBRACKETS NUM CBRACKETS SEMI {
     TreeNode *t = newDeclNode(DeclArray);
     t->type = $1;
     t->flags.isArray = true;
-    t->attr.arrayAttr.name = strdup($2);
+    t->attr.arrayAttr.name = strdup($2.name);
     t->attr.arrayAttr.size = $4;
+    t->scope = strdup(currentScope);
     $$ = t;
   }
 | error SEMI {
@@ -134,9 +144,12 @@ function_declaration:
   type ID OPARENTHESIS function_params CPARENTHESIS compound_stmt {
     TreeNode *t = newDeclNode(DeclFunction);
     t->type = $1;
-    t->attr.name = strdup($2);
-    t->child[0] = $4;
-    t->child[1] = $6;
+    t->attr.name = strdup($2.name);
+    t->scope = strdup("global");
+    t->lineno = $2.lineno; 
+    currentScope = t->attr.name;
+    insertScope(t->child[0] = $4, currentScope);
+    insertScope(t->child[1] = $6, currentScope);
     $$ = t;
   }
 ;
@@ -159,14 +172,14 @@ parameter:
   type ID {
     TreeNode *t = newDeclNode(DeclParameter);
     t->type = $1;
-    t->attr.name = strdup($2);
+    t->attr.name = strdup($2.name);
     $$ = t;
   }
 | type ID OBRACKETS CBRACKETS {
     TreeNode *t = newDeclNode(DeclParameter);
     t->type = $1;
     t->flags.isArray = true;
-    t->attr.arrayAttr.name = strdup($2);
+    t->attr.arrayAttr.name = strdup($2.name);
     $$ = t;
   }
 ;
@@ -184,7 +197,7 @@ OKEYS local_declarations statement_list CKEYS {
       $$ = NULL;
   }
 | OKEYS error CKEYS {
-      yyerror("Invalid compound statement → error after \'{\'");
+      yyerror("Invalid compound statement → error in statements");
       yyerrok;
       $$ = NULL;
   }
@@ -297,25 +310,25 @@ expression:
 
 variable:
   ID {
-    TreeNode *t = newExpNode( ExpID);
+    TreeNode *t = newExpNode(ExpID);
     t->type = Integer;
     t->flags.isArray = false;
-    t->attr.name = strdup($1);  // Variable → <id> (Name)
+    t->attr.name = strdup($1.name);  // Variable → <id> (Name)
     $$ = t;
   }
 | ID OBRACKETS expression CBRACKETS {
-    TreeNode *t = newExpNode( ExpID);
+    TreeNode *t = newExpNode(ExpID);
     t->type = Integer;
     t->flags.isArray = true;
-    t->attr.arrayAttr.name = strdup($1);  // Variable → <id> (Name)
-    t->child[0] = $3;                     // Variable → [ Expression ]
+    t->attr.arrayAttr.name = strdup($1.name);  // Variable → <id> (Name)
+    t->child[0] = $3;                          // Variable → [ Expression ]
     $$ = t;
  }
 ;
 
 simple_expression:
   add_expression relational add_expression {
-    TreeNode *t = newExpNode( ExpOperator);
+    TreeNode *t = newExpNode(ExpOperator);
     t->type = Boolean;
     t->child[0] = $1;       // Simple Expression → Expression
     t->attr.operator = $2;  // Simple Expression → Relational Symbol
@@ -338,7 +351,7 @@ relational:
 
 add_expression:
   add_expression sum_sub term {
-    TreeNode *t = newExpNode( ExpOperator);
+    TreeNode *t = newExpNode(ExpOperator);
     t->type = Integer;
     t->child[0] = $1;       // Add Expression → Add Expression
     t->attr.operator = $2;  // Add Expression → Operator (+ or -)
@@ -357,7 +370,7 @@ sum_sub:
 
 term:
   term mul_div factor {
-    TreeNode *t = newExpNode( ExpOperator);
+    TreeNode *t = newExpNode(ExpOperator);
     t->type = Integer;
     t->child[0] = $1;       // Term → Term
     t->attr.operator = $2;  // Term → Operator (* or /)
@@ -395,7 +408,8 @@ factor:
 call:
   ID OPARENTHESIS args CPARENTHESIS {
     TreeNode *t = newExpNode(ExpCall);
-    t->attr.name = strdup($1);
+    t->attr.name = strdup($1.name);
+    t->scope = strdup("global");
     t->child[0] = $3; // Call → Arguments
     $$ = t;
   }
