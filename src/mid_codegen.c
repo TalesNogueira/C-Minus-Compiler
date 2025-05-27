@@ -617,7 +617,7 @@ static void printQuadruplesList(void) {
   while (list != NULL) {
     char str[32];
 
-    fprintf(file, "\t> %d:\t%s ", counter, opString[list->op]);
+    fprintf(file, "%s ", opString[list->op]);
     sprintf(str, "\t> %d:\t%s ", counter, opString[list->op]);
     traceMidCode(str);
 
