@@ -50,6 +50,8 @@ extern bool TraceScan;
 extern bool TraceParse;
 /* TraceSemantic → Trace Semantic's Analyzer and its Symbol Table; and prints it out   */
 extern bool TraceSemantic;
+/* TraceMidCode → Trace Intermediate "Mid" Code Generator and it's Quadruples List; and prints it out   */
+extern bool TraceMidCode;
 
 /*--------------------------------------------/
  *  Abstract Syntax Tree (AST) and related structures
@@ -61,18 +63,18 @@ extern bool TraceSemantic;
 
 #define MAXCHILDREN 3
 
-typedef enum { DeclarationK, StatementK, ExpressionK } NodeKind;
+typedef enum { NodeDeclaration, NodeStatement, NodeExpression } NodeKind;
 
 typedef enum { 
-    VariableK, FunctionK, ParameterK 
+    DeclFunction, DeclParameter, DeclVariable, DeclArray
 } DeclKind;
 
 typedef enum { 
-    AssignK, CompoundK, IfK, WhileK, ReturnK
+    StmtAssign, StmtCompound, StmtIf, StmtWhile, StmtReturn
 } StmtKind;
 
 typedef enum { 
-    OperatorK, ConstK, IdK, CallK 
+    ExpOperator, ExpConst, ExpID, ExpCall
 } ExpKind;
 
 /*  (struct treeNode) TreeNode → Standard tree node structure for constructing the Abstract Syntax Tree   */
@@ -81,7 +83,8 @@ typedef struct treeNode {
     struct treeNode *sibling;
     
     int lineno;
-    
+    char *scope;
+
     NodeKind nodekind;
     
     union {
@@ -116,9 +119,13 @@ extern TreeNode *abstractSyntaxTree;
   *---------------------------------*/
 
 /*  semanticAnalysis() → Traverses the entire Abstract Syntax Tree and performs the Semantic Analysis  */
-extern void semanticAnalysis(TreeNode *tree);
+extern void semanticAnalysis(TreeNode *AST);
 
-/*  currentScope → Current scope of analyzed tree node  */
-extern char *currentScope;
+/*--------------------------------------------/
+  *  Intermediate Code functions
+  *---------------------------------*/
+
+/*  midCodeGenerate() → Traverses the entire Abstract Syntax Tree and performs the Intermediate Code Generation  */
+extern void midCodeGenerate(TreeNode *AST);
 
 #endif

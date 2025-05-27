@@ -21,15 +21,20 @@
  bool TraceScan = true;
  /* TraceParse → Trace Bison's parser Abstract Syntax Tree (AST); and prints it out   */
  bool TraceParse = true;
- /* TraceSemantic → Trace Semantic's Analyzer and its Symbol Table; and prints it out   */
+ /* TraceSemantic → Trace Semantic's Analyzer and it's Symbol Table; and prints it out   */
  bool TraceSemantic = true;
+ /* TraceMidCode → Trace Intermediate "Mid" Code Generator and it's Quadruples List; and prints it out   */
+ bool TraceMidCode = true;
 
 int main(void) {
     inputSelect();
     
+ /* lexicalAnalysis(); ← Syntax Analysis includes it    */
     syntaxAnalysis();
     semanticAnalysis(abstractSyntaxTree);
 
-    printf("\n> End of compilation → %s\n", source);
+    midCodeGenerate(abstractSyntaxTree);
+
+    printf("\n> End of compilation → [%s]\n", source);
     return 0;
 }
