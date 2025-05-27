@@ -437,7 +437,8 @@ argument_list:
 static void traceParser(void) {
   if (TraceParse) {
     newLine();
-    printf("> Syntax Analysis ----------------------------------------------------------\n");    
+    printf("> Syntax Analysis ----------------------------------------------------------");
+    printBars();
     printTree(abstractSyntaxTree);
     printf("\n> END OF FILE → (EOF)\n");
   } else {

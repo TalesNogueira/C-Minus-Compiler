@@ -106,7 +106,8 @@ static void traceScanner() {
     if (firstExecution) {
       firstExecution = false;
       newLine();
-      printf("> Lexical Analysis --------------------------------------------------------\n");
+      printf("> Lexical Analysis --------------------------------------------------------");
+      printBars();
       newLine();
       printf("--- Line %d\n", yylineno);
     }

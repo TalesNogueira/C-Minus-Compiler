@@ -14,11 +14,11 @@
 
 /*  Operation → Defines all supported intermediate code operations  */
 typedef enum {
-    ADD, SUB, MUL, DIV, SGT, SLT, SGET, SLET, SET, SDT,
-    AllocVAR, AllocARRAY, StoreVAR, StoreARRAY, LoadVAR, LoadARRAY, MOVE,
-    IFfalse, LABEL, JUMP, 
-    FunBGN, FunEND, PARAM, CALL, RETURN,
-    PUSH, POP, HALT
+    Add, Sub, Mul, Div, SGT, SLT, SGET, SLET, SET, SDT,
+    AllocVAR, AllocARRAY, StoreVAR, StoreARRAY, LoadVAR, LoadARRAY, Move,
+    IFfalse, Label, Jump, 
+    FunBGN, FunEND, Param, Call, Return,
+    Push, Pop, Halt
 } Operation;
 
 /*  AddrType → Defines the type of an address (void, constant, or string)  */
