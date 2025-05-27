@@ -81,6 +81,21 @@ TreeNode *st_lookup(TreeNode *t) {
         l = l->next;
     }
 
+    if (t->nodekind == NodeExpression &&
+       (t->kind.exp == ExpID) ||
+        t->kind.exp == ExpCall)
+    {
+        h = hash(t->attr.name, "global");
+        l = hashTable[h];
+
+        while (l != NULL) {
+            if (strcmp(t->attr.name, l->name) == 0) {
+                return l->treeNode;
+            }
+            l = l->next;
+        }
+    }
+
     return NULL;
 }
 
@@ -125,5 +140,7 @@ void printSymbolTable() {
             l = l->next;
         }
     }
-    printf("\n*[~line]: \"line\" declaration line.\n");
+
+    printf("\n*[~line]: \"line\" = declaration line.");
+    printBars();
 }
