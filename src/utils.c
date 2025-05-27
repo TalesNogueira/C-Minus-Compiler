@@ -243,8 +243,7 @@ TreeNode *addSibling(TreeNode *t, TreeNode *sibling) {
 /*  insertScope() → [TODO]   */
 void insertScope(TreeNode *t, char *scope) {
   while (t != NULL) {
-
-    if (t->scope == NULL || strcmp(t->scope, "global") != 0) t->scope = strdup(scope);
+    t->scope = strdup(scope);
 
     for (int i=0; i<MAXCHILDREN; i++) {
       if (t->child[i] != NULL) {
