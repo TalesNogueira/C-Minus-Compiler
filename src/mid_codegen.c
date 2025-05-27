@@ -10,9 +10,9 @@
 /*  opString[] → [TODO]  */
 const char *opString[] = {
   "Add", "Sub", "Mul", "Div", "SGT", "SLT", "SGET", "SLET", "SET", "SDT",
-  "AllocVAR", "AllocARRAY", "StoreVAR", "StoreARRAY", "LoadVAR", "LoadARRAY", "Move",
+  "AllocVAR", "AllocARRAY", "StoreVAR", "StoreARRAY", "LoadVAR", "LoadARRAY",
   "IFfalse", "Label", "Jump", 
-  "FunBGN", "FunEND", "Param", "Call", "Return",
+  "FunBGN", "FunEND", "Param", "Call", "Move", "Return",
   "Push", "Pop", "Halt"
 };
 
