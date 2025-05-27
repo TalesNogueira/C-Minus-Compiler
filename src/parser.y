@@ -408,7 +408,6 @@ call:
   ID OPARENTHESIS args CPARENTHESIS {
     TreeNode *t = newExpNode(ExpCall);
     t->attr.name = strdup($1.name);
-    t->scope = strdup("global");
     t->child[0] = $3; // Call → Arguments
     $$ = t;
   }

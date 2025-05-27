@@ -27,8 +27,8 @@ static int hash(char *key, char *salt) {
 }
 
 /*  st_insert() → Inserts or updates an identifier in the Symbol Table  */
-void st_insert(TreeNode *t) {
-    int h = hash(t->attr.name, t->scope);
+void st_insert(TreeNode *t, char *scope) {
+    int h = hash(t->attr.name, scope);
     BucketList l = hashTable[h];
 
     while (l != NULL) {
@@ -43,7 +43,7 @@ void st_insert(TreeNode *t) {
         l = malloc(sizeof(struct BucketListRec));
 
         l->name = strdup(t->attr.name);
-        l->scope = strdup(t->scope);
+        l->scope = strdup(scope);
 
         l->lines = malloc(sizeof(struct LineListRec));
         l->lines->lineno = t->lineno;

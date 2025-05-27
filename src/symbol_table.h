@@ -32,7 +32,7 @@ typedef struct BucketListRec {
  *---------------------------------*/
 
 /*  st_insert() → Inserts or updates an identifier in the Symbol Table  */
-void st_insert(TreeNode *t);
+void st_insert(TreeNode *t, char *scope);
 
 /*  st_lookup() → Checks if the identifier is already declared in the Symbol Table and return the result (NULL or treeNode pointer)  */
 TreeNode *st_lookup(TreeNode *t);
