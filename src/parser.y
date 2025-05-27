@@ -16,8 +16,8 @@ static int yylex(void);
 /*  yyerror() → Print Syntax error messages  */
 static void yyerror(const char *msg);
 
-/*  currentScope → Current scope of analyzed tree node  */
-char *currentScope = "global";
+/*  globalScope → Global scope of analyzed tree node  */
+char *globalScope = "global";
 
 /*  AbstractSyntaxTree → Pointer to TreeNode base of Abstract Syntax Tree    */
 TreeNode *abstractSyntaxTree;
@@ -116,7 +116,7 @@ variable_declaration:
     t->type = $1;
     t->flags.isArray = false;
     t->attr.name = strdup($2.name);
-    t->scope = strdup(currentScope);
+    t->scope = strdup(globalScope);
     $$ = t;
   }
 | type ID OBRACKETS NUM CBRACKETS SEMI {
@@ -125,7 +125,7 @@ variable_declaration:
     t->flags.isArray = true;
     t->attr.arrayAttr.name = strdup($2.name);
     t->attr.arrayAttr.size = $4;
-    t->scope = strdup(currentScope);
+    t->scope = strdup(globalScope);
     $$ = t;
   }
 | error SEMI {
@@ -147,9 +147,8 @@ function_declaration:
     t->attr.name = strdup($2.name);
     t->scope = strdup("global");
     t->lineno = $2.lineno; 
-    currentScope = t->attr.name;
-    insertScope(t->child[0] = $4, currentScope);
-    insertScope(t->child[1] = $6, currentScope);
+    insertScope(t->child[0] = $4, t->attr.name);
+    insertScope(t->child[1] = $6, t->attr.name);
     $$ = t;
   }
 ;
