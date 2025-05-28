@@ -16,13 +16,6 @@ const char *opString[] = {
   "Push", "Pop", "Halt"
 };
 
-static void printQuadruplesList(void);
-
-/*  stmtGen() → [TODO]  */
-static void stmtGen(TreeNode *t);
-/*  expGen() → [TODO]  */
-static void expGen(TreeNode *t);
-
 /*  codeGen() → [TODO]  */
 static void codeGen(TreeNode *t);
 
