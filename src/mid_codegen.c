@@ -610,55 +610,55 @@ static void printQuadruplesList(void) {
   while (list != NULL) {
     char str[32];
 
-    fprintf(file, "%s ", opString[list->op]);
-    sprintf(str, "\t> %d:\t%s ", counter, opString[list->op]);
+    fprintf(file, "%-10s ", opString[list->op]);
+    sprintf(str, "\t> %d:\t%-10s →   ", counter, opString[list->op]);
     traceMidCode(str);
 
     switch (list->src.type) {
       case addrVoid:
-        fprintf(file, "[---] ");
-        traceMidCode("[---] ");
+        fprintf(file, "-----  ");
+        traceMidCode("-----  ");
         break;
       case addrConst:
-        fprintf(file, "%d ", list->src.content.value);
-        sprintf(str, "%d ", list->src.content.value);
+        fprintf(file, "%-6d ", list->src.content.value);
+        sprintf(str, "%-6d ", list->src.content.value);
         traceMidCode(str);
         break;
       case addrString:
-        fprintf(file, "%s ", list->src.content.name);
-        sprintf(str, "%s ", list->src.content.name);
+        fprintf(file, "%-6s ", list->src.content.name);
+        sprintf(str, "%-6s ", list->src.content.name);
         traceMidCode(str);
         break;
     }
     switch (list->tgt.type) {
       case addrVoid:
-        fprintf(file, "[---] ");
-        traceMidCode("[---] ");
+        fprintf(file, "-----  ");
+        traceMidCode("-----  ");
         break;
       case addrConst:
-        fprintf(file, "%d ", list->tgt.content.value);
-        sprintf(str, "%d ", list->tgt.content.value);
+        fprintf(file, "%-6d ", list->tgt.content.value);
+        sprintf(str, "%-6d ", list->tgt.content.value);
         traceMidCode(str);
         break;
       case addrString:
-        fprintf(file, "%s ", list->tgt.content.name);
-        sprintf(str, "%s ", list->tgt.content.name);
+        fprintf(file, "%-6s ", list->tgt.content.name);
+        sprintf(str, "%-6s ", list->tgt.content.name);
         traceMidCode(str);
         break;
     }
     switch (list->dst.type) {
       case addrVoid:
-        fprintf(file, "[---] ");
-        traceMidCode("[---] ");
+        fprintf(file, "-----  ");
+        traceMidCode("-----  ");
         break;
       case addrConst:
-        fprintf(file, "%d ", list->dst.content.value);
-        sprintf(str, "%d ", list->dst.content.value);
+        fprintf(file, "%-6d ", list->dst.content.value);
+        sprintf(str, "%-6d ", list->dst.content.value);
         traceMidCode(str);
         break;
       case addrString:
-        fprintf(file, "%s ", list->dst.content.name);
-        sprintf(str, "%s ", list->dst.content.name);
+        fprintf(file, "%-6s ", list->dst.content.name);
+        sprintf(str, "%-6s ", list->dst.content.name);
         traceMidCode(str);
         break;
     }
