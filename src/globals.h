@@ -79,8 +79,8 @@ typedef enum {
 
 /*  (struct treeNode) TreeNode → Standard tree node structure for constructing the Abstract Syntax Tree   */
 typedef struct treeNode {
-    struct treeNode *child[MAXCHILDREN];
     struct treeNode *sibling;
+    struct treeNode *child[MAXCHILDREN];
     
     int lineno;
     char *scope;
