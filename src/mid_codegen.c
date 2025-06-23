@@ -30,7 +30,7 @@ static char *useRegister(int addr) {
   char reg[16];
 
   if (addr == -1) {
-    for (int i = 0; i < REG_SIZE; i++) {
+    for (int i = 4; i < 28; i++) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
@@ -114,7 +114,7 @@ static void pushRegister(void) {
 	empty.type = addrVoid;
 
 	for(int i = 0; i<REG_SIZE; i++) {
-		if(registers[i] == 1) {
+		if (registers[i] == 1) {
       sprintf(reg, "r%d", i);
 
 			src.type = addrString;
@@ -133,7 +133,7 @@ static void popRegister(void) {
 	empty.type = addrVoid;
 
 	for(int i = REG_SIZE - 1; i>=0; i--) {
-		if(registers[i] == 1) {
+		if (registers[i] == 1) {
       sprintf(reg, "r%d", i);
 
 			src.type = addrString;
@@ -433,8 +433,8 @@ static void stmtGen(TreeNode *t) {
       if (t->child[0] != NULL) {
         codeGen(t->child[0]);
 
-        regTemp = useRegister(31);
-        
+        regTemp = useRegister(2);
+
         if (regTemp != NULL){
           tgt.type = addrString;
           tgt.content.name = regTemp;
@@ -442,21 +442,14 @@ static void stmtGen(TreeNode *t) {
           dst.type = addrVoid;
 
           insertQuad(Move, current, tgt, dst);
+          insertQuad(Return, tgt, dst, dst);
 
           freeRegisters(current.content.name);
           freeRegisters(tgt.content.name);
-        } else {
-          dst.type = addrVoid;
-
-          insertQuad(Move, current, current, dst);
-
-          freeRegisters(current.content.name);
         }
       } else {
         src.type = addrVoid;
-
         tgt.type = addrVoid;
-
         dst.type = addrVoid;
 
         insertQuad(Return, src, tgt, dst);
@@ -538,8 +531,8 @@ static void expGen(TreeNode *t) {
       while (parameters != NULL) {
         paramCounter++;
 
-        if(parameters->nodekind == NodeStatement) stmtGen(parameters);
-				else if(parameters->nodekind = NodeExpression) expGen(parameters);
+        if (parameters->nodekind == NodeStatement) stmtGen(parameters);
+				else if (parameters->nodekind = NodeExpression) expGen(parameters);
 
         tgt.type = addrVoid;
         dst.type = addrVoid;
@@ -564,8 +557,13 @@ static void expGen(TreeNode *t) {
       popRegister();
 
 
-      if(t->type != Void) {
-        regTemp = useRegister(31);
+      if (t->type != Void) {
+        if (strcmp(src.content.name, "input") == 0 || strcmp(src.content.name, "output") == 0) {
+          regTemp = useRegister(2);
+        } else {
+          regTemp = useRegister(3);
+        }
+
         current.type = addrString;
         current.content.name = strdup(regTemp);
       }
@@ -614,13 +612,22 @@ static void printQuadruplesList(void) {
     char str[32];
 
     fprintf(file, "%-10s ", opString[list->op]);
-    sprintf(str, "\t> %d:\t%-10s →   ", counter, opString[list->op]);
+
+    sprintf(str, "\t> %d:\t%-10s ", counter, opString[list->op]);
+    traceMidCode(str);
+
+    if (list->src.type != addrVoid) {
+      sprintf(str, "→");
+      traceMidCode(str);
+    }
+
+    sprintf(str, "   ");
     traceMidCode(str);
 
     switch (list->src.type) {
       case addrVoid:
-        fprintf(file, "-----  ");
-        traceMidCode("-----  ");
+        // fprintf(file, "-----  ");
+        // traceMidCode("-----  ");
         break;
       case addrConst:
         fprintf(file, "%-6d ", list->src.content.value);
@@ -635,8 +642,8 @@ static void printQuadruplesList(void) {
     }
     switch (list->tgt.type) {
       case addrVoid:
-        fprintf(file, "-----  ");
-        traceMidCode("-----  ");
+        // fprintf(file, "-----  ");
+        // traceMidCode("-----  ");
         break;
       case addrConst:
         fprintf(file, "%-6d ", list->tgt.content.value);
@@ -651,8 +658,8 @@ static void printQuadruplesList(void) {
     }
     switch (list->dst.type) {
       case addrVoid:
-        fprintf(file, "-----  ");
-        traceMidCode("-----  ");
+        // fprintf(file, "-----  ");
+        // traceMidCode("-----  ");
         break;
       case addrConst:
         fprintf(file, "%-6d ", list->dst.content.value);
