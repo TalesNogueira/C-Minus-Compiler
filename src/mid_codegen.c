@@ -34,7 +34,7 @@ static char *useRegister(int addr) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
-        sprintf(reg, "t%d", i);
+        sprintf(reg, "r%d", i);
 
         return strdup(reg);
       }
@@ -43,7 +43,7 @@ static char *useRegister(int addr) {
     if (registers[addr] == 0) {
       registers[addr] = 1;
       
-      sprintf(reg, "t%d", addr);
+      sprintf(reg, "r%d", addr);
 
       return strdup(reg);
     }
@@ -68,7 +68,7 @@ static void freeRegisters(char *reg) {
       registers[i] = 0;
     }
   } else {
-    if (reg[0] == 't') {
+    if (reg[0] == 'r') {
       int regIndex = atoi(&reg[1]);
       if (regIndex >= 0 && regIndex < REG_SIZE) registers[regIndex] = 0;
     }
@@ -115,7 +115,7 @@ static void pushRegister(void) {
 
 	for(int i = 0; i<REG_SIZE; i++) {
 		if(registers[i] == 1) {
-      sprintf(reg, "t%d", i);
+      sprintf(reg, "r%d", i);
 
 			src.type = addrString;
 			src.content.name = strdup(reg);
@@ -134,7 +134,7 @@ static void popRegister(void) {
 
 	for(int i = REG_SIZE - 1; i>=0; i--) {
 		if(registers[i] == 1) {
-      sprintf(reg, "t%d", i);
+      sprintf(reg, "r%d", i);
 
 			src.type = addrString;
 			src.content.name = strdup(reg);
@@ -433,7 +433,7 @@ static void stmtGen(TreeNode *t) {
       if (t->child[0] != NULL) {
         codeGen(t->child[0]);
 
-        regTemp = useRegister(30);
+        regTemp = useRegister(31);
         
         if (regTemp != NULL){
           tgt.type = addrString;
@@ -563,9 +563,12 @@ static void expGen(TreeNode *t) {
       
       popRegister();
 
-      regTemp = useRegister(30);
-      current.type = addrString;
-      current.content.name = strdup(regTemp);
+
+      if(t->type != Void) {
+        regTemp = useRegister(31);
+        current.type = addrString;
+        current.content.name = strdup(regTemp);
+      }
       break;
   }
 }
