@@ -33,8 +33,9 @@ int main(void) {
     syntaxAnalysis();
     semanticAnalysis(abstractSyntaxTree);
 
+    printf("\n> End of analysis... → [%s]\n", source);
+
     midCodeGenerate(abstractSyntaxTree);
 
-    printf("\n> End of compilation → [%s]\n", source);
     return 0;
 }
