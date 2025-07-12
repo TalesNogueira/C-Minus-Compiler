@@ -433,7 +433,7 @@ static void stmtGen(TreeNode *t) {
       if (t->child[0] != NULL) {
         codeGen(t->child[0]);
 
-        regTemp = useRegister(2);
+        regTemp = useRegister(3);
 
         if (regTemp != NULL){
           tgt.type = addrString;
@@ -607,11 +607,13 @@ static void printQuadruplesList(void) {
   printf("\n> Intermediate Code Synthesis ----------------------------------------------");
   printBars();
 
+  fprintf(file, "%s\n", source);
+
   QuadList *list = quadruples;
   while (list != NULL) {
     char str[32];
 
-    fprintf(file, "%-10s ", opString[list->op]);
+    fprintf(file, "%s|", opString[list->op]);
 
     sprintf(str, "\t> %d:\t%-10s ", counter, opString[list->op]);
     traceMidCode(str);
@@ -626,48 +628,48 @@ static void printQuadruplesList(void) {
 
     switch (list->src.type) {
       case addrVoid:
-        // fprintf(file, "-----  ");
+        fprintf(file, "---|");
         // traceMidCode("-----  ");
         break;
       case addrConst:
-        fprintf(file, "%-6d ", list->src.content.value);
+        fprintf(file, "%d|", list->src.content.value);
         sprintf(str, "%-6d ", list->src.content.value);
         traceMidCode(str);
         break;
       case addrString:
-        fprintf(file, "%-6s ", list->src.content.name);
+        fprintf(file, "%s|", list->src.content.name);
         sprintf(str, "%-6s ", list->src.content.name);
         traceMidCode(str);
         break;
     }
     switch (list->tgt.type) {
       case addrVoid:
-        // fprintf(file, "-----  ");
+        fprintf(file, "---|");
         // traceMidCode("-----  ");
         break;
       case addrConst:
-        fprintf(file, "%-6d ", list->tgt.content.value);
+        fprintf(file, "%d|", list->tgt.content.value);
         sprintf(str, "%-6d ", list->tgt.content.value);
         traceMidCode(str);
         break;
       case addrString:
-        fprintf(file, "%-6s ", list->tgt.content.name);
+        fprintf(file, "%s|", list->tgt.content.name);
         sprintf(str, "%-6s ", list->tgt.content.name);
         traceMidCode(str);
         break;
     }
     switch (list->dst.type) {
       case addrVoid:
-        // fprintf(file, "-----  ");
+        fprintf(file, "---");
         // traceMidCode("-----  ");
         break;
       case addrConst:
-        fprintf(file, "%-6d ", list->dst.content.value);
+        fprintf(file, "%d", list->dst.content.value);
         sprintf(str, "%-6d ", list->dst.content.value);
         traceMidCode(str);
         break;
       case addrString:
-        fprintf(file, "%-6s ", list->dst.content.name);
+        fprintf(file, "%s", list->dst.content.name);
         sprintf(str, "%-6s ", list->dst.content.name);
         traceMidCode(str);
         break;
@@ -680,6 +682,7 @@ static void printQuadruplesList(void) {
     list = list->next;
   }
   fclose(file);
+  newLine();
 }
 
 /*  midCodeGenerate() → Call codeGen() and [TODO] ---> Traceable    */
