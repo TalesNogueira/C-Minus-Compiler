@@ -19,7 +19,9 @@ EXEC := $(BUILD_DIR)/compiler
 
 REPORT ?= report
 
-.PHONY: all clean run build
+PYTHON := python3
+
+.PHONY: all clean run build assembly
 
 build: $(EXEC)
 
@@ -42,9 +44,13 @@ run: build
 	@echo "> Running compiler..."
 	@mkdir -p $(OUT_DIR)
 	@echo	"/---------------------------------------------------------------------------\n>		    C- Compiler by Tales C. Nogueira\n---------------------------------------------------------------------------/"
-	@script -q -c "$(EXEC)" $(OUT_DIR)/$(REPORT).out
+	@script -q -c "$(EXEC)" $(OUT_DIR)/$(REPORT).log 2>&1
 
-all: run
+assembly: run
+	@echo "> Generating Assembly Code (Python3)..."
+	@$(PYTHON) $(SRC_DIR)/assembly_codegen.py
+
+all: assembly
 
 clean:
 	@rm -rf $(BUILD_DIR)/*
