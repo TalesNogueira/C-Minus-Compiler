@@ -101,7 +101,7 @@ static void insertQuad(Operation op, Address src, Address tgt, Address dst) {
   if (op == Add || op == Sub || op == Mul || op == Div || op == SGT || op == SLT || op == SGET || op == SLET || op == SET || op == SDT) {
     if (src.type == addrString) freeRegisters(src.content.name);
     if (tgt.type == addrString) freeRegisters(tgt.content.name);
-  } else if (op == StoreVAR) {
+  } else if (op == StoreVAR || op == StoreARRAY) {
     if (src.type == addrString) freeRegisters(src.content.name);
   }
 }
@@ -203,7 +203,9 @@ static void declGen(TreeNode *t) {
       src.type = addrString;
       src.content.name = strdup(t->attr.name);	
 
-      tgt.type = addrVoid;
+      tgt.type = addrString;
+      tgt.content.name = strdup(expTypeToString(t->type));
+
       dst.type = addrVoid;
 
       insertQuad(FunBGN, src, tgt, dst);
@@ -274,6 +276,7 @@ static Address current;
 /*  stmtGen() → [TODO]  */
 static void stmtGen(TreeNode *t) {
   Address src, tgt, dst;
+  Address empty;
   Address condition;
 
   char *labelStart;
@@ -281,6 +284,8 @@ static void stmtGen(TreeNode *t) {
   char *labelEnd;
 
   char *regTemp;
+
+  empty.type = addrVoid;
   
   if (t == NULL) return;
 
@@ -299,28 +304,25 @@ static void stmtGen(TreeNode *t) {
         regTemp = useRegister(-1);
         dst.type = addrString;
         dst.content.name = strdup(regTemp);
-
-        insertQuad(LoadARRAY, src, tgt, dst);
         
-        src = dst;
+        insertQuad(LoadVAR, src, tgt, dst);
 
         codeGen(t->child[0]->child[0]);
-
-        tgt = current;
+        
+        Address temp;
 
         regTemp = useRegister(-1);
-        dst.type = addrString;
-        dst.content.name = strdup(regTemp);
+        temp.type = addrString;
+        temp.content.name = strdup(regTemp);
 
-        insertQuad(Add, src, tgt, dst);
+        insertQuad(Add, dst, current, temp);
 
         tgt.type = addrString;
-        tgt.content.name = tgt.content.name = strdup(t->child[0]->scope);	
+        tgt.content.name = strdup(t->child[0]->scope);	
 
-        insertQuad(StoreARRAY, right, tgt, dst);
+        insertQuad(StoreARRAY, right, tgt, temp);
 
-        freeRegisters(right.content.name);
-        freeRegisters(dst.content.name);
+        freeRegisters(temp.content.name);
       } else {
         src.type = addrString;
         src.content.name = strdup(t->child[0]->scope);
@@ -345,9 +347,7 @@ static void stmtGen(TreeNode *t) {
       tgt.type = addrString;
       tgt.content.name = labelElse;
 
-      dst.type = addrVoid;
-
-      insertQuad(IFfalse, condition, tgt, dst);
+      insertQuad(IFfalse, condition, tgt, empty);
 
       freeRegisters(condition.content.name);
 
@@ -356,32 +356,20 @@ static void stmtGen(TreeNode *t) {
       src.type = addrString;
       src.content.name = labelEnd;
 
-      tgt.type = addrVoid;
-
-      dst.type = addrVoid;
-
-      insertQuad(Jump, src, tgt, dst);
+      insertQuad(Jump, src, empty, empty);
 
       if (t->child[2] != NULL) {
         src.type = addrString;
         src.content.name = labelElse;
 
-        tgt.type = addrVoid;
-
-        dst.type = addrVoid;
-
-        insertQuad(Label, src, tgt, dst);
+        insertQuad(Label, src, empty, empty);
 
         codeGen(t->child[2]);
 
         src.type = addrString;
         src.content.name = labelEnd;
 
-        tgt.type = addrVoid;
-
-        dst.type = addrVoid;
-
-        insertQuad(Label, src, tgt, dst);
+        insertQuad(Label, src, empty, empty);
       }
       break;
     case StmtWhile:
@@ -391,11 +379,7 @@ static void stmtGen(TreeNode *t) {
       src.type = addrString;
       src.content.name = labelStart;
 
-      tgt.type = addrVoid;
-
-      dst.type = addrVoid;
-
-      insertQuad(Label, src, tgt, dst);
+      insertQuad(Label, src, empty, empty);
 
       codeGen(t->child[0]);
       condition = current;
@@ -403,9 +387,7 @@ static void stmtGen(TreeNode *t) {
       tgt.type = addrString;
       tgt.content.name = labelEnd;  
 
-      dst.type = addrVoid;
-
-      insertQuad(IFfalse, condition, tgt, dst);
+      insertQuad(IFfalse, condition, tgt, empty);
 
       freeRegisters(condition.content.name);
 
@@ -414,45 +396,33 @@ static void stmtGen(TreeNode *t) {
       src.type = addrString;
       src.content.name = labelStart;
 
-      tgt.type = addrVoid;
-
-      dst.type = addrVoid;
-
-      insertQuad(Jump, src, tgt, dst);
+      insertQuad(Jump, src, empty, empty);
 
       src.type = addrString;
       src.content.name = labelEnd;
 
-      tgt.type = addrVoid;
-
-      dst.type = addrVoid;
-
-      insertQuad(Label, src, tgt, dst);
+      insertQuad(Label, src, empty, empty);
       break;
     case StmtReturn:
       if (t->child[0] != NULL) {
         codeGen(t->child[0]);
 
+        // Quick-Fix
+        freeRegisters("r3");
         regTemp = useRegister(3);
 
         if (regTemp != NULL){
           tgt.type = addrString;
           tgt.content.name = regTemp;
-
-          dst.type = addrVoid;
-
-          insertQuad(Move, current, tgt, dst);
-          insertQuad(Return, tgt, dst, dst);
-
+          
+          insertQuad(Move, current, tgt, empty);
+          insertQuad(Return, tgt, empty, empty);
+          
           freeRegisters(current.content.name);
           freeRegisters(tgt.content.name);
         }
       } else {
-        src.type = addrVoid;
-        tgt.type = addrVoid;
-        dst.type = addrVoid;
-
-        insertQuad(Return, src, tgt, dst);
+        insertQuad(Return, empty, empty, empty);
       }
       break;
   }
@@ -461,7 +431,10 @@ static void stmtGen(TreeNode *t) {
 /*  expGen() → [TODO]  */
 static void expGen(TreeNode *t) {
   Address src, tgt, dst;
+  Address empty;
   char *regTemp;
+
+  empty.type = addrVoid;
 
   if (t == NULL) return;
 
@@ -495,21 +468,25 @@ static void expGen(TreeNode *t) {
         dst.type = addrString;
         dst.content.name = strdup(regTemp);
 
-        insertQuad(LoadARRAY, src, tgt, dst);
-
-        src = dst;
+        insertQuad(LoadVAR, src, tgt, dst);
 
         codeGen(t->child[0]);
 
-        tgt = current;
+        Address temp;
+
+        regTemp = useRegister(-1);
+        temp.type = addrString;
+        temp.content.name = strdup(regTemp);
+
+        insertQuad(Add, dst, current, temp);
 
         regTemp = useRegister(-1);
         current.type = addrString;
         current.content.name = strdup(regTemp);
 
-        insertQuad(Add, src, tgt, current);
+        insertQuad(LoadARRAY, src, temp, current);
 
-        freeRegisters(src.content.name);
+        freeRegisters(temp.content.name);
       } else {
         src.type = addrString;
         src.content.name = strdup(t->scope);
@@ -534,10 +511,19 @@ static void expGen(TreeNode *t) {
         if (parameters->nodekind == NodeStatement) stmtGen(parameters);
 				else if (parameters->nodekind = NodeExpression) expGen(parameters);
 
-        tgt.type = addrVoid;
-        dst.type = addrVoid;
+        if (current.type == addrConst) {
+          tgt.type = addrConst;
+          tgt.content.value = 0;
 
-        insertQuad(Param, current, tgt, dst);
+          regTemp = useRegister(-1);
+          dst.type = addrString;
+          dst.content.name = strdup(regTemp);
+
+          insertQuad(Add, current, tgt, dst);
+          insertQuad(Param, dst, empty, empty);
+        } else {
+          insertQuad(Param, current, empty, empty);
+        }
 
         parameters = parameters->sibling;
       }
@@ -548,14 +534,11 @@ static void expGen(TreeNode *t) {
       tgt.type = addrConst;
       tgt.content.value = paramCounter;
 
-      dst.type = addrVoid;
-
       pushRegister();
 
-      insertQuad(Call, src, tgt, dst);
+      insertQuad(Call, src, tgt, empty);
       
       popRegister();
-
 
       if (t->type != Void) {
         if (strcmp(src.content.name, "input") == 0 || strcmp(src.content.name, "output") == 0) {
