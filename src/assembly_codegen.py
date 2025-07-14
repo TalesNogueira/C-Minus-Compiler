@@ -199,8 +199,12 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     global_variables += 1
                 else:
                     variable_offsets.setdefault(current_function, {})[tgt] = local_offset
-                    local_offset += array_size
-                    instructions.append(Instruction("addi", "$sp", "$sp", dst))
+                    if (array_size == 0):
+                        local_offset += 1
+                        instructions.append(Instruction("addi", "$sp", "$sp", "1"))
+                    else:
+                        local_offset += array_size
+                        instructions.append(Instruction("addi", "$sp", "$sp", dst))
                 
             case "STOREVAR":
                 if dst in variable_offsets.get("global", {}):
@@ -238,7 +242,10 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 continue
             
             case "LABEL":
-                labels[src] = len(instructions) + 1
+                if "main" in labels:
+                    labels[src] = len(instructions)
+                else:
+                    labels[src] = len(instructions) + 1
         
             case "JUMP":
                 instructions.append(Instruction("j", src, "-", "-"))
