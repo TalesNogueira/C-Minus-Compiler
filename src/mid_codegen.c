@@ -339,7 +339,6 @@ static void stmtGen(TreeNode *t) {
       break;
     case StmtIf:
       labelElse = useLabel();
-      labelEnd = useLabel();
 
       codeGen(t->child[0]);
       condition = current;
@@ -353,12 +352,14 @@ static void stmtGen(TreeNode *t) {
 
       codeGen(t->child[1]);
 
-      src.type = addrString;
-      src.content.name = labelEnd;
-
-      insertQuad(Jump, src, empty, empty);
-
       if (t->child[2] != NULL) {
+        labelEnd = useLabel();
+
+        src.type = addrString;
+        src.content.name = labelEnd;
+
+        insertQuad(Jump, src, empty, empty);
+        
         src.type = addrString;
         src.content.name = labelElse;
 
@@ -370,8 +371,13 @@ static void stmtGen(TreeNode *t) {
         src.content.name = labelEnd;
 
         insertQuad(Label, src, empty, empty);
+      } else {
+        src.type = addrString;
+        src.content.name = labelElse;
+
+        insertQuad(Label, src, empty, empty);
       }
-      break;
+    break;
     case StmtWhile:
       labelStart = useLabel();
       labelEnd = useLabel();
