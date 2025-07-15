@@ -10,6 +10,8 @@ PARSER_SRC := $(SRC_DIR)/parser.y
 SYMTAB_SRC := src/symbol_table.c
 SEMANTIC_SRC := src/semantic_analyzer.c
 MID_CODEGEN_SRC := $(SRC_DIR)/mid_codegen.c
+ASSEMBLY_CODEGEN_SRC := $(SRC_DIR)/assembly_codegen.py
+BIN_CODEGEN_SRC := $(SRC_DIR)/binary_codegen.py
 
 LEX_C := $(SRC_DIR)/lex.yy.c
 PARSER_C := $(SRC_DIR)/parser.tab.c
@@ -48,9 +50,14 @@ run: build
 
 assembly: run
 	@echo "> Generating Assembly Code (Python3)..."
-	@$(PYTHON) $(SRC_DIR)/assembly_codegen.py
+	@$(PYTHON) $(ASSEMBLY_CODEGEN_SRC)
 
-all: assembly
+binary: assembly
+	@echo "> Generating Binary Code (Python3)..."
+	@$(PYTHON) $(BIN_CODEGEN_SRC)
+
+all: binary
+	@echo "> End of compilation."
 
 clean:
 	@rm -rf $(BUILD_DIR)/*
