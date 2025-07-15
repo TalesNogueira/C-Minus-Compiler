@@ -46,9 +46,9 @@ def midcodeTranslate(path: str) -> List[Quadruple]:
 
 def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
     global_variables = 0
+    global_variable = False
     
     current_function = None
-    
     variable_offsets = {}
     local_offset = 0
     global_offset = 0
@@ -58,8 +58,6 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
     registers = []
      
     instructions = []
-    
-    global_variable = False
     
     for quad in quads:
         operator = quad.op.upper()
@@ -342,6 +340,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
 
 def assemblySave(path: str, instructions: List[Instruction]):
     with open(path, 'w') as output:
+        output.write(source+"\n")
         for index, instr in enumerate(instructions):
             line = f"[{index}] {instr.instr} {instr.addr_src} {instr.addr_tgt} {instr.addr_dst}\n"
             output.write(line)
