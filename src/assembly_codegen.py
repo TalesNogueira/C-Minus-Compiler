@@ -288,7 +288,10 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     
             case "MOVE" | "RETURN":
                 if (operator == "MOVE"):
-                    instructions.append(Instruction("move", src, "-", tgt))
+                    if (src.isdigit()):
+                        instructions.append(Instruction("movei", src, "-", tgt))
+                    else:
+                        instructions.append(Instruction("move", src, "-", tgt))
                 
             case "PUSH":
                 registers.append(src)
