@@ -408,29 +408,31 @@ static void stmtGen(TreeNode *t) {
       src.content.name = labelEnd;
 
       insertQuad(Label, src, empty, empty);
-      break;
+    break;
     case StmtReturn:
       if (t->child[0] != NULL) {
+        Address rtn;
+
         codeGen(t->child[0]);
 
         // Quick-Fix
         freeRegisters("r3");
         regTemp = useRegister(3);
+        rtn.type = addrString;
+        rtn.content.name = regTemp;
 
-        if (regTemp != NULL){
-          tgt.type = addrString;
-          tgt.content.name = regTemp;
-          
-          insertQuad(Move, current, tgt, empty);
-          insertQuad(Return, tgt, empty, empty);
-          
+        insertQuad(Move, current, rtn, empty);   
+        insertQuad(Return, rtn, empty, empty);
+
+        if (current.type == addrString) {
           freeRegisters(current.content.name);
-          freeRegisters(tgt.content.name);
         }
+
+        freeRegisters(rtn.content.name);
       } else {
         insertQuad(Return, empty, empty, empty);
       }
-      break;
+    break;
   }
 }
 
