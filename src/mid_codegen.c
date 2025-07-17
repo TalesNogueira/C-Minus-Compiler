@@ -30,7 +30,7 @@ static char *useRegister(int addr) {
   char reg[16];
 
   if (addr == -1) {
-    for (int i = 4; i < 28; i++) {
+    for (int i = 5; i < 28; i++) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
@@ -520,14 +520,11 @@ static void expGen(TreeNode *t) {
 				else if (parameters->nodekind = NodeExpression) expGen(parameters);
 
         if (current.type == addrConst) {
-          tgt.type = addrConst;
-          tgt.content.value = 0;
-
           regTemp = useRegister(-1);
           dst.type = addrString;
           dst.content.name = strdup(regTemp);
 
-          insertQuad(Add, current, tgt, dst);
+          insertQuad(Move, current, dst, empty);
           insertQuad(Param, dst, empty, empty);
         } else {
           insertQuad(Param, current, empty, empty);
