@@ -8,7 +8,7 @@ registers = {
     "$one":  "00001",
     "$io":   "00010",
     "$rf":   "00011",
-    "r4":    "00100",
+    "$aux":  "00100",
     "r5":    "00101",
     "r6":    "00110",
     "r7":    "00111",
@@ -33,8 +33,8 @@ registers = {
     "r26":   "11010",
     "r27":   "11011",
     "$gp":   "11100",
-    "$sp":   "11101",
-    "$fp":   "11110",
+    "$fp":   "11101",
+    "$sp":   "11110",
     "$ra":   "11111",
 }
 
@@ -85,7 +85,7 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             case "in":
                 opcode = "000000"
                 funct = "000001"
-                binary.append(opcode+"00010"+"000000000000000"+funct)
+                binary.append(opcode+"0000000000"+"00010"+"00000"+funct)
             
             case "out":
                 opcode = "000000"
@@ -219,12 +219,10 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
             
             # case "andi":
-            #     opcode = "001000"
-            #     binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+            #     continue
             
             # case "ori":
-            #     opcode = "001001"
-            #     binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+            #     continue
             
             case "beq":
                 opcode = "001100"
@@ -284,12 +282,12 @@ def binarySave(path: str, bin: List[str]):
     with open(path, 'w') as output:
         if (traceBinary):
             print("\n> Binary Code Tracing ------------------------------------------------------")
-            print("----------------------------------------------------------------------------\n")
-        for bin_line, inst_line in zip(bin, instructions):
+            print("----------------------------------------------------------------------------")
+        for index, (bin_line, inst_line) in enumerate(zip(bin, instructions)):
             line = f"{bin_line}\n"
             
             if (traceBinary):
-                print(f"> {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n    {line}")
+                print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
             output.write(line)
 
 def main():
