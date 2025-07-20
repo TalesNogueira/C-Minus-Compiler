@@ -68,7 +68,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
         match operator:
             case "ADD":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("addi", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("addi", src, dst, tgt))
@@ -79,7 +79,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     
             case "SUB":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("subi", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("subi", src, dst, tgt))
@@ -90,7 +90,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     
             case "MUL":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("muli", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("muli", src, dst, tgt))
@@ -101,7 +101,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     
             case "DIV":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("divi", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("divi", src, dst, tgt))
@@ -112,7 +112,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     
             case "SGT":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("sgti", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("sgti", src, dst, tgt))
@@ -123,7 +123,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             
             case "SLT":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("slti", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("slti", src, dst, tgt))
@@ -134,7 +134,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             
             case "SGET":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("segti", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("segti", src, dst, tgt))
@@ -145,7 +145,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             
             case "SLET":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("selti", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("selti", src, dst, tgt))
@@ -156,7 +156,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             
             case "SET":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("seti", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("seti", src, dst, tgt))
@@ -167,7 +167,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             
             case "SDT":
                 if (src.isdigit() and tgt.isdigit()):
-                    instructions.append(Instruction("addi", dst, dst, src))
+                    instructions.append(Instruction("movei", src, "-", dst))
                     instructions.append(Instruction("sdti", dst, dst, tgt))
                 elif (not src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("sdti", src, dst, tgt))
@@ -188,36 +188,56 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("addi", "$sp", "$sp", "1"))
                     
             case "ALLOCARRAY":
-                array_size = int(dst)
+                array_size = int(dst) + 1
                 
                 if src == "global":
                     variable_offsets.setdefault("global", {})[tgt] = global_offset
+                    instructions.append(Instruction("addi", "$gp", "$aux", "1"))
+                    instructions.append(Instruction("store", "$gp", "$aux", str(global_offset)))
+                    instructions.append(Instruction("addi", "$gp", "$gp", str(array_size)))
                     global_offset += array_size
-                    instructions.append(Instruction("addi", "$gp", "$gp", dst))
-                    global_variables += 1
+                    global_variables += 3
                 else:
                     variable_offsets.setdefault(current_function, {})[tgt] = local_offset
-                    if (array_size == 0):
-                        local_offset += 1
-                        instructions.append(Instruction("addi", "$sp", "$sp", "1"))
-                    else:
-                        local_offset += array_size
-                        instructions.append(Instruction("addi", "$sp", "$sp", dst))
+                    if (dst == "0"):
+                        instructions.append(Instruction("addi", "$sp", "$sp", str(array_size)))
+                    else: 
+                        instructions.append(Instruction("addi", "$fp", "$aux", "1"))
+                        instructions.append(Instruction("store", "$fp", "$aux", str(local_offset)))
+                        instructions.append(Instruction("addi", "$sp", "$sp", str(array_size)))
+                    local_offset += array_size
                 
             case "STOREVAR":
                 if dst in variable_offsets.get("global", {}):
                     offset = variable_offsets["global"][dst]
-                    instructions.append(Instruction("store", "$gp", src, str(offset)))
+                    if (src.isdigit()):
+                        instructions.append(Instruction("movei", src, "-", "$aux"))
+                        instructions.append(Instruction("store", "$gp", "$aux", str(offset)))
+                    else:
+                        instructions.append(Instruction("store", "$gp", src, str(offset)))
+                    global_variable = False
                 else:
                     offset = variable_offsets[tgt][dst]
-                    instructions.append(Instruction("store", "$fp", src, str(offset)))
+                    if (src.isdigit()):
+                        instructions.append(Instruction("movei", src, "-", "$aux"))
+                        instructions.append(Instruction("store", "$fp", "$aux", str(offset)))
+                    else:
+                        instructions.append(Instruction("store", "$fp", src, str(offset)))
                 
             case "STOREARRAY":
                 if (global_variable):
-                    instructions.append(Instruction("store", "$gp", src, dst))
+                    if (src.isdigit()):
+                        instructions.append(Instruction("movei", src, "-", "$aux"))
+                        instructions.append(Instruction("store", dst, "$aux", "0"))
+                    else:
+                        instructions.append(Instruction("store", dst, src, "0"))
                     global_variable = False
                 else:
-                    instructions.append(Instruction("store", "$fp", src, dst))
+                    if (src.isdigit()):
+                        instructions.append(Instruction("movei", src, "-", "$aux"))
+                        instructions.append(Instruction("store", dst, "$aux", "0"))
+                    else:
+                        instructions.append(Instruction("store", dst, src, "0"))
             
             case "LOADVAR":
                 if tgt in variable_offsets.get("global", {}):
@@ -230,10 +250,10 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             
             case "LOADARRAY":
                 if (global_variable):
-                    instructions.append(Instruction("load", "$gp", dst, tgt))
-                    global_variable = False
+                    instructions.append(Instruction("load", tgt, dst, "0"))
+                    global_variable = True
                 else:
-                    instructions.append(Instruction("load", "$fp", dst, tgt))
+                    instructions.append(Instruction("load", tgt, dst, "0"))
         
             case "IFFALSE":
                 instructions.append(Instruction("beq", src, "$zero", tgt))
@@ -251,17 +271,17 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             case "FUNBGN":
                 if (src.lower() == "main"):
                     labels[src.lower()] = len(instructions) + 1
-
                     if (labels[src.lower()] > 1):
                         instructions.insert(global_variables, Instruction("j", labels[src.lower()], "-", "-"))
+                    local_offset = 0
                 else:
                     labels[src] = len(instructions) + 1
                     instructions.append(Instruction("store", "$fp", "$ra", "1"))
                     instructions.append(Instruction("addi", "$sp", "$sp", "1"))
-                    
+                    local_offset = 2
+    
                 current_function = src
                 variable_offsets[current_function] = {}
-                local_offset = 0
             
             case "FUNEND":
                 if (src.lower() != "main"):
@@ -273,13 +293,15 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 
             case "CALL":
                 if (src.lower() == "input"):
-                    instructions.append(Instruction("in", "r2", "value", "-"))
+                    instructions.append(Instruction("in", "-", "-", "r2"))
                 elif (src.lower() == "output"):
-                    instructions.append(Instruction("out", registers[-1], "r2", "-"))  
+                    instructions.append(Instruction("out", registers[-1], "-", "-"))  
                 else:
                     instructions.append(Instruction("store", "$sp", "$fp", "0"))
                     instructions.append(Instruction("addi", "$sp", "$fp", "0"))
                     instructions.append(Instruction("addi", "$sp", "$sp", "1"))
+                    for index, reg in enumerate(registers):
+                        instructions.append(Instruction("store", "$fp", reg, str(2+index)))
                     instructions.append(Instruction("jal", src, "-", "-"))
                     instructions.append(Instruction("addi", "$fp", "$sp", "0"))
                     instructions.append(Instruction("load", "$fp", "$fp", "0"))
