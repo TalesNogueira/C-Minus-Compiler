@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 traceBinary = True
+addressRange = 256
 
 registers = {
     "$zero": "00000",
@@ -289,6 +290,9 @@ def binarySave(path: str, bin: List[str]):
             if (traceBinary):
                 print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
             output.write(line)
+        if addressRange > len(bin):
+            for index in range(len(bin), addressRange):
+                output.write("00000000000000000000000000000000\n")
 
 def main():
     path_assembly = "outputs/assembly.txt"
