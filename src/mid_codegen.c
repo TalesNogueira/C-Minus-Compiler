@@ -646,10 +646,10 @@ static void printQuadruplesList(void) {
     sprintf(str, "\t> %d:\t%-10s ", counter, opString[list->op]);
     traceMidCode(str);
 
-    if (list->src.type != addrVoid) {
-      sprintf(str, "→");
-      traceMidCode(str);
-    }
+
+    sprintf(str, "→");
+    traceMidCode(str);
+    
 
     sprintf(str, "   ");
     traceMidCode(str);
