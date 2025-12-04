@@ -25,17 +25,20 @@ static bool firstExecution = true;
 #define REG_SIZE 32
 static int *registers;
 
+int usedRegisters = 0;
+
 /*  useRegister() → [TODO]  */
 static char *useRegister(int addr) {
   char reg[16];
 
   if (addr == -1) {
-    for (int i = 5; i < 28; i++) {
+    for (int i = 6; i < 28; i++) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
         sprintf(reg, "r%d", i);
 
+        usedRegisters++;
         return strdup(reg);
       }
     }
@@ -45,6 +48,7 @@ static char *useRegister(int addr) {
       
       sprintf(reg, "r%d", addr);
 
+      usedRegisters++;
       return strdup(reg);
     }
   }
@@ -67,10 +71,14 @@ static void freeRegisters(char *reg) {
     for(int i=0; i<REG_SIZE; i++) {
       registers[i] = 0;
     }
+    usedRegisters = 0;
   } else {
     if (reg[0] == 'r') {
       int regIndex = atoi(&reg[1]);
-      if (regIndex >= 0 && regIndex < REG_SIZE) registers[regIndex] = 0;
+      if (regIndex >= 0 && regIndex < REG_SIZE) {
+        registers[regIndex] = 0;
+        usedRegisters--;
+      }
     }
   }
 
@@ -107,7 +115,7 @@ static void insertQuad(Operation op, Address src, Address tgt, Address dst) {
 }
 
 /*  pushRegister() → [TODO]  */
-static void pushRegister(void) {
+static void pushRegister(int paramCounter) {
   char reg[16];
 	Address src, empty;
   
@@ -115,18 +123,22 @@ static void pushRegister(void) {
 
 	for(int i = 0; i<REG_SIZE; i++) {
 		if (registers[i] == 1) {
-      sprintf(reg, "r%d", i);
+      if (paramCounter == usedRegisters) {
+        sprintf(reg, "r%d", i);
 
-			src.type = addrString;
-			src.content.name = strdup(reg);
+        src.type = addrString;
+        src.content.name = strdup(reg);
 
-			insertQuad(Push, src, empty, empty);
+        insertQuad(Push, src, empty, empty);
+      } else {
+        paramCounter++;
+      }
 		}
 	}
 }
 
 /*  popRegister() → [TODO]  */
-static void popRegister(void) {
+static void popRegister(int paramCounter) {
 	char reg[16];
 	Address src, empty;
   
@@ -134,14 +146,16 @@ static void popRegister(void) {
 
 	for(int i = REG_SIZE - 1; i>=0; i--) {
 		if (registers[i] == 1) {
-      sprintf(reg, "r%d", i);
+      if (paramCounter > 0) {
+        sprintf(reg, "r%d", i);
 
-			src.type = addrString;
-			src.content.name = strdup(reg);
+        src.type = addrString;
+        src.content.name = strdup(reg);
 
-			insertQuad(Pop, src, empty, empty);
-
-      freeRegisters(src.content.name);
+        insertQuad(Pop, src, empty, empty);
+        freeRegisters(src.content.name);
+        paramCounter--;
+      }
 		}
 	}
 }
@@ -458,7 +472,17 @@ static void expGen(TreeNode *t) {
       current.type = addrString;
       current.content.name = strdup(regTemp);
 
+      if (left.type == addrString && right.type == addrString) {
+        if (strcmp(left.content.name, "r4") == 0 && strcmp(right.content.name, "r3") == 0) {
+          Address aux;
+          aux.content = left.content;
+          left.content = right.content;
+          right.content = aux.content;
+        }
+      }
+
       insertQuad(tokenToOperation(t->attr.operator), left, right, current);
+
       break;
     case ExpConst:
       current.type = addrConst;
@@ -511,45 +535,61 @@ static void expGen(TreeNode *t) {
       break;
     case ExpCall:
       int paramCounter = 0;
+      Address rf_alternative;
       TreeNode *parameters = t->child[0];
 
+      if (registers[3] == 1) {
+        regTemp = useRegister(4);
+        dst.type = addrString;
+        dst.content.name = strdup(regTemp);
+
+        insertQuad(Move, current, dst, empty);
+
+        rf_alternative.type = addrString;
+        rf_alternative.content.name = strdup(regTemp);
+      }
+      
       while (parameters != NULL) {
         paramCounter++;
-
+        
         if (parameters->nodekind == NodeStatement) stmtGen(parameters);
 				else if (parameters->nodekind = NodeExpression) expGen(parameters);
-
+        
         if (current.type == addrConst) {
           regTemp = useRegister(-1);
           dst.type = addrString;
           dst.content.name = strdup(regTemp);
-
+          
           insertQuad(Move, current, dst, empty);
           insertQuad(Param, dst, empty, empty);
         } else {
           insertQuad(Param, current, empty, empty);
         }
-
+        
         parameters = parameters->sibling;
       }
 
       src.type = addrString;
       src.content.name = strdup(t->attr.name);
-
+      
       tgt.type = addrConst;
       tgt.content.value = paramCounter;
 
-      pushRegister();
+      pushRegister(paramCounter);
 
       insertQuad(Call, src, tgt, empty);
       
-      popRegister();
+      popRegister(paramCounter);
 
       if (t->type != Void) {
         if (strcmp(src.content.name, "input") == 0 || strcmp(src.content.name, "output") == 0) {
           regTemp = useRegister(2);
         } else {
-          regTemp = useRegister(3);
+          if (registers[4] == 1) {
+            regTemp = strdup(rf_alternative.content.name);
+          } else {
+            regTemp = useRegister(3);
+          }
         }
 
         current.type = addrString;

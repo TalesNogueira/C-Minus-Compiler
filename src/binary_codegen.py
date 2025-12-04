@@ -2,15 +2,15 @@ from dataclasses import dataclass
 from typing import List
 
 traceBinary = True
-addressRange = 256
+addressRange = 0
 
 registers = {
     "$zero": "00000",
-    "$one":  "00001",
+    "$aux":  "00001",
     "$io":   "00010",
-    "$rf":   "00011",
-    "$aux":  "00100",
-    "r5":    "00101",
+    "$rfA":  "00011",
+    "$rfB":  "00100",
+    "$hd":   "00101",
     "r6":    "00110",
     "r7":    "00111",
     "r8":    "01000",
