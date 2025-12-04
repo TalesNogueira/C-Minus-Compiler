@@ -179,7 +179,7 @@ static void checkNode(TreeNode *t) {
     }
 }
 
-/*  initiPredefinedFunctions() → Inserts predefined functions (input/output) into the Symbol Table  */
+/*  initiPredefinedFunctions() → Inserts predefined functions into the Symbol Table  */
 static void initPredefinedFunctions() {
     TreeNode *inputFunc = newDeclNode(DeclFunction);
     inputFunc->type = Integer;
