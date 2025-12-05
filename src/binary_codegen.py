@@ -8,9 +8,9 @@ registers = {
     "$zero": "00000",
     "$aux":  "00001",
     "$io":   "00010",
-    "$rfA":  "00011",
-    "$rfB":  "00100",
-    "$hd":   "00101",
+    "$hd":   "00011",
+    "$rfA":  "00100",
+    "$rfB":  "00101",
     "r6":    "00110",
     "r7":    "00111",
     "r8":    "01000",
@@ -183,7 +183,7 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 funct = "010101"
                 shamt = "00000"
                 binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
-            
+                
             case "jr":
                 opcode = "000000"
                 funct = "100000"
@@ -257,6 +257,18 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             
             case "selti":
                 opcode = "010101"
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                
+            case "loadHD":
+                opcode = "010110"
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                                
+            case "storeHD":
+                opcode = "010111"
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+
+            case "HDtoIM":
+                opcode = "011000"
                 binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
             
             # # J-Type

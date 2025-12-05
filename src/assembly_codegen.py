@@ -296,7 +296,13 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 if (src.lower() == "input"):
                     instructions.append(Instruction("in", "-", "-", "r2"))
                 elif (src.lower() == "output"):
-                    instructions.append(Instruction("out", registers[-1], "-", "-"))  
+                    instructions.append(Instruction("out", registers[-1], "-", "-")) 
+                elif (src.lower() == "loadhd"):
+                    instructions.append(Instruction("loadHD", registers[-1], "$hd", dst))
+                elif (src.lower() == "storehd"):
+                    instructions.append(Instruction("storeHD", registers[-1], registers[-2], dst))
+                elif (src.lower() == "hdtoim"):
+                    instructions.append(Instruction("HDtoIM", registers[-1], registers[-2], dst))
                 else:
                     instructions.append(Instruction("store", "$sp", "$fp", "0"))
                     instructions.append(Instruction("addi", "$sp", "$fp", "0"))
@@ -348,17 +354,24 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 instr.addr_dst = "$io"
                 
             if (instr.addr_src == "r3"):
-                instr.addr_src = "$rfA"
+                instr.addr_src = "$hd"
             if (instr.addr_tgt == "r3"):
-                instr.addr_tgt = "$rfA"
+                instr.addr_tgt = "$hd"
             if (instr.addr_dst == "r3"):
-                instr.addr_dst = "$rfA"
+                instr.addr_dst = "$hd"
                 
             if (instr.addr_src == "r4"):
-                instr.addr_src = "$rfB"
+                instr.addr_src = "$rfA"
             if (instr.addr_tgt == "r4"):
-                instr.addr_tgt = "$rfB"
+                instr.addr_tgt = "$rfA"
             if (instr.addr_dst == "r4"):
+                instr.addr_dst = "$rfA"
+                
+            if (instr.addr_src == "r5"):
+                instr.addr_src = "$rfB"
+            if (instr.addr_tgt == "r5"):
+                instr.addr_tgt = "$rfB"
+            if (instr.addr_dst == "r5"):
                 instr.addr_dst = "$rfB"
     
     traceAssembler(instructions)

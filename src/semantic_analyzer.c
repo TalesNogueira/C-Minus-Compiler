@@ -181,7 +181,7 @@ static void checkNode(TreeNode *t) {
 
 /*  initiPredefinedFunctions() → Inserts predefined functions into the Symbol Table  */
 static void initPredefinedFunctions() {
-    TreeNode *inputFunc = newDeclNode(DeclFunction);
+    TreeNode *inputFunc = newDeclNode(DeclFunction);    // Input()
     inputFunc->type = Integer;
     inputFunc->lineno = 0;
     inputFunc->attr.name = "input";
@@ -190,19 +190,93 @@ static void initPredefinedFunctions() {
     inputFunc->child[1] = NULL;
     st_insert(inputFunc, "global");
     
-    TreeNode *outputFunc = newDeclNode(DeclFunction);
+//----------------------------------------------------
+    TreeNode *outputFunc = newDeclNode(DeclFunction);   // Output(value)
     outputFunc->type = Void;
     outputFunc->lineno = 0;
     outputFunc->attr.name = "output";
     outputFunc->scope = "global";
 
-    TreeNode *t = newDeclNode(DeclParameter);
-    t->type = Integer;
-    t->attr.name = strdup("integer");
+    TreeNode *out_value = newDeclNode(DeclParameter);
+    out_value->type = Integer;
+    out_value->attr.name = strdup("value");
 
-    outputFunc->child[0] = t;
+    outputFunc->child[0] = out_value;
     outputFunc->child[1] = NULL;
     st_insert(outputFunc, "global");
+
+//----------------------------------------------------
+    TreeNode *loadHDFunc = newDeclNode(DeclFunction);   // LoadHD(offset, line)
+    loadHDFunc->type = Integer;
+    loadHDFunc->lineno = 0;
+    loadHDFunc->attr.name = "loadHD";
+    loadHDFunc->scope = "global";
+    
+    TreeNode *lHD_offset = newDeclNode(DeclParameter);
+    lHD_offset->type = Integer;
+    lHD_offset->attr.name = strdup("offset");
+
+    TreeNode *lHD_line = newDeclNode(DeclParameter);
+    lHD_line->type = Integer;
+    lHD_line->attr.name = strdup("line");
+
+    addSibling(lHD_offset, lHD_line);
+
+    loadHDFunc->child[0] = lHD_offset;
+    loadHDFunc->child[1] = NULL;
+    st_insert(loadHDFunc, "global");
+
+//----------------------------------------------------
+    TreeNode *storeHDFunc = newDeclNode(DeclFunction);   // StoreHD(offset, line, value)
+    storeHDFunc->type = Void;
+    storeHDFunc->lineno = 0;
+    storeHDFunc->attr.name = "storeHD";
+    storeHDFunc->scope = "global";
+    
+    TreeNode *sHD_offset = newDeclNode(DeclParameter);
+    sHD_offset->type = Integer;
+    sHD_offset->attr.name = strdup("offset");
+
+    TreeNode *sHD_line = newDeclNode(DeclParameter);
+    sHD_line->type = Integer;
+    sHD_line->attr.name = strdup("line");
+
+    TreeNode *sHD_value = newDeclNode(DeclParameter);
+    sHD_value->type = Integer;
+    sHD_value->attr.name = strdup("value");
+
+    addSibling(sHD_offset, sHD_line);
+    addSibling(sHD_offset, sHD_value);
+
+    storeHDFunc->child[0] = sHD_offset;
+    storeHDFunc->child[1] = NULL;
+    st_insert(storeHDFunc, "global");
+
+//----------------------------------------------------
+    TreeNode *HD2IMFunc = newDeclNode(DeclFunction);   // HD2IM(offset, line, address)
+    HD2IMFunc->type = Void;
+    HD2IMFunc->lineno = 0;
+    HD2IMFunc->attr.name = "HDtoIM";
+    HD2IMFunc->scope = "global";
+    
+    TreeNode *HD2IM_offset = newDeclNode(DeclParameter);
+    HD2IM_offset->type = Integer;
+    HD2IM_offset->attr.name = strdup("offset");
+
+    TreeNode *HD2IM_line = newDeclNode(DeclParameter);
+    HD2IM_line->type = Integer;
+    HD2IM_line->attr.name = strdup("line");
+
+    TreeNode *HD2IM_address = newDeclNode(DeclParameter);
+    HD2IM_address->type = Integer;
+    HD2IM_address->attr.name = strdup("address");
+
+    addSibling(HD2IM_offset, HD2IM_line);
+    addSibling(HD2IM_offset, HD2IM_address);
+
+    HD2IMFunc->child[0] = HD2IM_offset;
+    HD2IMFunc->child[1] = NULL;
+    st_insert(HD2IMFunc, "global");
 }
 
 /*  traceSemantic() → Check TraceSemantic and print out the Symbol Table  */

@@ -430,8 +430,8 @@ static void stmtGen(TreeNode *t) {
         codeGen(t->child[0]);
 
         // Quick-Fix
-        freeRegisters("r3");
-        regTemp = useRegister(3);
+        freeRegisters("r4");
+        regTemp = useRegister(4);
         rtn.type = addrString;
         rtn.content.name = regTemp;
 
@@ -538,8 +538,8 @@ static void expGen(TreeNode *t) {
       Address rf_alternative;
       TreeNode *parameters = t->child[0];
 
-      if (registers[3] == 1) {
-        regTemp = useRegister(4);
+      if (registers[4] == 1 && t->type != Void) {
+        regTemp = useRegister(5);
         dst.type = addrString;
         dst.content.name = strdup(regTemp);
 
@@ -549,24 +549,52 @@ static void expGen(TreeNode *t) {
         rf_alternative.content.name = strdup(regTemp);
       }
       
-      while (parameters != NULL) {
-        paramCounter++;
-        
-        if (parameters->nodekind == NodeStatement) stmtGen(parameters);
-				else if (parameters->nodekind = NodeExpression) expGen(parameters);
-        
-        if (current.type == addrConst) {
-          regTemp = useRegister(-1);
-          dst.type = addrString;
-          dst.content.name = strdup(regTemp);
+      if (strcmp(t->attr.name, "loadHD") == 0 || strcmp(t->attr.name, "storeHD") == 0 || strcmp(t->attr.name, "HDtoIM") == 0) {
+        while (parameters != NULL) {
+          paramCounter++;
           
-          insertQuad(Move, current, dst, empty);
-          insertQuad(Param, dst, empty, empty);
-        } else {
-          insertQuad(Param, current, empty, empty);
+          if (parameters->nodekind == NodeStatement) stmtGen(parameters);
+          else if (parameters->nodekind = NodeExpression) expGen(parameters);
+          
+          if (current.type == addrConst) {
+            if (parameters->sibling == NULL) {
+              dst = current;
+            } else {
+              regTemp = useRegister(-1);
+              dst.type = addrString;
+              dst.content.name = strdup(regTemp);
+              
+              insertQuad(Move, current, dst, empty);
+              insertQuad(Param, dst, empty, empty);
+            }
+          } else {
+            insertQuad(Param, current, empty, empty);
+          }
+          
+          parameters = parameters->sibling;
         }
-        
-        parameters = parameters->sibling;
+      } else {
+        while (parameters != NULL) {
+          paramCounter++;
+          
+          if (parameters->nodekind == NodeStatement) stmtGen(parameters);
+          else if (parameters->nodekind = NodeExpression) expGen(parameters);
+          
+          if (current.type == addrConst) {
+            regTemp = useRegister(-1);
+            dst.type = addrString;
+            dst.content.name = strdup(regTemp);
+            
+            insertQuad(Move, current, dst, empty);
+            insertQuad(Param, dst, empty, empty);
+          } else {
+            insertQuad(Param, current, empty, empty);
+          }
+          
+          parameters = parameters->sibling;
+        }
+
+        dst.type = addrVoid;
       }
 
       src.type = addrString;
@@ -577,18 +605,20 @@ static void expGen(TreeNode *t) {
 
       pushRegister(paramCounter);
 
-      insertQuad(Call, src, tgt, empty);
+      insertQuad(Call, src, tgt, dst);
       
       popRegister(paramCounter);
 
       if (t->type != Void) {
-        if (strcmp(src.content.name, "input") == 0 || strcmp(src.content.name, "output") == 0) {
+        if (strcmp(src.content.name, "input") == 0) {
           regTemp = useRegister(2);
+        } else if (strcmp(src.content.name, "loadHD") == 0) {
+          regTemp = useRegister(3);
         } else {
-          if (registers[4] == 1) {
+          if (registers[5] == 1) {
             regTemp = strdup(rf_alternative.content.name);
           } else {
-            regTemp = useRegister(3);
+            regTemp = useRegister(4);
           }
         }
 
