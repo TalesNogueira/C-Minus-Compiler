@@ -319,16 +319,25 @@ def binarySave(path: str, bin: List[str]):
         if (traceBinary):
             print("\n> Binary Code Tracing ------------------------------------------------------")
             print("--------------------------------------------------------------------------- -")
-            output.write(f"{format(size, '032b')} // {source} Size = {size} \n")
+            output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
         for index, (bin_line, inst_line) in enumerate(zip(bin, instructions)):
             line = f"{bin_line}\n"
             
             if (traceBinary):
-                print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
+                if (index == 0):
+                    line = f"{bin_line} // --- START OF CLUSTER ({source})\n"
+                    print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
+                else:
+                    print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
             output.write(line)
         if addressRange > size:
             for index in range(size, addressRange):
-                output.write("00000000000000000000000000000000\n")
+                if (index == 0):
+                    output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
+                elif (index == addressRange - 1):
+                    output.write(f"00000000000000000000000000000000 // --- END OF CLUSTER ({source})\n")
+                else:
+                    output.write("00000000000000000000000000000000\n")
 
 def main():
     path_assembly = "outputs/assembly.txt"
