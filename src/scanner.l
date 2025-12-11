@@ -29,7 +29,7 @@ digit       	[0-9]
 number        {digit}+
 
 letter      	[a-zA-Z]
-id            {letter}({letter}|{digit})*
+id            {letter}({letter}|{digit}|_)*
 
 whitespace  	[ \t\r]+
 newline       \n
@@ -95,7 +95,8 @@ newline       \n
               }
 
 {digit}+      { yylval.num = atoi(yytext); return NUM; }
-{letter}+     { yylval.id.name = strdup(yytext);
+
+{id}          { yylval.id.name = strdup(yytext);
                 yylval.id.lineno = yylineno;
                 return ID;
               }
