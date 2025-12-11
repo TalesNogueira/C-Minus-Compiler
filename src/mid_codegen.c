@@ -481,11 +481,27 @@ static void expGen(TreeNode *t) {
 
   switch (t->kind.exp) {
     case ExpOperator:
-      codeGen(t->child[0]);
-      Address left = current;
+      Address left, right;
 
-      codeGen(t->child[1]);
-      Address right = current;
+      if (t->child[0]->nodekind == NodeExpression && t->child[0]->kind.exp == ExpCall) {
+        codeGen(t->child[0]);
+        left = current;
+
+        codeGen(t->child[1]);
+        right = current;
+      } else if (t->child[1]->nodekind == NodeExpression && t->child[1]->kind.exp == ExpCall) {
+        codeGen(t->child[1]);
+        right = current;
+
+        codeGen(t->child[0]);
+        left = current;
+      } else {
+        codeGen(t->child[0]);
+        left = current;
+  
+        codeGen(t->child[1]);
+        right = current;
+      }
 
       regTemp = useRegister(-1);
       current.type = addrString;
