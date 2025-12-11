@@ -61,7 +61,7 @@ all: binary
 
 clean:
 	@rm -rf $(BUILD_DIR)/*
-	@#	@rm -rf $(OUT_DIR)/* Use only if you want to delete outputs when cleaning
+	@rm -rf $(OUT_DIR)/* Use only if you want to delete outputs when cleaning
 	@rm -f $(LEX_C) $(PARSER_C) $(PARSER_H)
 	@clear
 	@echo "> Cleanup complete."
