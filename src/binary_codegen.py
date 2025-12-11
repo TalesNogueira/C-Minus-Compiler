@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List
 
 traceBinary = True
-addressRange = 0
+addressRange = 256
 
 registers = {
     "$zero": "00000",
@@ -313,17 +314,20 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
 
 def binarySave(path: str, bin: List[str]):
     with open(path, 'w') as output:
+        size = len(bin)
+        
         if (traceBinary):
             print("\n> Binary Code Tracing ------------------------------------------------------")
-            print("----------------------------------------------------------------------------")
+            print("--------------------------------------------------------------------------- -")
+            output.write(f"{format(size, '032b')} // {source} Size = {size} \n")
         for index, (bin_line, inst_line) in enumerate(zip(bin, instructions)):
             line = f"{bin_line}\n"
             
             if (traceBinary):
                 print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
             output.write(line)
-        if addressRange > len(bin):
-            for index in range(len(bin), addressRange):
+        if addressRange > size:
+            for index in range(size, addressRange):
                 output.write("00000000000000000000000000000000\n")
 
 def main():
