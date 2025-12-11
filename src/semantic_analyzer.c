@@ -277,6 +277,106 @@ static void initPredefinedFunctions() {
     HD2IMFunc->child[0] = HD2IM_offset;
     HD2IMFunc->child[1] = NULL;
     st_insert(HD2IMFunc, "global");
+//----------------------------------------------------
+    TreeNode *LCDwriteFunc = newDeclNode(DeclFunction);   // LCDwrite(c0, c1, ..., c14, c15, line)
+    LCDwriteFunc->type = Void;
+    LCDwriteFunc->lineno = 0;
+    LCDwriteFunc->attr.name = "LCDwrite";
+    LCDwriteFunc->scope = "global";
+
+    TreeNode *LCD_c0  = newDeclNode(DeclParameter);
+    LCD_c0->type = Integer;
+    LCD_c0->attr.name = strdup("c0");
+
+    TreeNode *LCD_c1  = newDeclNode(DeclParameter);
+    LCD_c1->type = Integer;
+    LCD_c1->attr.name = strdup("c1");
+
+    TreeNode *LCD_c2  = newDeclNode(DeclParameter);
+    LCD_c2->type = Integer;
+    LCD_c2->attr.name = strdup("c2");
+
+    TreeNode *LCD_c3  = newDeclNode(DeclParameter);
+    LCD_c3->type = Integer;
+    LCD_c3->attr.name = strdup("c3");
+
+    TreeNode *LCD_c4  = newDeclNode(DeclParameter);
+    LCD_c4->type = Integer;
+    LCD_c4->attr.name = strdup("c4");
+
+    TreeNode *LCD_c5  = newDeclNode(DeclParameter);
+    LCD_c5->type = Integer;
+    LCD_c5->attr.name = strdup("c5");
+
+    TreeNode *LCD_c6  = newDeclNode(DeclParameter);
+    LCD_c6->type = Integer;
+    LCD_c6->attr.name = strdup("c6");
+
+    TreeNode *LCD_c7  = newDeclNode(DeclParameter);
+    LCD_c7->type = Integer;
+    LCD_c7->attr.name = strdup("c7");
+
+    TreeNode *LCD_c8  = newDeclNode(DeclParameter);
+    LCD_c8->type = Integer;
+    LCD_c8->attr.name = strdup("c8");
+
+    TreeNode *LCD_c9  = newDeclNode(DeclParameter);
+    LCD_c9->type = Integer;
+    LCD_c9->attr.name = strdup("c9");
+
+    TreeNode *LCD_c10 = newDeclNode(DeclParameter);
+    LCD_c10->type = Integer;
+    LCD_c10->attr.name = strdup("c10");
+
+    TreeNode *LCD_c11 = newDeclNode(DeclParameter);
+    LCD_c11->type = Integer;
+    LCD_c11->attr.name = strdup("c11");
+
+    TreeNode *LCD_c12 = newDeclNode(DeclParameter);
+    LCD_c12->type = Integer;
+    LCD_c12->attr.name = strdup("c12");
+
+    TreeNode *LCD_c13 = newDeclNode(DeclParameter);
+    LCD_c13->type = Integer;
+    LCD_c13->attr.name = strdup("c13");
+
+    TreeNode *LCD_c14 = newDeclNode(DeclParameter);
+    LCD_c14->type = Integer;
+    LCD_c14->attr.name = strdup("c14");
+
+    TreeNode *LCD_c15 = newDeclNode(DeclParameter);
+    LCD_c15->type = Integer;
+    LCD_c15->attr.name = strdup("c15");
+
+    TreeNode *LCD_c16 = newDeclNode(DeclParameter);
+    LCD_c16->type = Integer;
+    LCD_c16->attr.name = strdup("c16");
+
+    TreeNode *LCD_line = newDeclNode(DeclParameter);
+    HD2IM_line->type = Integer;
+    HD2IM_line->attr.name = strdup("line");
+
+    addSibling(LCD_c0, LCD_c1);
+    addSibling(LCD_c0, LCD_c2);
+    addSibling(LCD_c0, LCD_c3);
+    addSibling(LCD_c0, LCD_c4);
+    addSibling(LCD_c0, LCD_c5);
+    addSibling(LCD_c0, LCD_c6);
+    addSibling(LCD_c0, LCD_c7);
+    addSibling(LCD_c0, LCD_c8);
+    addSibling(LCD_c0, LCD_c9);
+    addSibling(LCD_c0, LCD_c10);
+    addSibling(LCD_c0, LCD_c11);
+    addSibling(LCD_c0, LCD_c12);
+    addSibling(LCD_c0, LCD_c13);
+    addSibling(LCD_c0, LCD_c14);
+    addSibling(LCD_c0, LCD_c15);
+    addSibling(LCD_c0, LCD_c16);
+    addSibling(LCD_c0, LCD_line);
+
+    LCDwriteFunc->child[0] = LCD_c0;
+    LCDwriteFunc->child[1] = NULL;
+    st_insert(LCDwriteFunc, "global");
 }
 
 /*  traceSemantic() → Check TraceSemantic and print out the Symbol Table  */

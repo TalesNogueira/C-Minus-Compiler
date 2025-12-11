@@ -32,13 +32,13 @@ static char *useRegister(int addr) {
   char reg[16];
 
   if (addr == -1) {
-    for (int i = 6; i < 28; i++) {
+    for (int i = 5; i < 28; i++) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
         sprintf(reg, "r%d", i);
 
-        usedRegisters++;
+                usedRegisters++;
         return strdup(reg);
       }
     }
@@ -138,9 +138,9 @@ static void pushRegister(int paramCounter) {
 }
 
 /*  popRegister() → [TODO]  */
-static void popRegister(int paramCounter) {
+static void popRegister(int paramCounter, int addsub) {
 	char reg[16];
-	Address src, empty;
+	Address src, dontSUB, empty;
   
 	empty.type = addrVoid;
 
@@ -152,7 +152,13 @@ static void popRegister(int paramCounter) {
         src.type = addrString;
         src.content.name = strdup(reg);
 
-        insertQuad(Pop, src, empty, empty);
+        if (addsub) {
+          dontSUB.type = addrConst;
+          dontSUB.content.value = 1;
+          insertQuad(Pop, src, empty, dontSUB);
+        } else {
+          insertQuad(Pop, src, empty, empty);
+        }    
         freeRegisters(src.content.name);
         paramCounter--;
       }
@@ -429,9 +435,7 @@ static void stmtGen(TreeNode *t) {
 
         codeGen(t->child[0]);
 
-        // Quick-Fix
-        freeRegisters("r4");
-        regTemp = useRegister(4);
+        regTemp = useRegister(2);
         rtn.type = addrString;
         rtn.content.name = regTemp;
 
@@ -462,27 +466,17 @@ static void expGen(TreeNode *t) {
 
   switch (t->kind.exp) {
     case ExpOperator:
-      codeGen(t->child[1]);
-      Address right = current;
-
       codeGen(t->child[0]);
       Address left = current;
+
+      codeGen(t->child[1]);
+      Address right = current;
 
       regTemp = useRegister(-1);
       current.type = addrString;
       current.content.name = strdup(regTemp);
 
-      if (left.type == addrString && right.type == addrString) {
-        if (strcmp(left.content.name, "r4") == 0 && strcmp(right.content.name, "r3") == 0) {
-          Address aux;
-          aux.content = left.content;
-          left.content = right.content;
-          right.content = aux.content;
-        }
-      }
-
       insertQuad(tokenToOperation(t->attr.operator), left, right, current);
-
       break;
     case ExpConst:
       current.type = addrConst;
@@ -534,96 +528,73 @@ static void expGen(TreeNode *t) {
       }
       break;
     case ExpCall:
+      int addsub = 0;
       int paramCounter = 0;
-      Address rf_alternative;
+      Address rf_temp;
       TreeNode *parameters = t->child[0];
-
-      if (registers[4] == 1 && t->type != Void) {
-        regTemp = useRegister(5);
-        dst.type = addrString;
-        dst.content.name = strdup(regTemp);
-
-        insertQuad(Move, current, dst, empty);
-
-        rf_alternative.type = addrString;
-        rf_alternative.content.name = strdup(regTemp);
+      
+      while (parameters != NULL) {
+        paramCounter++;
+        
+        if (parameters->nodekind == NodeStatement) stmtGen(parameters);
+        else if (parameters->nodekind = NodeExpression) expGen(parameters);
+        
+        if (current.type == addrConst) {
+          regTemp = useRegister(-1);
+          dst.type = addrString;
+          dst.content.name = strdup(regTemp);
+          
+          insertQuad(Move, current, dst, empty);
+          insertQuad(Param, dst, empty, empty);
+        } else {
+          insertQuad(Param, current, empty, empty);
+        }
+        
+        parameters = parameters->sibling;
       }
       
-      if (strcmp(t->attr.name, "loadHD") == 0 || strcmp(t->attr.name, "storeHD") == 0 || strcmp(t->attr.name, "HDtoIM") == 0) {
-        while (parameters != NULL) {
-          paramCounter++;
-          
-          if (parameters->nodekind == NodeStatement) stmtGen(parameters);
-          else if (parameters->nodekind = NodeExpression) expGen(parameters);
-          
-          if (current.type == addrConst) {
-            if (parameters->sibling == NULL) {
-              dst = current;
-            } else {
-              regTemp = useRegister(-1);
-              dst.type = addrString;
-              dst.content.name = strdup(regTemp);
-              
-              insertQuad(Move, current, dst, empty);
-              insertQuad(Param, dst, empty, empty);
-            }
-          } else {
-            insertQuad(Param, current, empty, empty);
-          }
-          
-          parameters = parameters->sibling;
-        }
-      } else {
-        while (parameters != NULL) {
-          paramCounter++;
-          
-          if (parameters->nodekind == NodeStatement) stmtGen(parameters);
-          else if (parameters->nodekind = NodeExpression) expGen(parameters);
-          
-          if (current.type == addrConst) {
-            regTemp = useRegister(-1);
-            dst.type = addrString;
-            dst.content.name = strdup(regTemp);
-            
-            insertQuad(Move, current, dst, empty);
-            insertQuad(Param, dst, empty, empty);
-          } else {
-            insertQuad(Param, current, empty, empty);
-          }
-          
-          parameters = parameters->sibling;
-        }
-
-        dst.type = addrVoid;
-      }
-
       src.type = addrString;
       src.content.name = strdup(t->attr.name);
       
       tgt.type = addrConst;
       tgt.content.value = paramCounter;
+      
+      dst.type = addrVoid;
 
-      pushRegister(paramCounter);
+      if (strcmp(t->attr.name, "output") == 0 ||
+          strcmp(t->attr.name, "loadHD") == 0 ||
+          strcmp(t->attr.name, "LCDwrite") == 0 ||
+          strcmp(t->attr.name, "storeHD") == 0 ||
+          strcmp(t->attr.name, "HDtoIM") == 0
+        )
+      {
+        addsub = 1;
+      } else {
+        pushRegister(paramCounter);
+      }
 
       insertQuad(Call, src, tgt, dst);
       
-      popRegister(paramCounter);
+      popRegister(paramCounter, addsub);
 
       if (t->type != Void) {
         if (strcmp(src.content.name, "input") == 0) {
-          regTemp = useRegister(2);
-        } else if (strcmp(src.content.name, "loadHD") == 0) {
           regTemp = useRegister(3);
+        } else if (strcmp(src.content.name, "loadHD") == 0) {
+          regTemp = useRegister(4);
         } else {
-          if (registers[5] == 1) {
-            regTemp = strdup(rf_alternative.content.name);
-          } else {
-            regTemp = useRegister(4);
-          }
+          regTemp = useRegister(2);
         }
 
+        rf_temp.type = addrString;
+        rf_temp.content.name = strdup(regTemp);
+        
+        regTemp = useRegister(-1);
         current.type = addrString;
         current.content.name = strdup(regTemp);
+
+        insertQuad(Move, rf_temp, current, empty);
+        freeRegisters(rf_temp.content.name);
       }
       break;
   }

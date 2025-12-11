@@ -257,7 +257,6 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
         
             case "IFFALSE":
                 instructions.append(Instruction("beq", src, "$zero", tgt))
-                continue
             
             case "LABEL":
                 if "main" in labels:
@@ -290,19 +289,37 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 
             case "PARAM":
                 registers.append(src)
-                continue
                 
             case "CALL":
                 if (src.lower() == "input"):
-                    instructions.append(Instruction("in", "-", "-", "r2"))
+                    instructions.append(Instruction("in", "-", "-", "$io"))
                 elif (src.lower() == "output"):
                     instructions.append(Instruction("out", registers[-1], "-", "-")) 
                 elif (src.lower() == "loadhd"):
-                    instructions.append(Instruction("loadHD", registers[-1], "$hd", dst))
+                    instructions.append(Instruction("loadHD", registers[-2], registers[-1], "$hd"))
                 elif (src.lower() == "storehd"):
-                    instructions.append(Instruction("storeHD", registers[-1], registers[-2], dst))
+                    instructions.append(Instruction("add", registers[-2], registers[-1], registers[-1]))
+                    instructions.append(Instruction("storeHD", registers[-3], registers[-1], "-"))
                 elif (src.lower() == "hdtoim"):
-                    instructions.append(Instruction("HDtoIM", registers[-1], registers[-2], dst))
+                    instructions.append(Instruction("add", registers[-2], registers[-1], registers[-1]))
+                    instructions.append(Instruction("HDtoIM", registers[-3], registers[-1], "-"))
+                elif (src.lower() == "lcdwrite"):
+                    instructions.append(Instruction("writeLCD", registers[-17], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-16], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-15], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-14], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-13], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-12], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-11], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-10], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-9], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-8], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-7], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-6], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-5], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-4], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-3], registers[-1], "-"))
+                    instructions.append(Instruction("writeLCD", registers[-2], registers[-1], "-"))
                 else:
                     instructions.append(Instruction("store", "$sp", "$fp", "0"))
                     instructions.append(Instruction("addi", "$sp", "$fp", "0"))
@@ -321,14 +338,13 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                         instructions.append(Instruction("move", src, "-", tgt))
                 
             case "PUSH":
-                if (src != "r3"):
-                    instructions.append(Instruction("store", "$sp", src, "0"))
-                    instructions.append(Instruction("addi", "$sp", "$sp", "1"))
+                instructions.append(Instruction("store", "$sp", src, "0"))
+                instructions.append(Instruction("addi", "$sp", "$sp", "1"))
                 
             case "POP":
                 registers.pop()
                 
-                if (src != "r3"):
+                if (dst != "1"):
                     instructions.append(Instruction("subi", "$sp", "$sp", "1"))   
                 
             case "HALT":
@@ -344,35 +360,28 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             if instr.addr_tgt in labels:
                 instr.addr_tgt = str(labels[instr.addr_tgt])
             if instr.addr_dst in labels:
-                instr.addr_dst = str(labels[instr.addr_dst])
+                instr.addr_dst = str(labels[instr.addr_dst]) 
             
             if (instr.addr_src == "r2"):
-                instr.addr_src = "$io"
+                instr.addr_src = "$rf"
             if (instr.addr_tgt == "r2"):
-                instr.addr_tgt = "$io"
+                instr.addr_tgt = "$rf"
             if (instr.addr_dst == "r2"):
-                instr.addr_dst = "$io"
+                instr.addr_dst = "$rf"
                 
             if (instr.addr_src == "r3"):
-                instr.addr_src = "$hd"
+                instr.addr_src = "$io"
             if (instr.addr_tgt == "r3"):
-                instr.addr_tgt = "$hd"
+                instr.addr_tgt = "$io"
             if (instr.addr_dst == "r3"):
-                instr.addr_dst = "$hd"
+                instr.addr_dst = "$io"
                 
             if (instr.addr_src == "r4"):
-                instr.addr_src = "$rfA"
+                instr.addr_src = "$hd"
             if (instr.addr_tgt == "r4"):
-                instr.addr_tgt = "$rfA"
+                instr.addr_tgt = "$hd"
             if (instr.addr_dst == "r4"):
-                instr.addr_dst = "$rfA"
-                
-            if (instr.addr_src == "r5"):
-                instr.addr_src = "$rfB"
-            if (instr.addr_tgt == "r5"):
-                instr.addr_tgt = "$rfB"
-            if (instr.addr_dst == "r5"):
-                instr.addr_dst = "$rfB"
+                instr.addr_dst = "$hd"
     
     traceAssembler(instructions)
     return instructions

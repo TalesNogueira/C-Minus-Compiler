@@ -7,10 +7,10 @@ addressRange = 0
 registers = {
     "$zero": "00000",
     "$aux":  "00001",
-    "$io":   "00010",
-    "$hd":   "00011",
-    "$rfA":  "00100",
-    "$rfB":  "00101",
+    "$rf":   "00010",
+    "$io":   "00011",
+    "$hd":   "00100",
+    "r5":    "00101",
     "r6":    "00110",
     "r7":    "00111",
     "r8":    "01000",
@@ -86,12 +86,12 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             case "in":
                 opcode = "000000"
                 funct = "000001"
-                binary.append(opcode+"0000000000"+"00010"+"00000"+funct)
+                binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
             
             case "out":
                 opcode = "000000"
                 funct = "000010"
-                binary.append(opcode+registers[src]+"000000000000000"+funct)
+                binary.append(opcode+registers[src]+"00000"+"00000"+"00000"+funct)
             
             # # R-Type
             case "move":
@@ -184,11 +184,35 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 shamt = "00000"
                 binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
                 
+            case "loadHD":
+                opcode = "000000"
+                funct = "010110"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
+                
+            case "storeHD":
+                opcode = "000000"
+                funct = "010111"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
+                
+            case "HDtoIM":
+                opcode = "000000"
+                funct = "011000"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
+                
             case "jr":
                 opcode = "000000"
                 funct = "100000"
                 shamt = "00000"
                 binary.append(opcode+registers[src]+"00000"+"00000"+shamt+funct)
+            
+            case "writeLCD":
+                opcode = "000000"
+                funct = "111111"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
             
             # # I-Type
             case "load":
@@ -257,18 +281,6 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             
             case "selti":
                 opcode = "010101"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
-                
-            case "loadHD":
-                opcode = "010110"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
-                                
-            case "storeHD":
-                opcode = "010111"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
-
-            case "HDtoIM":
-                opcode = "011000"
                 binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
             
             # # J-Type
