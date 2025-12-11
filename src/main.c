@@ -28,14 +28,10 @@
 
 int main(void) {
     inputSelect();
-    
  /* lexicalAnalysis(); ← Syntax Analysis includes it    */
     syntaxAnalysis();
     semanticAnalysis(abstractSyntaxTree);
-
     printf("\n> End of analysis... → [%s]\n", source);
-
     midCodeGenerate(abstractSyntaxTree);
-
     return 0;
 }

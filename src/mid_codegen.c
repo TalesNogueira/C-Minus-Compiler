@@ -9,7 +9,9 @@
 
 /*  opString[] → [TODO]  */
 const char *opString[] = {
-  "Add", "Sub", "Mul", "Div", "SGT", "SLT", "SGET", "SLET", "SET", "SDT",
+  "Add", "Sub", "Mul", "Div",
+  "Or", "And",
+  "SGT", "SLT", "SGET", "SLET", "SET", "SDT",
   "AllocVAR", "AllocARRAY", "StoreVAR", "StoreARRAY", "LoadVAR", "LoadARRAY",
   "IFfalse", "Label", "Jump", 
   "FunBGN", "FunEND", "Param", "Call", "Move", "Return",
@@ -106,7 +108,7 @@ static void insertQuad(Operation op, Address src, Address tgt, Address dst) {
     list->next = newQuad;
   }
 
-  if (op == Add || op == Sub || op == Mul || op == Div || op == SGT || op == SLT || op == SGET || op == SLET || op == SET || op == SDT) {
+  if (op == Add || op == Sub || op == Mul || op == Div || op == OR || op == AND || op == SGT || op == SLT || op == SGET || op == SLET || op == SET || op == SDT) {
     if (src.type == addrString) freeRegisters(src.content.name);
     if (tgt.type == addrString) freeRegisters(tgt.content.name);
   } else if (op == StoreVAR || op == StoreARRAY) {
@@ -191,6 +193,12 @@ static const Operation tokenToOperation(int token) {
 		case DIV:
 			return Div;
 			break;
+    case OR:
+      return Or;
+      break;
+    case AND:
+      return And;
+      break;
 		case MORE:
 			return SGT;
 			break;
@@ -658,7 +666,7 @@ static void printQuadruplesList(void) {
     switch (list->src.type) {
       case addrVoid:
         fprintf(file, "---|");
-        // traceMidCode("-----  ");
+        // traceMidCode("-----  ");   // Optional hifens
         break;
       case addrConst:
         fprintf(file, "%d|", list->src.content.value);
@@ -674,7 +682,7 @@ static void printQuadruplesList(void) {
     switch (list->tgt.type) {
       case addrVoid:
         fprintf(file, "---|");
-        // traceMidCode("-----  ");
+        // traceMidCode("-----  ");   // Optional hifens
         break;
       case addrConst:
         fprintf(file, "%d|", list->tgt.content.value);
@@ -690,7 +698,7 @@ static void printQuadruplesList(void) {
     switch (list->dst.type) {
       case addrVoid:
         fprintf(file, "---");
-        // traceMidCode("-----  ");
+        // traceMidCode("-----  ");   // Optional hifens
         break;
       case addrConst:
         fprintf(file, "%d", list->dst.content.value);

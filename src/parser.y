@@ -48,14 +48,17 @@ TreeNode *abstractSyntaxTree;
 
 %token IF WHILE RETURN
 
-%nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
+%token AND OR
 
+%left OR
+%left AND
+%nonassoc MORE LESS EQUALMORE EQUALLESS EQUAL DIFER
 %left ADD SUB
 %left MUL DIV
-
 %right GET
-%nonassoc MORE LESS EQUALMORE EQUALLESS EQUAL DIFER
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %token COMMA SEMI
 %token OPARENTHESIS CPARENTHESIS
@@ -74,7 +77,7 @@ TreeNode *abstractSyntaxTree;
       %type <node> local_declarations
       %type <node> statement_list statement
         %type <node> expression_stmt 
-          %type <node> variable expression
+          %type <node> variable expression or_expression and_expression
           %type <node> simple_expression add_expression term factor
             %type <node> call args argument_list
         %type <node> selection_stmt iteration_stmt return_stmt
@@ -302,6 +305,34 @@ expression:
     t->child[1] = $3;       // Expression → Expression
     $$ = t;
   }
+| or_expression {
+    $$ = $1;
+  }
+;
+
+or_expression:
+  or_expression OR and_expression {
+    TreeNode *t = newExpNode(ExpOperator);
+    t->type = Integer;
+    t->child[0] = $1;
+    t->attr.operator = OR;
+    t->child[1] = $3;
+    $$ = t;
+  }
+| and_expression {
+    $$ = $1;
+  }
+;
+
+and_expression:
+  and_expression AND simple_expression {
+    TreeNode *t = newExpNode(ExpOperator);
+    t->type = Integer;
+    t->child[0] = $1;
+    t->attr.operator = AND;
+    t->child[1] = $3;
+    $$ = t;
+  }
 | simple_expression {
     $$ = $1;
   }
@@ -328,7 +359,7 @@ variable:
 simple_expression:
   add_expression relational add_expression {
     TreeNode *t = newExpNode(ExpOperator);
-    t->type = Boolean;
+    t->type = Integer;
     t->child[0] = $1;       // Simple Expression → Expression
     t->attr.operator = $2;  // Simple Expression → Relational Symbol
     t->child[1] = $3;       // Simple Expression → Expression

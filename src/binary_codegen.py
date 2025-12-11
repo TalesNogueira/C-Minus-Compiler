@@ -124,11 +124,17 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 shamt = "00000"
                 binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
             
-            # case "and":
-            #     continue
+            case "and":
+                opcode = "000000"
+                funct = "001000"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
             
-            # case "or":
-            #     continue
+            case "or":
+                opcode = "000000"
+                funct = "001001"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
             
             # case "not":
             #     continue
@@ -243,11 +249,13 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 opcode = "000111"
                 binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
             
-            # case "andi":
-            #     continue
+            case "andi":
+                opcode = "001000"
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
             
-            # case "ori":
-            #     continue
+            case "ori":
+                opcode = "001001"
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
             
             case "beq":
                 opcode = "001100"

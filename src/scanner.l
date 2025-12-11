@@ -51,6 +51,9 @@ newline       \n
 "*"           return MUL;
 "/"           return DIV;
 
+"&&"          return AND;
+"||"          return OR;
+
 "="           return GET;
 
 ">"           return MORE;

@@ -14,7 +14,9 @@
 
 /*  Operation → Defines all supported intermediate code operations  */
 typedef enum {
-    Add, Sub, Mul, Div, SGT, SLT, SGET, SLET, SET, SDT,
+    Add, Sub, Mul, Div,
+    Or, And,
+    SGT, SLT, SGET, SLET, SET, SDT,
     AllocVAR, AllocARRAY, StoreVAR, StoreARRAY, LoadVAR, LoadARRAY,
     IFfalse, Label, Jump, 
     FunBGN, FunEND, Param, Call, Move, Return,

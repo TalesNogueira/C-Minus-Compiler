@@ -103,6 +103,9 @@ const char *tokenToString(int token) {
     case MUL: return "MUL";
     case DIV: return "DIV";
 
+    case OR: return "OR";
+    case AND: return "AND";
+
     case GET: return "GET";
     case MORE: return "MORE";
     case LESS: return "LESS";
@@ -137,6 +140,9 @@ static const char *tokenToSymbol(int token) {
     case SUB: return "-";
     case MUL: return "*";
     case DIV: return "/";
+
+    case OR: return "||";
+    case AND: return "&&";
 
     case GET: return "=";
     

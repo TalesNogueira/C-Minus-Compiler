@@ -392,8 +392,10 @@ static void traceSemantic(void) {
 void semanticAnalysis(TreeNode *AST) {
     initPredefinedFunctions(); // [TODO]: Add a bool in main to config this
 
+    
     traverse(AST, insertNode, checkNode);
-
+    printf("\n> Starting Semantic Analysis...\n");
+    
     if (!mainDeclared) {
         printBars(); 
         printf("> Semantic Error\n     Main Missing: function 'main' was not declared.");
