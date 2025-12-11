@@ -106,6 +106,9 @@ const char *tokenToString(int token) {
     case OR: return "OR";
     case AND: return "AND";
 
+    case LSHIFT: return "LSHIFT";
+    case RSHIFT: return "RSHIFT";
+
     case GET: return "GET";
     case MORE: return "MORE";
     case LESS: return "LESS";
@@ -143,6 +146,9 @@ static const char *tokenToSymbol(int token) {
 
     case OR: return "||";
     case AND: return "&&";
+
+    case LSHIFT: return "<<";
+    case RSHIFT: return ">>";
 
     case GET: return "=";
     

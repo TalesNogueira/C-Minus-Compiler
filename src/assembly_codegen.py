@@ -132,6 +132,28 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 else:
                     instructions.append(Instruction("and", src, tgt, dst))
                     
+            case "LSHIFT":
+                if (src.isdigit() and tgt.isdigit()):
+                    instructions.append(Instruction("movei", src, "-", dst))
+                    instructions.append(Instruction("sll", dst, tgt, dst))
+                elif (not src.isdigit() and tgt.isdigit()):
+                    instructions.append(Instruction("sll", src, tgt, dst))
+                elif (src.isdigit() and not tgt.isdigit()):
+                    instructions.append(Instruction("sll", src, "ERROR", dst))
+                else:
+                    instructions.append(Instruction("sll", src, "ERROR", dst))
+            
+            case "RSHIFT":
+                if (src.isdigit() and tgt.isdigit()):
+                    instructions.append(Instruction("movei", src, "-", dst))
+                    instructions.append(Instruction("srl", dst, tgt, dst))
+                elif (not src.isdigit() and tgt.isdigit()):
+                    instructions.append(Instruction("srl", src, tgt, dst))
+                elif (src.isdigit() and not tgt.isdigit()):
+                    instructions.append(Instruction("srl", src, "ERROR", dst))
+                else:
+                    instructions.append(Instruction("srl", src, "ERROR", dst))
+                    
             case "SGT":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))

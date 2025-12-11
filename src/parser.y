@@ -49,10 +49,12 @@ TreeNode *abstractSyntaxTree;
 %token IF WHILE RETURN
 
 %token AND OR
+%token LSHIFT RSHIFT
 
 %left OR
 %left AND
 %nonassoc MORE LESS EQUALMORE EQUALLESS EQUAL DIFER
+%left LSHIFT RSHIFT
 %left ADD SUB
 %left MUL DIV
 %right GET
@@ -77,12 +79,12 @@ TreeNode *abstractSyntaxTree;
       %type <node> local_declarations
       %type <node> statement_list statement
         %type <node> expression_stmt 
-          %type <node> variable expression or_expression and_expression
+          %type <node> variable expression or_expression and_expression shift_expression
           %type <node> simple_expression add_expression term factor
             %type <node> call args argument_list
         %type <node> selection_stmt iteration_stmt return_stmt
 
-%type <op> relational sum_sub mul_div
+%type <op> shift relational sum_sub mul_div
 %type <type> type
 
 %start program
@@ -325,7 +327,7 @@ or_expression:
 ;
 
 and_expression:
-  and_expression AND simple_expression {
+  and_expression AND shift_expression {
     TreeNode *t = newExpNode(ExpOperator);
     t->type = Integer;
     t->child[0] = $1;
@@ -333,9 +335,28 @@ and_expression:
     t->child[1] = $3;
     $$ = t;
   }
+| shift_expression {
+    $$ = $1;
+  }
+;
+
+shift_expression:
+  shift_expression shift simple_expression {
+    TreeNode *t = newExpNode(ExpOperator);
+    t->type = Integer;
+    t->child[0] = $1;
+    t->attr.operator = $2;
+    t->child[1] = $3;
+    $$ = t;
+  }
 | simple_expression {
     $$ = $1;
   }
+;
+
+shift:
+  LSHIFT      { $$ = LSHIFT; }
+| RSHIFT      { $$ = RSHIFT; }
 ;
 
 variable:

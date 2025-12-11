@@ -11,6 +11,7 @@
 const char *opString[] = {
   "Add", "Sub", "Mul", "Div",
   "Or", "And",
+  "Lshift", "Rshift",
   "SGT", "SLT", "SGET", "SLET", "SET", "SDT",
   "AllocVAR", "AllocARRAY", "StoreVAR", "StoreARRAY", "LoadVAR", "LoadARRAY",
   "IFfalse", "Label", "Jump", 
@@ -108,7 +109,7 @@ static void insertQuad(Operation op, Address src, Address tgt, Address dst) {
     list->next = newQuad;
   }
 
-  if (op == Add || op == Sub || op == Mul || op == Div || op == OR || op == AND || op == SGT || op == SLT || op == SGET || op == SLET || op == SET || op == SDT) {
+  if (op == Add || op == Sub || op == Mul || op == Div || op == Or || op == And || op == Lshift || op == Rshift || op == SGT || op == SLT || op == SGET || op == SLET || op == SET || op == SDT) {
     if (src.type == addrString) freeRegisters(src.content.name);
     if (tgt.type == addrString) freeRegisters(tgt.content.name);
   } else if (op == StoreVAR || op == StoreARRAY) {
@@ -198,6 +199,12 @@ static const Operation tokenToOperation(int token) {
       break;
     case AND:
       return And;
+      break;
+    case LSHIFT:
+      return Lshift;
+      break;
+    case RSHIFT:
+      return Rshift;
       break;
 		case MORE:
 			return SGT;

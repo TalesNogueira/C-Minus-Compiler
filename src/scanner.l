@@ -54,6 +54,9 @@ newline       \n
 "&&"          return AND;
 "||"          return OR;
 
+"<<"          return LSHIFT;
+">>"          return RSHIFT;
+
 "="           return GET;
 
 ">"           return MORE;

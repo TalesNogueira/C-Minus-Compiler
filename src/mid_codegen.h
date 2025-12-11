@@ -16,6 +16,7 @@
 typedef enum {
     Add, Sub, Mul, Div,
     Or, And,
+    Lshift, Rshift,
     SGT, SLT, SGET, SLET, SET, SDT,
     AllocVAR, AllocARRAY, StoreVAR, StoreARRAY, LoadVAR, LoadARRAY,
     IFfalse, Label, Jump, 

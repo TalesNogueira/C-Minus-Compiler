@@ -61,13 +61,15 @@ def assemblyTranslate(path: str) -> List[Instruction]:
                 instructions.append(inst)
         return instructions
 
-def valueToBinary(value: str, address: bool) -> str:
+def valueToBinary(value: str, form: int) -> str:
     num = int(value)
     
     if num < 0:
         num = (1 << 16) + num
     
-    if (address):
+    if (form == 2):
+        return format(num & 0x1F, '05b')
+    elif (form == 1):
         return format(num & 0x3FFFFFF, '026b')
     else:
         return format(num & 0xFFFF, '016b')
@@ -145,14 +147,12 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             case "sll":
                 opcode = "000000"
                 funct = "001100"
-                shamt = "00000"
-                binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
+                binary.append(opcode+registers[src]+"00000"+registers[dst]+valueToBinary(tgt, 2)+funct)
             
             case "srl":
                 opcode = "000000"
                 funct = "001101"
-                shamt = "00000"
-                binary.append(opcode+registers[src]+registers[tgt]+registers[dst]+shamt+funct)
+                binary.append(opcode+registers[src]+"00000"+registers[dst]+valueToBinary(tgt, 2)+funct)
             
             case "set":
                 opcode = "000000"
@@ -223,43 +223,43 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             # # I-Type
             case "load":
                 opcode = "000001"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "store":
                 opcode = "000010"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "movei":
                 opcode = "000011"
-                binary.append(opcode+"00000"+registers[dst]+valueToBinary(src, False))
+                binary.append(opcode+"00000"+registers[dst]+valueToBinary(src, 0))
             
             case "addi":
                 opcode = "000100"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "subi":
                 opcode = "000101"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "muli":
                 opcode = "000110"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "divi":
                 opcode = "000111"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "andi":
                 opcode = "001000"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "ori":
                 opcode = "001001"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "beq":
                 opcode = "001100"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             # case "bne":
             #     continue
@@ -269,27 +269,27 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             
             case "seti":
                 opcode = "010000"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "sdti":
                 opcode = "010001"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "sgti":
                 opcode = "010010"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "slti":
                 opcode = "010011"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "segti":
                 opcode = "010100"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             case "selti":
                 opcode = "010101"
-                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, False))
+                binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
             
             # # J-Type
             case "nop":
@@ -297,15 +297,15 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             
             case "j":
                 opcode = "100000"
-                binary.append(opcode+valueToBinary(src, True))
+                binary.append(opcode+valueToBinary(src, 1))
             
             case "jal":
                 opcode = "100001"
-                binary.append(opcode+valueToBinary(src, True))
+                binary.append(opcode+valueToBinary(src, 1))
             
             case "halt":
                 opcode = "100010"
-                binary.append(opcode+"00000000000000000000000000")
+                binary.append(opcode+"00000000000000000000000000"+" // Halt")
             
             case _:
                 binary.append(f"---UNKNOWN---")
