@@ -181,6 +181,15 @@ static void checkNode(TreeNode *t) {
 
 /*  initiPredefinedFunctions() → Inserts predefined functions into the Symbol Table  */
 static void initPredefinedFunctions() {
+    TreeNode *haltFunc = newDeclNode(DeclFunction);   // halt()
+    haltFunc->type = Void;
+    haltFunc->lineno = 0;
+    haltFunc->attr.name = "halt";
+    haltFunc->scope = "global";
+    haltFunc->child[0] = NULL;
+    haltFunc->child[1] = NULL;
+    st_insert(haltFunc, "global");
+//----------------------------------------------------
     TreeNode *inputFunc = newDeclNode(DeclFunction);    // Input()
     inputFunc->type = Integer;
     inputFunc->lineno = 0;

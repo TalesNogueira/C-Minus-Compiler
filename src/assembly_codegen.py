@@ -335,7 +335,9 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 registers.append(src)
                 
             case "CALL":
-                if (src.lower() == "input"):
+                if (src.lower() == "halt"):
+                    instructions.append(Instruction("halt", "-", "-", "-"))
+                elif (src.lower() == "input"):
                     instructions.append(Instruction("in", "-", "-", "$io"))
                 elif (src.lower() == "output"):
                     instructions.append(Instruction("out", registers[-1], "-", "-")) 
