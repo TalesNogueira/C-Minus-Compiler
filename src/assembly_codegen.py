@@ -243,7 +243,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     if (dst == "0"):
                         instructions.append(Instruction("addi", "$sp", "$sp", str(array_size)))
                     else: 
-                        instructions.append(Instruction("addi", "$fp", "$aux", "1"))
+                        instructions.append(Instruction("addi", "$fp", "$aux", str(local_offset+1)))
                         instructions.append(Instruction("store", "$fp", "$aux", str(local_offset)))
                         instructions.append(Instruction("addi", "$sp", "$sp", str(array_size)))
                     local_offset += array_size
