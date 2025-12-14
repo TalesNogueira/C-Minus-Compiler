@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import List
 
 traceBinary = True
-addressRange = 256
+systemRange = 1530
+programRange = 512
 
 registers = {
     "$zero": "00000",
@@ -11,7 +12,7 @@ registers = {
     "$rf":   "00010",
     "$io":   "00011",
     "$hd":   "00100",
-    "r5":    "00101",
+    "$so":   "00101",
     "r6":    "00110",
     "r7":    "00111",
     "r8":    "01000",
@@ -209,11 +210,27 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 shamt = "00000"
                 binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
                 
+            case "dmset":
+                opcode = "000000"
+                funct = "011111"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+"00000"+"00000"+shamt+funct)
+                
             case "jr":
                 opcode = "000000"
                 funct = "100000"
                 shamt = "00000"
                 binary.append(opcode+registers[src]+"00000"+"00000"+shamt+funct)
+                
+            case "jimset":
+                opcode = "000000"
+                funct = "100001"
+                shamt = "00000"
+                
+                if src == "$so":
+                    binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct+" // --- END OF FILE ---")
+                else:
+                    binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
             
             case "writeLCD":
                 opcode = "000000"
@@ -291,6 +308,10 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
             case "selti":
                 opcode = "010101"
                 binary.append(opcode+registers[src]+registers[tgt]+valueToBinary(dst, 0))
+                
+            case "pcbkp":
+                opcode = "011111"
+                binary.append(opcode+"00000"+registers[tgt]+"00000"+"00000"+"000000")
             
             # # J-Type
             case "nop":
@@ -305,7 +326,7 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 binary.append(opcode+valueToBinary(src, 1))
             
             case "halt":
-                opcode = "100010"
+                opcode = "111111"
                 binary.append(opcode+"00000000000000000000000000"+" // Halt")
             
             case _:
@@ -319,7 +340,8 @@ def binarySave(path: str, bin: List[str]):
         if (traceBinary):
             print("\n> Binary Code Tracing ------------------------------------------------------")
             print("--------------------------------------------------------------------------- -")
-            output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
+            if source == "inputs/SO.cm":
+                output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
         for index, (bin_line, inst_line) in enumerate(zip(bin, instructions)):
             line = f"{bin_line}\n"
             
@@ -330,14 +352,25 @@ def binarySave(path: str, bin: List[str]):
                 else:
                     print(f"    > [{index}] {inst_line.instr} {inst_line.addr_src} {inst_line.addr_tgt} {inst_line.addr_dst}\n        {line}", end = "")
             output.write(line)
-        if addressRange > size:
-            for index in range(size, addressRange):
-                if (index == 0):
-                    output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
-                elif (index == addressRange - 1):
-                    output.write(f"00000000000000000000000000000000 // --- END OF CLUSTER ({source})\n")
-                else:
-                    output.write("00000000000000000000000000000000\n")
+            
+        if source == "inputs/SO.cm":
+            if systemRange > size:
+                for index in range(size, systemRange):
+                    if (index == 0):
+                        output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
+                    elif (index == systemRange - 1):
+                        output.write(f"00000000000000000000000000000000 // --- END OF CLUSTER ({source})\n")
+                    else:
+                        output.write("00000000000000000000000000000000\n")
+        else:
+            if programRange > size:
+                for index in range(size, programRange):
+                    if (index == 0):
+                        output.write(f"{format(size, '032b')} // --- {source} Size = {size} \n")
+                    elif (index == programRange - 1):
+                        output.write(f"00000000000000000000000000000000 // --- END OF CLUSTER ({source})\n")
+                    else:
+                        output.write("00000000000000000000000000000000\n")
 
 def main():
     path_assembly = "outputs/assembly.txt"

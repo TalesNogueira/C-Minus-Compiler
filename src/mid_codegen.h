@@ -21,7 +21,7 @@ typedef enum {
     AllocVAR, AllocARRAY, StoreVAR, StoreARRAY, LoadVAR, LoadARRAY,
     IFfalse, Label, Jump, 
     FunBGN, FunEND, Param, Call, Move, Return,
-    Push, Pop, Halt
+    Push, Pop, Halt, End
 } Operation;
 
 /*  AddrType → Defines the type of an address (void, constant, or string)  */

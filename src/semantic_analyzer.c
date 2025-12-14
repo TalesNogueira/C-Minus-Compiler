@@ -181,7 +181,7 @@ static void checkNode(TreeNode *t) {
 
 /*  initiPredefinedFunctions() → Inserts predefined functions into the Symbol Table  */
 static void initPredefinedFunctions() {
-    TreeNode *haltFunc = newDeclNode(DeclFunction);   // halt()
+    TreeNode *haltFunc = newDeclNode(DeclFunction);   // Halt()
     haltFunc->type = Void;
     haltFunc->lineno = 0;
     haltFunc->attr.name = "halt";
@@ -189,6 +189,26 @@ static void initPredefinedFunctions() {
     haltFunc->child[0] = NULL;
     haltFunc->child[1] = NULL;
     st_insert(haltFunc, "global");
+//----------------------------------------------------
+    TreeNode *execFunc = newDeclNode(DeclFunction);   // Execute(IMoffset, DMoffset)
+    execFunc->type = Void;
+    execFunc->lineno = 0;
+    execFunc->attr.name = "execute";
+    execFunc->scope = "global";
+    
+    TreeNode *exec_IMoffset = newDeclNode(DeclParameter);
+    exec_IMoffset->type = Integer;
+    exec_IMoffset->attr.name = strdup("IMoffset");
+
+    TreeNode *exec_DMoffset = newDeclNode(DeclParameter);
+    exec_DMoffset->type = Integer;
+    exec_DMoffset->attr.name = strdup("DMoffset");
+
+    addSibling(exec_IMoffset, exec_DMoffset);
+
+    execFunc->child[0] = exec_IMoffset;
+    execFunc->child[1] = NULL;
+    st_insert(execFunc, "global");
 //----------------------------------------------------
     TreeNode *inputFunc = newDeclNode(DeclFunction);    // Input()
     inputFunc->type = Integer;

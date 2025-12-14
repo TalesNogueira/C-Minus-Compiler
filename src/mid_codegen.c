@@ -16,7 +16,7 @@ const char *opString[] = {
   "AllocVAR", "AllocARRAY", "StoreVAR", "StoreARRAY", "LoadVAR", "LoadARRAY",
   "IFfalse", "Label", "Jump", 
   "FunBGN", "FunEND", "Param", "Call", "Move", "Return",
-  "Push", "Pop", "Halt"
+  "Push", "Pop", "Halt", "End"
 };
 
 /*  codeGen() → [TODO]  */
@@ -35,7 +35,7 @@ static char *useRegister(int addr) {
   char reg[16];
 
   if (addr == -1) {
-    for (int i = 5; i < 28; i++) {
+    for (int i = 6; i < 28; i++) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
@@ -253,7 +253,7 @@ static void declGen(TreeNode *t) {
       if (!strcmp(src.content.name, "main")) {
         src.type = addrVoid;
         
-        insertQuad(Halt, src, tgt, dst);
+        insertQuad(End, src, tgt, dst);
       }
 
       freeRegisters(NULL);
@@ -596,7 +596,8 @@ static void expGen(TreeNode *t) {
           strcmp(t->attr.name, "loadHD") == 0 ||
           strcmp(t->attr.name, "LCDwrite") == 0 ||
           strcmp(t->attr.name, "storeHD") == 0 ||
-          strcmp(t->attr.name, "HDtoIM") == 0
+          strcmp(t->attr.name, "HDtoIM") == 0 ||
+          strcmp(t->attr.name, "execute") == 0
         )
       {
         addsub = 1;

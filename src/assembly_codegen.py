@@ -224,8 +224,6 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 if src == "global":
                     variable_offsets.setdefault("global", {})[tgt] = global_offset
                     global_offset += 1
-                    instructions.append(Instruction("addi", "$gp", "$gp", "1"))
-                    global_variables += 1
                 else:
                     variable_offsets.setdefault(current_function, {})[tgt] = local_offset
                     local_offset += 1
@@ -236,11 +234,10 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 
                 if src == "global":
                     variable_offsets.setdefault("global", {})[tgt] = global_offset
-                    instructions.append(Instruction("addi", "$gp", "$aux", "1"))
+                    instructions.append(Instruction("addi", "$gp", "$aux", str(global_offset+1)))
                     instructions.append(Instruction("store", "$gp", "$aux", str(global_offset)))
-                    instructions.append(Instruction("addi", "$gp", "$gp", str(array_size)))
                     global_offset += array_size
-                    global_variables += 3
+                    global_variables += 2
                 else:
                     variable_offsets.setdefault(current_function, {})[tgt] = local_offset
                     if (dst == "0"):
@@ -337,6 +334,18 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             case "CALL":
                 if (src.lower() == "halt"):
                     instructions.append(Instruction("halt", "-", "-", "-"))
+                elif (src.lower() == "execute"):
+                    instructions.append(Instruction("store", "$zero", "$gp", "28"))
+                    instructions.append(Instruction("store", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("store", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("dmset", registers[-1], "-", "-"))
+                    instructions.append(Instruction("pcbkp", "-", "$so", "-"))
+                    instructions.append(Instruction("addi", "$so", "$so", "2"))
+                    instructions.append(Instruction("jimset", "$zero", registers[-2], "-"))
+                    instructions.append(Instruction("dmset", "$zero", "-", "-"))
+                    instructions.append(Instruction("load", "$zero", "$gp", "28"))
+                    instructions.append(Instruction("load", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("load", "$zero", "$sp", "30")) 
                 elif (src.lower() == "input"):
                     instructions.append(Instruction("in", "-", "-", "$io"))
                 elif (src.lower() == "output"):
@@ -395,6 +404,9 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 
             case "HALT":
                 instructions.append(Instruction("halt", "-", "-", "-"))
+                
+            case "END":
+                instructions.append(Instruction("jimset", "$so", "$zero", "-"))
                 
             case _:
                 instructions.append(Instruction("UNKNOWN", "-", "-", "-"))
