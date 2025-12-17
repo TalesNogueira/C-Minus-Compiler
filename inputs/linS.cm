@@ -1,0 +1,22 @@
+int vet [ 5 ];
+
+void main(void)
+{
+    int i;
+    int x;
+    int found;
+    
+    found = 0;
+    i = 0;
+    while (i < 5) {
+        vet[i] = input();
+        i = i + 1;
+    }
+    x = input();
+    i = 0;
+    while (i < 5) {
+        if (vet[i] == x) found = 1;
+        i = i + 1;
+    }
+    output(found);
+}

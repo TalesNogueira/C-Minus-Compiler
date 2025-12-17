@@ -1,0 +1,20 @@
+int vet [ 5 ];
+
+void main(void)
+{
+    int i;
+    int max;
+
+    i = 0;
+    while (i < 5) {
+        vet[i] = input();
+        i = i + 1;
+    }
+    max = vet[0];
+    i = 1;
+    while (i < 5) {
+        if (vet[i] > max) max = vet[i];
+        i = i + 1;
+    }
+    output(max);
+}

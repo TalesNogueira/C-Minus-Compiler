@@ -1,0 +1,25 @@
+int avrg ( int arr[] ) {
+    int i;
+    int sum;
+
+    i = 0;
+    sum = 0;
+    while (i < 5) {
+        sum = sum + arr[ i ];
+        i = i + 1;
+    }
+    return sum/5;
+}
+
+void main (void)
+{
+    int i;
+    int array[ 5 ];
+
+    i = 0;
+    while (i < 5) {
+        array[ i ] = input();
+        i = i + 1;
+    }
+    output(avrg(array));
+}

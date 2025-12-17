@@ -1,0 +1,18 @@
+int fact(int n)
+{
+    int fct;
+
+    if (n == 0) return 1;
+    else {
+        fct = n * fact(n - 1);
+        return fct;
+    }
+}
+
+void main(void)
+{
+    int x;
+
+    x = input();
+    output(fact(x));
+}

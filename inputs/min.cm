@@ -1,0 +1,20 @@
+int vet [ 5 ];
+
+void main(void)
+{
+    int i;
+    int min;
+
+    i = 0;
+    while (i < 5) {
+        vet[i] = input();
+        i = i + 1;
+    }
+    min = vet[0];
+    i = 1;
+    while (i < 5) {
+        if (vet[i] < min) min = vet[i];
+        i = i + 1;
+    }
+    output(min);
+}

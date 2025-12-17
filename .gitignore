@@ -1,7 +1,6 @@
 # Folder and files
 /build/
 /outputs/
-/inputs/*
 
 # Exception for Example.cm
 !/inputs/example.cm

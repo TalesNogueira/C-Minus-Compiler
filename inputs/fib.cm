@@ -1,0 +1,21 @@
+int fib (int n)
+{
+    int a;
+    int b;
+
+    if (n <= 1) {
+        return n;
+    } else {
+        a = fib(n-1);
+        b = fib(n-2);
+        return a + b;
+    }
+}
+
+void main (void)
+{
+    int in;
+    
+    in = input();
+    output(fib(in));
+}
