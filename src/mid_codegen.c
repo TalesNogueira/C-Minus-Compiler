@@ -35,7 +35,7 @@ static char *useRegister(int addr) {
   char reg[16];
 
   if (addr == -1) {
-    for (int i = 6; i < 28; i++) {
+    for (int i = 6; i < 26; i++) {
       if (registers[i] == 0) {
         registers[i] = 1;
         
@@ -592,12 +592,14 @@ static void expGen(TreeNode *t) {
       
       dst.type = addrVoid;
 
-      if (strcmp(t->attr.name, "output") == 0 ||
-          strcmp(t->attr.name, "loadHD") == 0 ||
-          strcmp(t->attr.name, "LCDwrite") == 0 ||
-          strcmp(t->attr.name, "storeHD") == 0 ||
-          strcmp(t->attr.name, "HDtoIM") == 0 ||
-          strcmp(t->attr.name, "execute") == 0
+      if (strcmp(t->attr.name, "output") == 0       ||
+          strcmp(t->attr.name, "loadHD") == 0       ||
+          strcmp(t->attr.name, "LCDwrite") == 0     ||
+          strcmp(t->attr.name, "storeHD") == 0      ||
+          strcmp(t->attr.name, "HDtoIM") == 0       ||
+          strcmp(t->attr.name, "execute") == 0      ||
+          strcmp(t->attr.name, "setupProgram") == 0 ||
+          strcmp(t->attr.name, "executeRR") == 0
         )
       {
         addsub = 1;
@@ -614,6 +616,8 @@ static void expGen(TreeNode *t) {
           regTemp = useRegister(3);
         } else if (strcmp(src.content.name, "loadHD") == 0) {
           regTemp = useRegister(4);
+        } else if (strcmp(src.content.name, "executeRR") == 0) {
+          regTemp = useRegister(26);
         } else {
           regTemp = useRegister(2);
         }

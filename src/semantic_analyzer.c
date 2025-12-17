@@ -209,6 +209,51 @@ static void initPredefinedFunctions() {
     execFunc->child[0] = exec_IMoffset;
     execFunc->child[1] = NULL;
     st_insert(execFunc, "global");
+
+//----------------------------------------------------
+    TreeNode *setupProgramFunc = newDeclNode(DeclFunction);   // SetupProgram(DMoffset)
+    setupProgramFunc->type = Void;
+    setupProgramFunc->lineno = 0;
+    setupProgramFunc->attr.name = "setupProgram";
+    setupProgramFunc->scope = "global";
+
+    TreeNode *setup_DMoffset = newDeclNode(DeclParameter);
+    setup_DMoffset->type = Integer;
+    setup_DMoffset->attr.name = strdup("DMoffset");
+
+    setupProgramFunc->child[0] = setup_DMoffset;
+    setupProgramFunc->child[1] = NULL;
+    st_insert(setupProgramFunc, "global");
+//----------------------------------------------------
+    TreeNode *execRRFunc = newDeclNode(DeclFunction);   // ExecuteRR(PC, IMoffset, DMoffset, quantum)
+    execRRFunc->type = Integer;
+    execRRFunc->lineno = 0;
+    execRRFunc->attr.name = "executeRR";
+    execRRFunc->scope = "global";
+    
+    TreeNode *execRR_pc = newDeclNode(DeclParameter);
+    execRR_pc->type = Integer;
+    execRR_pc->attr.name = strdup("pc");
+
+    TreeNode *execRR_IMoffset = newDeclNode(DeclParameter);
+    execRR_IMoffset->type = Integer;
+    execRR_IMoffset->attr.name = strdup("IMoffset");
+
+    TreeNode *execRR_DMoffset = newDeclNode(DeclParameter);
+    execRR_DMoffset->type = Integer;
+    execRR_DMoffset->attr.name = strdup("DMoffset");
+
+    TreeNode *execRR_quantum = newDeclNode(DeclParameter);
+    execRR_quantum->type = Integer;
+    execRR_quantum->attr.name = strdup("quantum");
+
+    addSibling(execRR_pc, execRR_IMoffset);
+    addSibling(execRR_pc, execRR_DMoffset);
+    addSibling(execRR_pc, execRR_quantum);
+
+    execRRFunc->child[0] = execRR_pc;
+    execRRFunc->child[1] = NULL;
+    st_insert(execRRFunc, "global");
 //----------------------------------------------------
     TreeNode *inputFunc = newDeclNode(DeclFunction);    // Input()
     inputFunc->type = Integer;

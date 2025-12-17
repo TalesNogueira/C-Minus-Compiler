@@ -30,12 +30,12 @@ def traceAssembler(items: List):
 
 def midcodeTranslate(path: str) -> List[Quadruple]:
     global source
-    
+
     quads = []
-    
+
     with open(path, 'r') as midcode:
         source = next(midcode).strip()
-        
+
         for line in midcode:
             parts = line.strip().split('|')
             if len(parts) == 4:
@@ -47,24 +47,24 @@ def midcodeTranslate(path: str) -> List[Quadruple]:
 def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
     global_variables = 0
     global_variable = False
-    
+
     current_function = None
     variable_offsets = {}
     local_offset = 0
     global_offset = 0
-    
+
     labels = {}
-    
+
     registers = []
-     
+
     instructions = []
-    
+
     for quad in quads:
         operator = quad.op.upper()
         src = quad.addr_src
         tgt = quad.addr_tgt
         dst = quad.addr_dst
-        
+
         match operator:
             case "ADD":
                 if (src.isdigit() and tgt.isdigit()):
@@ -76,7 +76,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("addi", tgt, dst, src))
                 else:
                     instructions.append(Instruction("add", src, tgt, dst))
-                    
+
             case "SUB":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -87,7 +87,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("subi", tgt, dst, src))
                 else:
                     instructions.append(Instruction("sub", src, tgt, dst))
-                    
+
             case "MUL":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -98,7 +98,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("muli", tgt, dst, src))
                 else:
                     instructions.append(Instruction("mul", src, tgt, dst))
-                    
+
             case "DIV":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -109,7 +109,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("divi", tgt, dst, src))
                 else:
                     instructions.append(Instruction("div", src, tgt, dst))
-                    
+
             case "OR":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -120,7 +120,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("ori", tgt, dst, src))
                 else:
                     instructions.append(Instruction("or", src, tgt, dst))
-                
+
             case "AND":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -131,7 +131,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("andi", tgt, dst, src))
                 else:
                     instructions.append(Instruction("and", src, tgt, dst))
-                    
+
             case "LSHIFT":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -142,7 +142,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("sll", src, "ERROR", dst))
                 else:
                     instructions.append(Instruction("sll", src, "ERROR", dst))
-            
+
             case "RSHIFT":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -153,7 +153,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("srl", src, "ERROR", dst))
                 else:
                     instructions.append(Instruction("srl", src, "ERROR", dst))
-                    
+
             case "SGT":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -164,7 +164,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("sgti", tgt, dst, src))
                 else:
                     instructions.append(Instruction("sgt", src, tgt, dst))
-            
+
             case "SLT":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -175,7 +175,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("slti", tgt, dst, src))
                 else:
                     instructions.append(Instruction("slt", src, tgt, dst))
-            
+
             case "SGET":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -186,7 +186,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("segti", tgt, dst, src))
                 else:
                     instructions.append(Instruction("segt", src, tgt, dst))
-            
+
             case "SLET":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -197,7 +197,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("selti", tgt, dst, src))
                 else:
                     instructions.append(Instruction("selt", src, tgt, dst))
-            
+
             case "SET":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -208,7 +208,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("seti", tgt, dst, src))
                 else:
                     instructions.append(Instruction("set", src, tgt, dst))
-            
+
             case "SDT":
                 if (src.isdigit() and tgt.isdigit()):
                     instructions.append(Instruction("movei", src, "-", dst))
@@ -219,7 +219,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("sdti", tgt, dst, src))
                 else:
                     instructions.append(Instruction("sdt", src, tgt, dst))
-        
+
             case "ALLOCVAR":
                 if src == "global":
                     variable_offsets.setdefault("global", {})[tgt] = global_offset
@@ -228,10 +228,10 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     variable_offsets.setdefault(current_function, {})[tgt] = local_offset
                     local_offset += 1
                     instructions.append(Instruction("addi", "$sp", "$sp", "1"))
-                    
+
             case "ALLOCARRAY":
                 array_size = int(dst) + 1
-                
+
                 if src == "global":
                     variable_offsets.setdefault("global", {})[tgt] = global_offset
                     instructions.append(Instruction("addi", "$gp", "$aux", str(global_offset+1)))
@@ -242,12 +242,12 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     variable_offsets.setdefault(current_function, {})[tgt] = local_offset
                     if (dst == "0"):
                         instructions.append(Instruction("addi", "$sp", "$sp", str(array_size)))
-                    else: 
+                    else:
                         instructions.append(Instruction("addi", "$fp", "$aux", str(local_offset+1)))
                         instructions.append(Instruction("store", "$fp", "$aux", str(local_offset)))
                         instructions.append(Instruction("addi", "$sp", "$sp", str(array_size)))
                     local_offset += array_size
-                
+
             case "STOREVAR":
                 if dst in variable_offsets.get("global", {}):
                     offset = variable_offsets["global"][dst]
@@ -264,7 +264,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                         instructions.append(Instruction("store", "$fp", "$aux", str(offset)))
                     else:
                         instructions.append(Instruction("store", "$fp", src, str(offset)))
-                
+
             case "STOREARRAY":
                 if (global_variable):
                     if (src.isdigit()):
@@ -279,7 +279,7 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                         instructions.append(Instruction("store", dst, "$aux", "0"))
                     else:
                         instructions.append(Instruction("store", dst, src, "0"))
-            
+
             case "LOADVAR":
                 if tgt in variable_offsets.get("global", {}):
                     offset = variable_offsets["global"][tgt]
@@ -288,26 +288,26 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                 else:
                     offset = variable_offsets[src][tgt]
                     instructions.append(Instruction("load", "$fp", dst, str(offset)))
-            
+
             case "LOADARRAY":
                 if (global_variable):
                     instructions.append(Instruction("load", tgt, dst, "0"))
                     global_variable = True
                 else:
                     instructions.append(Instruction("load", tgt, dst, "0"))
-        
+
             case "IFFALSE":
                 instructions.append(Instruction("beq", src, "$zero", tgt))
-            
+
             case "LABEL":
                 if "main" in labels:
                     labels[src] = len(instructions)
                 else:
                     labels[src] = len(instructions) + 1
-        
+
             case "JUMP":
                 instructions.append(Instruction("j", src, "-", "-"))
-                
+
             case "FUNBGN":
                 if (src.lower() == "main"):
                     labels[src.lower()] = len(instructions) + 1
@@ -319,37 +319,197 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("store", "$fp", "$ra", "1"))
                     instructions.append(Instruction("addi", "$sp", "$sp", "1"))
                     local_offset = 2
-    
+
                 current_function = src
                 variable_offsets[current_function] = {}
-            
+
             case "FUNEND":
                 if (src.lower() != "main"):
                     instructions.append(Instruction("load", "$fp", "$ra", "1"))
                     instructions.append(Instruction("jr", "$ra", "-", "-"))
-                
+
             case "PARAM":
                 registers.append(src)
-                
+
             case "CALL":
                 if (src.lower() == "halt"):
                     instructions.append(Instruction("halt", "-", "-", "-"))
                 elif (src.lower() == "execute"):
-                    instructions.append(Instruction("store", "$zero", "$gp", "28"))
                     instructions.append(Instruction("store", "$zero", "$fp", "29"))
                     instructions.append(Instruction("store", "$zero", "$sp", "30"))
                     instructions.append(Instruction("dmset", registers[-1], "-", "-"))
+                    instructions.append(Instruction("movei", "127", "-", "$fp"))
+                    instructions.append(Instruction("movei", "127", "-", "$sp"))
                     instructions.append(Instruction("pcbkp", "-", "$so", "-"))
                     instructions.append(Instruction("addi", "$so", "$so", "2"))
                     instructions.append(Instruction("jimset", "$zero", registers[-2], "-"))
                     instructions.append(Instruction("dmset", "$zero", "-", "-"))
-                    instructions.append(Instruction("load", "$zero", "$gp", "28"))
                     instructions.append(Instruction("load", "$zero", "$fp", "29"))
-                    instructions.append(Instruction("load", "$zero", "$sp", "30")) 
+                    instructions.append(Instruction("load", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("movei", "0", "-", "$so"))
+                elif (src.lower() == "setupprogram"):
+                    instructions.append(Instruction("store", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("store", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("dmset", registers[-1], "-", "-"))
+                    instructions.append(Instruction("movei", "127", "-", "$fp"))
+                    instructions.append(Instruction("movei", "127", "-", "$sp"))
+                    instructions.append(Instruction("store", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("store", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("dmset", "$zero", "-", "-"))
+                    instructions.append(Instruction("load", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("load", "$zero", "$sp", "30"))
+                elif (src.lower() == "executerr"):
+                    # # Saving SO Context & Changing RAM Offset ---------------------
+                        # IGNORE $zero 
+                    instructions.append(Instruction("store", "$zero", "$aux", "1"))
+                    instructions.append(Instruction("store", "$zero", "$rf", "2"))
+                    instructions.append(Instruction("store", "$zero", "$io", "3"))
+                    instructions.append(Instruction("store", "$zero", "$hd", "4"))
+                        # IGNORE $so
+                    instructions.append(Instruction("store", "$zero", "r6", "6"))
+                    instructions.append(Instruction("store", "$zero", "r7", "7"))
+                    instructions.append(Instruction("store", "$zero", "r8", "8"))
+                    instructions.append(Instruction("store", "$zero", "r9", "9"))
+                    instructions.append(Instruction("store", "$zero", "r10", "10"))
+                    instructions.append(Instruction("store", "$zero", "r11", "11"))
+                    instructions.append(Instruction("store", "$zero", "r12", "12"))
+                    instructions.append(Instruction("store", "$zero", "r13", "13"))
+                    instructions.append(Instruction("store", "$zero", "r14", "14"))
+                    instructions.append(Instruction("store", "$zero", "r15", "15"))
+                    instructions.append(Instruction("store", "$zero", "r16", "16"))
+                    instructions.append(Instruction("store", "$zero", "r17", "17"))
+                    instructions.append(Instruction("store", "$zero", "r18", "18"))
+                    instructions.append(Instruction("store", "$zero", "r19", "19"))
+                    instructions.append(Instruction("store", "$zero", "r20", "20"))
+                    instructions.append(Instruction("store", "$zero", "r21", "21"))
+                    instructions.append(Instruction("store", "$zero", "r22", "22"))
+                    instructions.append(Instruction("store", "$zero", "r23", "23"))
+                    instructions.append(Instruction("store", "$zero", "r24", "24"))
+                    instructions.append(Instruction("store", "$zero", "r25", "25"))
+                        # IGNORE $pc
+                        # IGNORE $off
+                        # IGNORE $gp
+                    instructions.append(Instruction("store", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("store", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("store", "$zero", "$ra", "31"))
+                    instructions.append(Instruction("dmset", registers[-2], "-", "-"))
+                    # # Setting up for Jump -----------------------------------------
+                    instructions.append(Instruction("move", registers[-4], "-", "$pc"))
+                    instructions.append(Instruction("move", registers[-3], "-", "$off"))
+                    # # Setting Timer -----------------------------------------------
+                    instructions.append(Instruction("addi", registers[-1], registers[-1], "30"))
+                    instructions.append(Instruction("setTimer", registers[-1], "-", "-"))
+                    # # Loading Program Context ------------------------------------!
+                        # IGNORE $zero
+                    instructions.append(Instruction("load", "$zero", "$aux", "1"))
+                    instructions.append(Instruction("load", "$zero", "$rf", "2"))
+                    instructions.append(Instruction("load", "$zero", "$io", "3"))
+                    instructions.append(Instruction("load", "$zero", "$hd", "4"))
+                        # IGNORE $so
+                    instructions.append(Instruction("load", "$zero", "r6", "6"))
+                    instructions.append(Instruction("load", "$zero", "r7", "7"))
+                    instructions.append(Instruction("load", "$zero", "r8", "8"))
+                    instructions.append(Instruction("load", "$zero", "r9", "9"))
+                    instructions.append(Instruction("load", "$zero", "r10", "10"))
+                    instructions.append(Instruction("load", "$zero", "r11", "11"))
+                    instructions.append(Instruction("load", "$zero", "r12", "12"))
+                    instructions.append(Instruction("load", "$zero", "r13", "13"))
+                    instructions.append(Instruction("load", "$zero", "r14", "14"))
+                    instructions.append(Instruction("load", "$zero", "r15", "15"))
+                    instructions.append(Instruction("load", "$zero", "r16", "16"))
+                    instructions.append(Instruction("load", "$zero", "r17", "17"))
+                    instructions.append(Instruction("load", "$zero", "r18", "18"))
+                    instructions.append(Instruction("load", "$zero", "r19", "19"))
+                    instructions.append(Instruction("load", "$zero", "r20", "20"))
+                    instructions.append(Instruction("load", "$zero", "r21", "21"))
+                    instructions.append(Instruction("load", "$zero", "r22", "22"))
+                    instructions.append(Instruction("load", "$zero", "r23", "23"))
+                    instructions.append(Instruction("load", "$zero", "r24", "24"))
+                    instructions.append(Instruction("load", "$zero", "r25", "25"))
+                        # IGNORE $pc
+                        # IGNORE $off
+                        # IGNORE $gp
+                    instructions.append(Instruction("load", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("load", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("load", "$zero", "$ra", "31"))
+                    # # Jumping to User Program -------------------------------------
+                    instructions.append(Instruction("pcbkp", "-", "$so", "-"))
+                    instructions.append(Instruction("addi", "$so", "$so", "2"))
+                    instructions.append(Instruction("jimset", "$pc", "$off", "-"))
+                    # # Saving Program Context & Changing RAM Offset ---------------!
+                        # IGNORE $zero
+                    instructions.append(Instruction("store", "$zero", "$aux", "1"))
+                    instructions.append(Instruction("store", "$zero", "$rf", "2"))
+                    instructions.append(Instruction("store", "$zero", "$io", "3"))
+                    instructions.append(Instruction("store", "$zero", "$hd", "4"))
+                        # IGNORE $so
+                    instructions.append(Instruction("store", "$zero", "r6", "6"))
+                    instructions.append(Instruction("store", "$zero", "r7", "7"))
+                    instructions.append(Instruction("store", "$zero", "r8", "8"))
+                    instructions.append(Instruction("store", "$zero", "r9", "9"))
+                    instructions.append(Instruction("store", "$zero", "r10", "10"))
+                    instructions.append(Instruction("store", "$zero", "r11", "11"))
+                    instructions.append(Instruction("store", "$zero", "r12", "12"))
+                    instructions.append(Instruction("store", "$zero", "r13", "13"))
+                    instructions.append(Instruction("store", "$zero", "r14", "14"))
+                    instructions.append(Instruction("store", "$zero", "r15", "15"))
+                    instructions.append(Instruction("store", "$zero", "r16", "16"))
+                    instructions.append(Instruction("store", "$zero", "r17", "17"))
+                    instructions.append(Instruction("store", "$zero", "r18", "18"))
+                    instructions.append(Instruction("store", "$zero", "r19", "19"))
+                    instructions.append(Instruction("store", "$zero", "r20", "20"))
+                    instructions.append(Instruction("store", "$zero", "r21", "21"))
+                    instructions.append(Instruction("store", "$zero", "r22", "22"))
+                    instructions.append(Instruction("store", "$zero", "r23", "23"))
+                    instructions.append(Instruction("store", "$zero", "r24", "24"))
+                    instructions.append(Instruction("store", "$zero", "r25", "25"))
+                        # IGNORE $pc
+                        # IGNORE $off
+                        # IGNORE $gp
+                    instructions.append(Instruction("store", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("store", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("store", "$zero", "$ra", "31"))
+                    instructions.append(Instruction("dmset", "$zero", "-", "-"))
+                    instructions.append(Instruction("nop", "-", "-", "-"))
+                    # # Loading SO Context ----------------------
+                        # IGNORE $zero
+                    instructions.append(Instruction("load", "$zero", "$aux", "1"))
+                    instructions.append(Instruction("load", "$zero", "$rf", "2"))
+                    instructions.append(Instruction("load", "$zero", "$io", "3"))
+                    instructions.append(Instruction("load", "$zero", "$hd", "4"))
+                        # IGNORE $so
+                    instructions.append(Instruction("load", "$zero", "r6", "6"))
+                    instructions.append(Instruction("load", "$zero", "r7", "7"))
+                    instructions.append(Instruction("load", "$zero", "r8", "8"))
+                    instructions.append(Instruction("load", "$zero", "r9", "9"))
+                    instructions.append(Instruction("load", "$zero", "r10", "10"))
+                    instructions.append(Instruction("load", "$zero", "r11", "11"))
+                    instructions.append(Instruction("load", "$zero", "r12", "12"))
+                    instructions.append(Instruction("load", "$zero", "r13", "13"))
+                    instructions.append(Instruction("load", "$zero", "r14", "14"))
+                    instructions.append(Instruction("load", "$zero", "r15", "15"))
+                    instructions.append(Instruction("load", "$zero", "r16", "16"))
+                    instructions.append(Instruction("load", "$zero", "r17", "17"))
+                    instructions.append(Instruction("load", "$zero", "r18", "18"))
+                    instructions.append(Instruction("load", "$zero", "r19", "19"))
+                    instructions.append(Instruction("load", "$zero", "r20", "20"))
+                    instructions.append(Instruction("load", "$zero", "r21", "21"))
+                    instructions.append(Instruction("load", "$zero", "r22", "22"))
+                    instructions.append(Instruction("load", "$zero", "r23", "23"))
+                    instructions.append(Instruction("load", "$zero", "r24", "24"))
+                    instructions.append(Instruction("load", "$zero", "r25", "25"))
+                        # IGNORE $pc
+                        # IGNORE $off
+                        # IGNORE $gp
+                    instructions.append(Instruction("load", "$zero", "$fp", "29"))
+                    instructions.append(Instruction("load", "$zero", "$sp", "30"))
+                    instructions.append(Instruction("load", "$zero", "$ra", "31"))
+                    instructions.append(Instruction("subi", registers[-1], registers[-1], "30"))
+                    # # ---> Quantum Ended - So we assume PC has the value of where ended
                 elif (src.lower() == "input"):
                     instructions.append(Instruction("in", "-", "-", "$io"))
                 elif (src.lower() == "output"):
-                    instructions.append(Instruction("out", registers[-1], "-", "-")) 
+                    instructions.append(Instruction("out", registers[-1], "-", "-"))
                 elif (src.lower() == "loadhd"):
                     instructions.append(Instruction("loadHD", registers[-2], registers[-1], "$hd"))
                 elif (src.lower() == "storehd"):
@@ -384,33 +544,33 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("jal", src, "-", "-"))
                     instructions.append(Instruction("addi", "$fp", "$sp", "0"))
                     instructions.append(Instruction("load", "$fp", "$fp", "0"))
-                    
+
             case "MOVE" | "RETURN":
                 if (operator == "MOVE"):
                     if (src.isdigit()):
                         instructions.append(Instruction("movei", src, "-", tgt))
                     else:
                         instructions.append(Instruction("move", src, "-", tgt))
-                
+
             case "PUSH":
                 instructions.append(Instruction("store", "$sp", src, "0"))
                 instructions.append(Instruction("addi", "$sp", "$sp", "1"))
-                
+
             case "POP":
                 registers.pop()
-                
+
                 if (dst != "1"):
-                    instructions.append(Instruction("subi", "$sp", "$sp", "1"))   
-                
+                    instructions.append(Instruction("subi", "$sp", "$sp", "1"))
+
             case "HALT":
                 instructions.append(Instruction("halt", "-", "-", "-"))
-                
+
             case "END":
                 instructions.append(Instruction("jimset", "$so", "$zero", "-"))
-                
+
             case _:
                 instructions.append(Instruction("UNKNOWN", "-", "-", "-"))
-    
+
     for instr in instructions:
         if (isinstance(instr, Instruction)):
             if instr.addr_src in labels:
@@ -418,29 +578,36 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
             if instr.addr_tgt in labels:
                 instr.addr_tgt = str(labels[instr.addr_tgt])
             if instr.addr_dst in labels:
-                instr.addr_dst = str(labels[instr.addr_dst]) 
-            
+                instr.addr_dst = str(labels[instr.addr_dst])
+
             if (instr.addr_src == "r2"):
                 instr.addr_src = "$rf"
             if (instr.addr_tgt == "r2"):
                 instr.addr_tgt = "$rf"
             if (instr.addr_dst == "r2"):
                 instr.addr_dst = "$rf"
-                
+
             if (instr.addr_src == "r3"):
                 instr.addr_src = "$io"
             if (instr.addr_tgt == "r3"):
                 instr.addr_tgt = "$io"
             if (instr.addr_dst == "r3"):
                 instr.addr_dst = "$io"
-                
+
             if (instr.addr_src == "r4"):
                 instr.addr_src = "$hd"
             if (instr.addr_tgt == "r4"):
                 instr.addr_tgt = "$hd"
             if (instr.addr_dst == "r4"):
                 instr.addr_dst = "$hd"
-    
+                
+            if (instr.addr_src == "r26"):
+                instr.addr_src = "$pc"
+            if (instr.addr_tgt == "r26"):
+                instr.addr_tgt = "$pc"
+            if (instr.addr_dst == "r26"):
+                instr.addr_dst = "$pc"
+
     traceAssembler(instructions)
     return instructions
 
@@ -450,15 +617,15 @@ def assemblySave(path: str, instructions: List[Instruction]):
         for index, instr in enumerate(instructions):
             line = f"[{index}] {instr.instr} {instr.addr_src} {instr.addr_tgt} {instr.addr_dst}\n"
             output.write(line)
-            
+
 def main():
     path_midcode = "outputs/midcode.txt"
     path_assembly = "outputs/assembly.txt"
-    
+
     quadruples = midcodeTranslate(path_midcode)
     instructions = assemblyCodeGenerate(quadruples)
     assemblySave(path_assembly, instructions)
-    
+
     print(f"\n> Assembly code generated... → [{source}]\n")
 
 if __name__ == "__main__":
