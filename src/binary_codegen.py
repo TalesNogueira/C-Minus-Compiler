@@ -7,12 +7,14 @@ systemRange = 1530
 programRange = 512
 
 registers = {
+    # Special Purpose Registers
     "$zero": "00000",
     "$aux":  "00001",
     "$rf":   "00010",
     "$io":   "00011",
     "$hd":   "00100",
     "$so":   "00101",
+    # General Purpose Registers
     "r6":    "00110",
     "r7":    "00111",
     "r8":    "01000",
@@ -33,8 +35,9 @@ registers = {
     "r23":   "10111",
     "r24":   "11000",
     "r25":   "11001",
-    "r26":   "11010",
-    "r27":   "11011",
+    # Special Purpose Registers
+    "$pc":   "11010",
+    "$off":  "11011",
     "$gp":   "11100",
     "$fp":   "11101",
     "$sp":   "11110",
@@ -209,10 +212,10 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 funct = "011000"
                 shamt = "00000"
                 binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
-                
-            case "dmset":
+            
+            case "setTimer":
                 opcode = "000000"
-                funct = "011111"
+                funct = "011001"
                 shamt = "00000"
                 binary.append(opcode+registers[src]+"00000"+"00000"+shamt+funct)
                 
@@ -231,6 +234,12 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                     binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct+" // --- END OF FILE ---")
                 else:
                     binary.append(opcode+registers[src]+registers[tgt]+"00000"+shamt+funct)
+            
+            case "dmset":
+                opcode = "000000"
+                funct = "100010"
+                shamt = "00000"
+                binary.append(opcode+registers[src]+"00000"+"00000"+shamt+funct)
             
             case "writeLCD":
                 opcode = "000000"
