@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import List
 
 traceBinary = True
-systemRange = 1530
-programRange = 512
+systemRange = 3066
+programRange = 1024
 
 registers = {
     # Special Purpose Registers
