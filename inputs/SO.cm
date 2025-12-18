@@ -1,0 +1,481 @@
+int spc;
+int excl;
+int asps;
+int pcnt;
+int eand;
+int hif;
+int n1;
+int n2;
+int n7;
+int tdot;
+int larrow;
+int rarrow;
+int intrg;
+int A;
+int B;
+int C;
+int D;
+int E;
+int F;
+int G;
+int H;
+int I;
+int J;
+int K;
+int L;
+int M;
+int N;
+int O;
+int P;
+int Q;
+int R;
+int S;
+int T;
+int U;
+int V;
+int W;
+int X;
+int Y;
+int Z;
+
+int under;
+
+void main ( void )
+{
+    int in;
+    int menu;
+    int loader;
+    int counter;
+
+    int chars;
+
+    int check;
+    int check_counter;
+
+    int quantum;
+
+    int programs[7];
+    int size[7];
+    int status[7];
+
+    int p_pc[7];
+    int p_names[7];
+
+    int p_running;
+    int p_counter;
+    int p_display;
+
+    int multioffset;
+
+    int SO_IM_size;
+    int DM_size;
+
+    int block_qnty;
+    int block_size;
+    int info_size;
+
+    int c_reserved;
+    int c_programs;
+    int c_free;
+
+    int file_status;
+    int file_name;
+    int cluster;
+    int file_size;
+
+    int c[4];
+    int chars;
+
+    spc = 32;
+    excl = 33;
+    asps = 34;
+    pcnt = 37;
+    eand = 38;
+    hif = 45;
+
+    n1 = 49;
+    n2 = 50;
+    n7 = 55;
+
+    tdot = 58;
+    larrow = 60;
+    rarrow = 62;
+    intrg = 63;
+
+    A = 65;
+    B = 66;
+    C = 67;
+    D = 68;
+    E = 69;
+    F = 70;
+    G = 71;
+    H = 72;
+    I = 73;
+    J = 74;
+    K = 75;
+    L = 76;
+    M = 77;
+    N = 78;
+    O = 79;
+    P = 80;
+    Q = 81;
+    R = 82;
+    S = 83;
+    T = 84;
+    U = 85;
+    V = 86;
+    W = 87;
+    X = 88;
+    Y = 89;
+    Z = 90;
+
+    under = 95;
+
+    while (1 == 1) {
+        LCDwrite(spc,spc,spc,spc,spc,spc,hif,S,O,hif,spc,spc,spc,spc,spc,spc, 0);
+        LCDwrite(spc,spc,spc,R,E,A,D,I,N,G,spc,H,D,spc,spc,spc, 1);
+
+        block_qnty = loadHD(0, 0);
+        block_size = loadHD(0, 1);
+        info_size  = loadHD(0, 2);
+
+        SO_IM_size = loadHD(0, 5);
+        DM_size = 512;
+
+        c_reserved = 0;
+        c_programs = 0;
+
+        counter = 0;
+        while (counter < block_qnty) {
+            cluster = loadHD(3 * block_size, counter);
+
+            if (cluster < 0) c_reserved = c_reserved + 1;
+            if (cluster == 1) c_programs = c_programs + 1;
+
+            counter = counter + 1;
+        }
+
+        c_free = block_qnty - (c_reserved + c_programs);
+
+        in = 0;
+        menu = 0;
+
+        while (in == 0) {
+            if (menu == 0) {
+                LCDwrite(spc,rarrow,spc,L,I,S,T,spc,P,R,O,G,S,spc,tdot,n1, 1);
+                in = input();
+                if (in != 0) menu = 1;
+            }
+            if (menu == 0) {
+                LCDwrite(spc,rarrow,spc,spc,R,U,N,spc,P,R,O,G,spc,spc,tdot,n1, 1);
+                in = input();
+                if (in != 0) menu = 2;
+            }
+            if (menu == 0) {
+                LCDwrite(spc,rarrow,spc,R,U,N,spc,M,P,R,O,G,S,spc,tdot,n1, 1);
+                in = input();
+                if (in != 0) menu = 3;
+            }
+            if (menu == 0) {
+                LCDwrite(spc,rarrow,spc,D,E,L,E,T,E,spc,P,R,G,spc,tdot,n1, 1);
+                in = input();
+                if (in != 0) menu = 4;
+            }
+            if (menu == 0) {
+                LCDwrite(spc,rarrow,spc,C,R,E,A,T,E,spc,P,R,G,spc,tdot,n1, 1);
+                in = input();
+                if (in != 0) menu = 5;
+            }
+            if (menu == 0) {
+                LCDwrite(spc,rarrow,spc,R,E,N,A,M,E,spc,P,R,G,spc,tdot,n1, 1);
+                in = input();
+                if (in != 0) menu = 6;
+            }
+        }
+
+        if (menu == 1) {
+            counter = 0;
+
+            while (counter < (block_qnty - c_reserved) * info_size) {
+                file_status = loadHD(4 * block_size, counter);
+
+                if (file_status == 1) {
+                    file_name     = loadHD(4 * block_size, counter + 1);
+                    file_size     = loadHD(4 * block_size, counter + 3);
+                    c[0] = file_name >> 24  && 255;
+                    c[1] = file_name >> 16 && 255;
+                    c[2] = file_name >> 8 && 255;
+                    c[3] = file_name && 255;
+
+                    LCDwrite(spc,rarrow,rarrow,spc,F,O,U,N,D,tdot,spc,c[0],c[1],c[2],c[3],spc, 1);
+                    output(file_size);
+                }
+
+                counter = counter + info_size;
+            }
+            LCDwrite(spc,rarrow,spc,E,N,D,spc,O,F,spc,F,I,L,E,S,spc, 1);
+            halt();
+        } else if (menu == 2) {
+            in = 0;
+            counter = 0;
+
+            while ((counter < (block_qnty - c_reserved) * info_size) && (in == 0)) {
+                file_status = loadHD(4 * block_size, counter);
+
+                if (file_status == 1) {
+                    file_name     = loadHD(4 * block_size, counter + 1);
+                    cluster       = loadHD(4 * block_size, counter + 2);
+                    file_size     = loadHD(4 * block_size, counter + 3);
+                    c[0] = file_name >> 24  && 255;
+                    c[1] = file_name >> 16 && 255;
+                    c[2] = file_name >> 8 && 255;
+                    c[3] = file_name && 255;
+
+                    LCDwrite(spc,rarrow,rarrow,spc,R,U,N,spc,c[0],c[1],c[2],c[3],spc,spc,tdot,n1, 1);
+                    in = input();
+                    if (in != 0) {
+                        loader = 0;
+                        while (loader < file_size) {
+                            HDtoIM(SO_IM_size + loader, cluster * block_size, loader);
+                            loader = loader + 1;
+                        }
+                        LCDwrite(spc,rarrow,spc,R,U,N,N,I,N,G,spc,c[0],c[1],c[2],c[3],spc, 1);
+                        execute(SO_IM_size, DM_size);
+                    }
+                }
+                counter = counter + info_size;
+                if (counter == (block_qnty - c_reserved) * info_size) counter = 0;
+            }
+        } else if (menu == 3) {
+            LCDwrite(spc,rarrow,rarrow,spc,H,O,W,spc,M,A,N,Y,spc,P,intrg,spc, 1);
+            p_running = input();
+            while((p_running < 2) || (p_running > 7)) {
+                LCDwrite(spc,I,N,spc,rarrow,spc,n2,spc,eand,spc,I,N,spc,larrow,spc,n7, 1);
+                p_running = input();
+            }
+
+            counter = 0;
+            p_counter = 0;
+            multioffset = SO_IM_size;
+
+            while (p_counter < p_running) {
+                p_display = p_counter + 48;
+                LCDwrite(spc,spc,spc,spc,spc,spc,hif,S,O,hif,spc,spc,spc,P,tdot,p_display, 0);
+
+                file_status = loadHD(4 * block_size, counter);
+
+                if (file_status == 1) {
+                    file_name     = loadHD(4 * block_size, counter + 1);
+                    cluster = loadHD(4 * block_size, counter + 2);
+                    file_size     = loadHD(4 * block_size, counter + 3);
+                    c[0] = file_name >> 24  && 255;
+                    c[1] = file_name >> 16 && 255;
+                    c[2] = file_name >> 8 && 255;
+                    c[3] = file_name && 255;
+
+                    LCDwrite(spc,rarrow,rarrow,spc,R,U,N,spc,c[0],c[1],c[2],c[3],spc,spc,tdot,n1, 1);
+                    in = input();
+                    if (in != 0) {
+                        loader = 0;
+                        while (loader < file_size) {
+                            HDtoIM(multioffset + loader, cluster * block_size, loader);
+                            loader = loader + 1;
+                        }
+
+                        setupProgram(DM_size*(p_counter + 1));
+
+                        programs[p_counter] = multioffset;
+                        size[p_counter] = file_size;
+                        status[p_counter] = 1;
+
+                        p_names[p_counter] = file_name;
+                        p_pc[p_counter] = 0;
+
+                        multioffset = multioffset + file_size;
+
+                        p_counter = p_counter + 1;
+                    }
+                }
+                counter = counter + info_size;
+                if (counter >= (block_qnty - c_reserved) * info_size) counter = 0;
+            }
+
+            quantum = 30;
+
+            p_counter = 0;
+            while (p_counter < p_running) {
+                if (status[p_counter] == 1) {
+                    p_display = p_counter + 49;
+                    LCDwrite(spc,spc,spc,spc,spc,spc,hif,S,O,hif,spc,spc,spc,P,tdot,p_display, 0);
+                    c[0] = p_names[p_counter] >> 24  && 255;
+                    c[1] = p_names[p_counter] >> 16 && 255;
+                    c[2] = p_names[p_counter] >> 8 && 255;
+                    c[3] = p_names[p_counter] && 255;
+                    LCDwrite(spc,rarrow,spc,R,U,N,N,I,N,G,spc,c[0],c[1],c[2],c[3],spc, 1);
+
+                    p_pc[p_counter] = executeRR(p_pc[p_counter], programs[p_counter], DM_size*(p_counter + 1), quantum);
+                    
+                    if (p_pc[p_counter] >= size[p_counter]) {
+                        LCDwrite(spc,rarrow,spc,F,I,N,I,S,H,E,D,spc,c[0],c[1],c[2],c[3], 1);
+                        halt();
+                        status[p_counter] = 0;
+                    }
+
+                    p_counter = p_counter + 1;
+                    if (p_counter >= p_running) p_counter = 0;
+                } else {
+                    p_counter = p_counter + 1;
+                    if (p_counter >= p_running) p_counter = 0;
+                }
+
+                check = 0;
+                check_counter = 0;
+                while (check_counter < p_running) {
+                    if (status[check_counter] == 0) check = check + 1;
+                    check_counter = check_counter + 1;
+                }
+
+                if (check == p_running) p_running = 0;
+            }
+        } else if (menu == 4) {
+            in = 0;
+            counter = 0;
+
+            while ((counter < (block_qnty - c_reserved) * info_size) && (in == 0)) {
+                file_status = loadHD(4 * block_size, counter);
+
+                if (file_status == 1) {
+                    file_name     = loadHD(4 * block_size, counter + 1);
+                    cluster       = loadHD(4 * block_size, counter + 2);
+                    file_size     = loadHD(4 * block_size, counter + 3);
+                    c[0] = file_name >> 24  && 255;
+                    c[1] = file_name >> 16 && 255;
+                    c[2] = file_name >> 8 && 255;
+                    c[3] = file_name && 255;
+
+                    LCDwrite(spc,rarrow,rarrow,spc,D,L,E,T,spc,c[0],c[1],c[2],c[3],spc,tdot,n1, 1);
+                    in = input();
+                    if (in != 0) {
+                        storeHD(0, 3 * block_size, (counter/4)+c_reserved);
+                        storeHD(0, 4 * block_size, counter);
+                        LCDwrite(spc,rarrow,spc,c[0],c[1],c[2],c[3],spc,D,E,L,E,T,E,D,spc, 1);
+                        halt();
+                    }
+                }
+                counter = counter + info_size;
+                if (counter == (block_qnty - c_reserved) * info_size) counter = 0;
+            }
+        } else if (menu == 5) {
+            if (c_free == 0) {
+                LCDwrite(spc,rarrow,spc,spc,spc,H,D,spc,F,U,L,L,excl,spc,spc,spc, 1);
+                halt();
+            } else {
+                counter = 0;
+
+                while (counter < block_qnty) {
+                    cluster = loadHD(3 * block_size, counter);
+
+                    if (cluster == 0) {
+                        storeHD(1, 3 * block_size, counter);
+                        cluster = counter;
+                        counter = block_qnty;
+                    }
+                    counter = counter + 1;
+                }
+                
+                in = 0;
+                counter = 0;
+
+                while ((counter < (block_qnty - c_reserved) * info_size) && (in == 0)) {
+                    file_status = loadHD(4 * block_size, counter);
+
+                    if (file_status == 0) {
+                        storeHD(1, 4 * block_size, counter);
+
+                        file_name = 0;
+                        file_name = file_name + (N << 24);
+                        file_name = file_name + ((E+32) << 16);
+                        file_name = file_name + ((W+32) << 8);
+                        file_name = file_name + spc;
+
+                        storeHD(file_name, 4 * block_size, counter + 1);
+                        storeHD(cluster, 4 * block_size, counter + 2);
+                        storeHD(0, 4 * block_size, counter + 3);
+                        
+                        LCDwrite(spc,rarrow,asps,N,(E+32),(W+32),asps,spc,C,R,E,A,T,E,D,spc, 1);
+                        halt();
+                        in = 1;
+                    }
+                    counter = counter + info_size;
+                    if (counter == (block_qnty - c_reserved) * info_size) counter = 0;
+                }
+            }
+        } else if (menu == 6) {
+            in = 0;
+            counter = 0;
+
+            while ((counter < (block_qnty - c_reserved) * info_size) && (in == 0)) {
+                file_status = loadHD(4 * block_size, counter);
+
+                if (file_status == 1) {
+                    file_name     = loadHD(4 * block_size, counter + 1);
+                    cluster       = loadHD(4 * block_size, counter + 2);
+                    file_size     = loadHD(4 * block_size, counter + 3);
+                    c[0] = file_name >> 24  && 255;
+                    c[1] = file_name >> 16 && 255;
+                    c[2] = file_name >> 8 && 255;
+                    c[3] = file_name && 255;
+
+                    LCDwrite(spc,rarrow,rarrow,spc,R,N,M,E,spc,c[0],c[1],c[2],c[3],spc,tdot,n1, 1);
+                    in = input();
+                    if (in != 0) {
+                        c[0] = A;
+                        c[1] = spc;
+                        c[2] = spc;
+                        c[3] = spc;
+
+                        chars = 0;
+
+                        while (chars < 4) {
+                            in = 0;
+                            while (in == 0) {
+                                LCDwrite(spc,rarrow,N,E,W,spc,N,A,M,E,tdot,spc,c[0],c[1],c[2],c[3], 1);
+                                in = input();
+                                if (in == 0) {
+                                    if (chars == 0) {
+                                        c[chars] = c[chars] + 1;
+                                    } else {
+                                        if (c[chars] == under) c[chars] = spc;
+                                        else if (((c[chars] < (A+32-1)) || ((Z+32+1) < c[chars]))) c[chars] = A+32;
+                                        else if (c[chars] == Z) c[chars] = under;
+                                        else c[chars] = c[chars] + 1;
+                                    }
+                                }
+                            }
+
+                            if (((c[chars] < (A-1)) || ((Z+1) < c[chars])) && chars == 0) c[chars] = A;
+                            else if (c[chars] == spc) chars = 4;
+
+                            chars = chars + 1;
+                            if (chars < 4) c[chars] = under;
+                        }
+
+                        file_name = 0;
+                        file_name = file_name + (c[0] << 24);
+                        file_name = file_name + (c[1] << 16);
+                        file_name = file_name + (c[2] << 8);
+                        file_name = file_name + (c[3]);
+
+                        storeHD(file_name, 4 * block_size, counter + 1);
+                        
+                        LCDwrite(spc,rarrow,N,E,W,spc,N,A,M,E,spc,S,A,V,E,D, 1);
+                        halt();
+                        in = 1;
+                    }
+                }
+                counter = counter + info_size;
+                if (counter == (block_qnty - c_reserved) * info_size) counter = 0;
+            }
+        }
+    } 
+}

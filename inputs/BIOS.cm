@@ -1,0 +1,148 @@
+int spc;
+int excl;
+int pcnt;
+int hif;
+int tdot;
+int rarrow;
+int A;
+int B;
+int C;
+int D;
+int E;
+int F;
+int G;
+int H;
+int I;
+int J;
+int K;
+int L;
+int M;
+int N;
+int O;
+int P;
+int Q;
+int R;
+int S;
+int T;
+int U;
+int V;
+int W;
+int X;
+int Y;
+int Z;
+
+void main ( void )
+{
+    int in;
+
+    int status;
+    int pswrd;
+    int size;
+
+    int bar;
+    int filled;
+    int buffer;
+
+    spc = 32;
+    excl = 33;
+    pcnt = 37;
+    hif = 45;
+    tdot = 58;
+    rarrow = 62;
+    A = 65;
+    B = 66;
+    C = 67;
+    D = 68;
+    E = 69;
+    F = 70;
+    G = 71;
+    H = 72;
+    I = 73;
+    J = 74;
+    K = 75;
+    L = 76;
+    M = 77;
+    N = 78;
+    O = 79;
+    P = 80;
+    Q = 81;
+    R = 82;
+    S = 83;
+    T = 84;
+    U = 85;
+    V = 86;
+    W = 87;
+    X = 88;
+    Y = 89;
+    Z = 90;
+
+    LCDwrite(spc,rarrow,B,I,O,S,tdot,spc,S,Y,S,spc,L,C,K,D, 0);
+    LCDwrite(spc,I,N,S,E,R,T,spc,P,A,S,S,W,O,R,D, 1);
+
+    in = 0;
+    status = loadHD(0, 3);
+    pswrd = loadHD(0, 4);
+
+    while (status == 0) {
+        in = input();
+
+        if (in == pswrd) {
+            status = 1;
+            storeHD(status, 0, 3);
+        }
+    }
+
+    LCDwrite(spc,rarrow,B,I,O,S,tdot,spc,L,O,A,D,I,N,G,spc, 0);
+    LCDwrite(spc,hif,spc,spc,spc,spc,spc,spc,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+
+    bar = 11;
+
+    buffer = 0;
+    size = loadHD(0, 5);
+    while (buffer < size) {
+        HDtoIM(buffer, 6, buffer);
+        buffer = buffer + 1;
+
+        filled = (buffer * bar)/size;
+        if (filled > bar) {
+            filled = bar;
+        }
+
+        if (filled == 0) {
+            LCDwrite(spc,hif,hif,spc,spc,spc,spc,spc,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 1) {
+            LCDwrite(spc,hif,hif,hif,spc,spc,spc,spc,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 2) {
+            LCDwrite(spc,hif,hif,hif,hif,spc,spc,spc,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 3) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,spc,spc,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 4) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,spc,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 5) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,hif,spc,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 6) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,hif,hif,spc,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 7) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,hif,hif,hif,spc,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 8) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,spc,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 9) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,spc,hif,pcnt,spc, 1);
+        }
+        if (filled == 10) {
+            LCDwrite(spc,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,hif,pcnt,spc, 1);
+        }
+    }
+
+    LCDwrite(spc,rarrow,B,I,O,S,tdot,spc,C,O,M,P,L,E,T,E, 0);
+    LCDwrite(spc,spc,spc,spc,W,E,L,C,O,M,E,excl,spc,spc,spc,spc, 1);
+}
