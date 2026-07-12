@@ -90,15 +90,16 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
         
         match instr:
             # IO-Type
+            case "peek":
+                opcode = "000000"
+                funct = "000000"
+                binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
+            
             case "in":
                 opcode = "000000"
                 funct = "000001"
                 binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
 
-            case "inUART":
-                opcode = "000000"
-                funct = "011010"
-                binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
 
             case "out":
                 opcode = "000000"
@@ -224,6 +225,11 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 shamt = "00000"
                 binary.append(opcode+registers[src]+"00000"+"00000"+shamt+funct)
                 
+            case "uart":
+                opcode = "000000"
+                funct = "011111"
+                binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
+
             case "jr":
                 opcode = "000000"
                 funct = "100000"

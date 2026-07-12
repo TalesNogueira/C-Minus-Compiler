@@ -56,8 +56,10 @@ void main(void)
     int string;
     int tuning;
     int listener;
+    int guard;
+    int tol;
 
-    int frequencies[6]; 
+    int frequencies[6];
 
     spc = 32;
     excl = 33;
@@ -110,12 +112,12 @@ void main(void)
     Y = 89;
     Z = 90;
 
-    frequencies[0] = 330;
-    frequencies[1] = 247;
-    frequencies[2] = 196;
-    frequencies[3] = 147;
-    frequencies[4] = 110;
-    frequencies[5] = 82;
+    frequencies[0] = 3296;
+    frequencies[1] = 2469;
+    frequencies[2] = 1960;
+    frequencies[3] = 1468;
+    frequencies[4] = 1100;
+    frequencies[5] = 824;
 
     exit = 0;
 
@@ -191,17 +193,22 @@ void main(void)
         } else if (exit == 0) {
             LCDwrite(spc,spc,T,U,N,E,spc,hif,spc,chord,spc,string,T,H,spc,spc, 0);
 
+            guard = peek();
+            tol = frequencies[6-menu] / 200;
+
             while (tuning == 0){
-                listener = inUART();
+                listener = UART();
                 if (listener == 0) {
                     LCDwrite(spc,spc,L,I,S,T,E,N,I,N,G,dot,dot,dot,spc,spc, 1);
-                } else if (listener < (frequencies[6-menu] - 3)) {
+                } else if (listener < (frequencies[6-menu] - tol)) {
                     LCDwrite(spc,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,spc,T,I,G,H,T,spc, 1);
-                } else if (listener > (frequencies[6-menu] + 3)) {
+                } else if (listener > (frequencies[6-menu] + tol)) {
                     LCDwrite(spc,L,O,O,S,E,spc,larrow,larrow,larrow,larrow,larrow,larrow,larrow,larrow,spc, 1);
                 } else {
                     LCDwrite(spc,spc,spc,spc,spc,T,U,N,E,D,excl,spc,spc,spc,tdot,n1, 1);
                 }
+
+                if (peek() != guard) tuning = 1;
             }
         }
     }

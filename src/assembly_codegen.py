@@ -506,10 +506,12 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     instructions.append(Instruction("load", "$zero", "$ra", "31"))
                     instructions.append(Instruction("subi", registers[-1], registers[-1], "30"))
                     # # ---> Quantum Ended - So we assume PC has the value of where ended
+                elif (src.lower() == "peek"):
+                    instructions.append(Instruction("peek", "-", "-", "$io"))
                 elif (src.lower() == "input"):
                     instructions.append(Instruction("in", "-", "-", "$io"))
-                elif (src.lower() == "inuart"):
-                    instructions.append(Instruction("inUART", "-", "-", "$io"))
+                elif (src.lower() == "uart"):
+                    instructions.append(Instruction("uart", "-", "-", "$io"))
                 elif (src.lower() == "output"):
                     instructions.append(Instruction("out", registers[-1], "-", "-"))
                 elif (src.lower() == "loadhd"):

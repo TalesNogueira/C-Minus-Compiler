@@ -254,7 +254,18 @@ static void initPredefinedFunctions() {
     execRRFunc->child[0] = execRR_pc;
     execRRFunc->child[1] = NULL;
     st_insert(execRRFunc, "global");
+    
 //----------------------------------------------------
+    TreeNode *peekFunc = newDeclNode(DeclFunction);     // Peek()
+    peekFunc->type = Integer;
+    peekFunc->lineno = 0;
+    peekFunc->attr.name = "peek";
+    peekFunc->scope = "global";
+    peekFunc->child[0] = NULL;
+    peekFunc->child[1] = NULL;
+    st_insert(peekFunc, "global");
+
+//----------------------------------------------------    
     TreeNode *inputFunc = newDeclNode(DeclFunction);    // Input()
     inputFunc->type = Integer;
     inputFunc->lineno = 0;
@@ -263,12 +274,12 @@ static void initPredefinedFunctions() {
     inputFunc->child[0] = NULL;
     inputFunc->child[1] = NULL;
     st_insert(inputFunc, "global");
-
+    
 //----------------------------------------------------
-    TreeNode *uartFunc = newDeclNode(DeclFunction);     // InUART()
+    TreeNode *uartFunc = newDeclNode(DeclFunction);     // UART()
     uartFunc->type = Integer;
     uartFunc->lineno = 0;
-    uartFunc->attr.name = "inUART";
+    uartFunc->attr.name = "UART";
     uartFunc->scope = "global";
     uartFunc->child[0] = NULL;
     uartFunc->child[1] = NULL;
