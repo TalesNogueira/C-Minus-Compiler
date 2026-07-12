@@ -508,6 +508,8 @@ def assemblyCodeGenerate(quads: List[Quadruple]) -> List[Instruction]:
                     # # ---> Quantum Ended - So we assume PC has the value of where ended
                 elif (src.lower() == "input"):
                     instructions.append(Instruction("in", "-", "-", "$io"))
+                elif (src.lower() == "inuart"):
+                    instructions.append(Instruction("inUART", "-", "-", "$io"))
                 elif (src.lower() == "output"):
                     instructions.append(Instruction("out", registers[-1], "-", "-"))
                 elif (src.lower() == "loadhd"):

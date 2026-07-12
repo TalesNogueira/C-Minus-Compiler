@@ -2,9 +2,6 @@
 /build/
 /outputs/
 
-# Exception for Example.cm
-!/inputs/example.cm
-
 # Flex/YACC-Bison generated files
 /src/lex.yy.c
 /src/parser.tab.c

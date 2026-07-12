@@ -94,7 +94,12 @@ def binaryCodeGenerate(instructions: List[Instruction]) -> List[str]:
                 opcode = "000000"
                 funct = "000001"
                 binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
-            
+
+            case "inUART":
+                opcode = "000000"
+                funct = "011010"
+                binary.append(opcode+"00000"+"00000"+registers[dst]+"00000"+funct)
+
             case "out":
                 opcode = "000000"
                 funct = "000010"

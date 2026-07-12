@@ -614,6 +614,8 @@ static void expGen(TreeNode *t) {
       if (t->type != Void) {
         if (strcmp(src.content.name, "input") == 0) {
           regTemp = useRegister(3);
+        } else if (strcmp(src.content.name, "inUART") == 0) {
+          regTemp = useRegister(3);
         } else if (strcmp(src.content.name, "loadHD") == 0) {
           regTemp = useRegister(4);
         } else if (strcmp(src.content.name, "executeRR") == 0) {

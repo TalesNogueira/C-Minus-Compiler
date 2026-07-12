@@ -263,7 +263,17 @@ static void initPredefinedFunctions() {
     inputFunc->child[0] = NULL;
     inputFunc->child[1] = NULL;
     st_insert(inputFunc, "global");
-    
+
+//----------------------------------------------------
+    TreeNode *uartFunc = newDeclNode(DeclFunction);     // InUART()
+    uartFunc->type = Integer;
+    uartFunc->lineno = 0;
+    uartFunc->attr.name = "inUART";
+    uartFunc->scope = "global";
+    uartFunc->child[0] = NULL;
+    uartFunc->child[1] = NULL;
+    st_insert(uartFunc, "global");
+
 //----------------------------------------------------
     TreeNode *outputFunc = newDeclNode(DeclFunction);   // Output(value)
     outputFunc->type = Void;
@@ -351,6 +361,7 @@ static void initPredefinedFunctions() {
     HD2IMFunc->child[0] = HD2IM_offset;
     HD2IMFunc->child[1] = NULL;
     st_insert(HD2IMFunc, "global");
+
 //----------------------------------------------------
     TreeNode *LCDwriteFunc = newDeclNode(DeclFunction);   // LCDwrite(c0, c1, ..., c14, c15, line)
     LCDwriteFunc->type = Void;
