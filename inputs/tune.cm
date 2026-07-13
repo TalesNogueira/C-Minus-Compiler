@@ -1,5 +1,6 @@
 int spc;
 int excl;
+int hash;
 int hif;
 int dot;
 int n1;
@@ -13,8 +14,10 @@ int larrow;
 int rarrow;
 int A;
 int B;
+int C;
 int D;
 int E;
+int F;
 int G;
 int H;
 int I;
@@ -44,11 +47,33 @@ void main(void)
     int bestDiff;
     int bestIdx;
 
+    int chromIdx;
+    int oct;
+    int pos;
+    int letter;
+    int sharp;
+    int octave;
+
+    int rem;
+    int tmp;
+    int d1;
+    int d2;
+    int d3;
+    int d4;
+    int f1;
+    int f2;
+    int f3;
+    int f4;
+
     int frequencies[6];
     int notes[6];
+    int freqAuto[32];
+    int letterPat[12];
+    int sharpPat[12];
 
     spc = 32;
     excl = 33;
+    hash = 35;
     hif = 45;
     dot = 46;
 
@@ -65,8 +90,10 @@ void main(void)
 
     A = 65;
     B = 66;
+    C = 67;
     D = 68;
     E = 69;
+    F = 70;
     G = 71;
     H = 72;
     I = 73;
@@ -91,6 +118,65 @@ void main(void)
     notes[3] = G;
     notes[4] = B;
     notes[5] = E;
+
+    freqAuto[0] = 824;
+    freqAuto[1] = 873;
+    freqAuto[2] = 925;
+    freqAuto[3] = 980;
+    freqAuto[4] = 1038;
+    freqAuto[5] = 1100;
+    freqAuto[6] = 1165;
+    freqAuto[7] = 1235;
+    freqAuto[8] = 1308;
+    freqAuto[9] = 1386;
+    freqAuto[10] = 1468;
+    freqAuto[11] = 1556;
+    freqAuto[12] = 1648;
+    freqAuto[13] = 1746;
+    freqAuto[14] = 1850;
+    freqAuto[15] = 1960;
+    freqAuto[16] = 2077;
+    freqAuto[17] = 2200;
+    freqAuto[18] = 2331;
+    freqAuto[19] = 2469;
+    freqAuto[20] = 2616;
+    freqAuto[21] = 2772;
+    freqAuto[22] = 2937;
+    freqAuto[23] = 3111;
+    freqAuto[24] = 3296;
+    freqAuto[25] = 3492;
+    freqAuto[26] = 3700;
+    freqAuto[27] = 3920;
+    freqAuto[28] = 4153;
+    freqAuto[29] = 4400;
+    freqAuto[30] = 4662;
+    freqAuto[31] = 4939;
+
+    letterPat[0] = C;
+    letterPat[1] = C;
+    letterPat[2] = D;
+    letterPat[3] = D;
+    letterPat[4] = E;
+    letterPat[5] = F;
+    letterPat[6] = F;
+    letterPat[7] = G;
+    letterPat[8] = G;
+    letterPat[9] = A;
+    letterPat[10] = A;
+    letterPat[11] = B;
+
+    sharpPat[0] = spc;
+    sharpPat[1] = hash;
+    sharpPat[2] = spc;
+    sharpPat[3] = hash;
+    sharpPat[4] = spc;
+    sharpPat[5] = spc;
+    sharpPat[6] = hash;
+    sharpPat[7] = spc;
+    sharpPat[8] = hash;
+    sharpPat[9] = spc;
+    sharpPat[10] = hash;
+    sharpPat[11] = spc;
 
     exit = 0;
 
@@ -141,12 +227,12 @@ void main(void)
                     LCDwrite(spc,spc,L,I,S,T,E,N,I,N,G,dot,dot,dot,spc,spc, 1);
                 } else {
                     bestIdx = 0;
-                    bestDiff = listener - frequencies[0];
+                    bestDiff = listener - freqAuto[0];
                     if (bestDiff < 0) bestDiff = 0 - bestDiff;
 
                     i = 1;
-                    while (i < 6) {
-                        diff = listener - frequencies[i];
+                    while (i < 32) {
+                        diff = listener - freqAuto[i];
                         if (diff < 0) diff = 0 - diff;
                         if (diff < bestDiff) {
                             bestDiff = diff;
@@ -155,21 +241,38 @@ void main(void)
                         i = i + 1;
                     }
 
-                    if (bestIdx == 0) { chord = E; string = n1; }
-                    if (bestIdx == 1) { chord = B; string = n2; }
-                    if (bestIdx == 2) { chord = G; string = n3; }
-                    if (bestIdx == 3) { chord = D; string = n4; }
-                    if (bestIdx == 4) { chord = A; string = n5; }
-                    if (bestIdx == 5) { chord = E; string = n6; }
+                    chromIdx = bestIdx + 4;
+                    oct = chromIdx / 12;
+                    pos = oct * 12;
+                    pos = chromIdx - pos;
+                    letter = letterPat[pos];
+                    sharp = sharpPat[pos];
+                    octave = 50 + oct;
 
-                    LCDwrite(spc,spc,A,U,T,O,spc,hif,spc,chord,spc,string,T,H,spc,spc, 0);
+                    LCDwrite(spc,spc,spc,A,U,T,O,spc,hif,spc,letter,sharp,octave,spc,spc,spc, 0);
 
-                    tol = frequencies[bestIdx] / 200;
+                    rem = listener;
+                    d1 = rem / 1000;
+                    tmp = d1 * 1000;
+                    rem = rem - tmp;
+                    d2 = rem / 100;
+                    tmp = d2 * 100;
+                    rem = rem - tmp;
+                    d3 = rem / 10;
+                    tmp = d3 * 10;
+                    d4 = rem - tmp;
+                    f1 = d1 + 48;
+                    f2 = d2 + 48;
+                    f3 = d3 + 48;
+                    f4 = d4 + 48;
+                    if (d1 == 0) f1 = spc;
 
-                    if (listener < (frequencies[bestIdx] - tol)) {
-                        LCDwrite(spc,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,spc,T,I,G,H,T,spc, 1);
-                    } else if (listener > (frequencies[bestIdx] + tol)) {
-                        LCDwrite(spc,L,O,O,S,E,spc,larrow,larrow,larrow,larrow,larrow,larrow,larrow,larrow,spc, 1);
+                    tol = freqAuto[bestIdx] / 200;
+
+                    if (listener < (freqAuto[bestIdx] - tol)) {
+                        LCDwrite(T,I,G,H,T,spc,f1,f2,f3,f4,spc,rarrow,rarrow,rarrow,rarrow,spc, 1);
+                    } else if (listener > (freqAuto[bestIdx] + tol)) {
+                        LCDwrite(spc,larrow,larrow,larrow,larrow,spc,f1,f2,f3,f4,spc,L,O,O,S,E, 1);
                     } else {
                         LCDwrite(spc,spc,spc,spc,spc,T,U,N,E,D,excl,spc,spc,spc,tdot,n1, 1);
                     }
@@ -187,12 +290,30 @@ void main(void)
                 listener = UART();
                 if (listener == 0) {
                     LCDwrite(spc,spc,L,I,S,T,E,N,I,N,G,dot,dot,dot,spc,spc, 1);
-                } else if (listener < (frequencies[6-menu] - tol)) {
-                    LCDwrite(spc,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,rarrow,spc,T,I,G,H,T,spc, 1);
-                } else if (listener > (frequencies[6-menu] + tol)) {
-                    LCDwrite(spc,L,O,O,S,E,spc,larrow,larrow,larrow,larrow,larrow,larrow,larrow,larrow,spc, 1);
                 } else {
-                    LCDwrite(spc,spc,spc,spc,spc,T,U,N,E,D,excl,spc,spc,spc,tdot,n1, 1);
+                    rem = listener;
+                    d1 = rem / 1000;
+                    tmp = d1 * 1000;
+                    rem = rem - tmp;
+                    d2 = rem / 100;
+                    tmp = d2 * 100;
+                    rem = rem - tmp;
+                    d3 = rem / 10;
+                    tmp = d3 * 10;
+                    d4 = rem - tmp;
+                    f1 = d1 + 48;
+                    f2 = d2 + 48;
+                    f3 = d3 + 48;
+                    f4 = d4 + 48;
+                    if (d1 == 0) f1 = spc;
+
+                    if (listener < (frequencies[6-menu] - tol)) {
+                        LCDwrite(T,I,G,H,T,spc,f1,f2,f3,f4,spc,rarrow,rarrow,rarrow,rarrow,spc, 1);
+                    } else if (listener > (frequencies[6-menu] + tol)) {
+                        LCDwrite(spc,larrow,larrow,larrow,larrow,spc,f1,f2,f3,f4,spc,L,O,O,S,E, 1);
+                    } else {
+                        LCDwrite(spc,spc,spc,spc,spc,T,U,N,E,D,excl,spc,spc,spc,tdot,n1, 1);
+                    }
                 }
 
                 if (peek() != guard) tuning = 1;
