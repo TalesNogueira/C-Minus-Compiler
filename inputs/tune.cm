@@ -1,50 +1,30 @@
 int spc;
 int excl;
-int asps;
-int pcnt;
-int eand;
 int hif;
 int dot;
-int n0;
 int n1;
 int n2;
 int n3;
 int n4;
 int n5;
 int n6;
-int n7;
-int n8;
-int n9;
 int tdot;
 int larrow;
 int rarrow;
-int intrg;
 int A;
 int B;
-int C;
 int D;
 int E;
-int F;
 int G;
 int H;
 int I;
-int J;
-int K;
 int L;
-int M;
 int N;
 int O;
-int P;
-int Q;
-int R;
 int S;
 int T;
 int U;
-int V;
-int W;
 int X;
-int Y;
-int Z;
 
 void main(void)
 {
@@ -68,54 +48,34 @@ void main(void)
 
     spc = 32;
     excl = 33;
-    asps = 34;
-    pcnt = 37;
-    eand = 38;
     hif = 45;
     dot = 46;
 
-    n0 = 48;
     n1 = 49;
     n2 = 50;
     n3 = 51;
     n4 = 52;
     n5 = 53;
     n6 = 54;
-    n7 = 55;
-    n8 = 56;
-    n9 = 57;
 
     tdot = 58;
     larrow = 60;
     rarrow = 62;
-    intrg = 63;
 
     A = 65;
     B = 66;
-    C = 67;
     D = 68;
     E = 69;
-    F = 70;
     G = 71;
     H = 72;
     I = 73;
-    J = 74;
-    K = 75;
     L = 76;
-    M = 77;
     N = 78;
     O = 79;
-    P = 80;
-    Q = 81;
-    R = 82;
     S = 83;
     T = 84;
     U = 85;
-    V = 86;
-    W = 87;
     X = 88;
-    Y = 89;
-    Z = 90;
 
     frequencies[0] = 3296;
     frequencies[1] = 2469;
@@ -246,7 +206,7 @@ void main(void)
             guard = peek();
             tol = frequencies[6-menu] / 200;
 
-            while (tuning == 0){
+            while (tuning == 0) {
                 listener = UART();
                 if (listener == 0) {
                     LCDwrite(spc,spc,L,I,S,T,E,N,I,N,G,dot,dot,dot,spc,spc, 1);
