@@ -45,6 +45,7 @@ void main(void)
     int bestIdx;
 
     int frequencies[6];
+    int notes[6];
 
     spc = 32;
     excl = 33;
@@ -84,6 +85,13 @@ void main(void)
     frequencies[4] = 1100;
     frequencies[5] = 824;
 
+    notes[0] = E;
+    notes[1] = A;
+    notes[2] = D;
+    notes[3] = G;
+    notes[4] = B;
+    notes[5] = E;
+
     exit = 0;
 
     while (exit == 0) {
@@ -96,47 +104,16 @@ void main(void)
         string = 0;
 
         while (in == 0) {
-            if (menu == 0) {
-                LCDwrite(spc,rarrow,spc,spc,E,spc,hif,spc,n6,T,H,spc,spc,spc,tdot,n1, 1);
-                in = input();
-                chord = E;
-                string = n6;
-                if (in != 0) menu = 1;
-            }
-            if (menu == 0) {
-                LCDwrite(spc,rarrow,spc,spc,A,spc,hif,spc,n5,T,H,spc,spc,spc,tdot,n1, 1);
-                in = input();
-                chord = A;
-                string = n5;
-                if (in != 0) menu = 2;
-            }
-            if (menu == 0) {
-                LCDwrite(spc,rarrow,spc,spc,D,spc,hif,spc,n4,T,H,spc,spc,spc,tdot,n1, 1);
-                in = input();
-                chord = D;
-                string = n4;
-                if (in != 0) menu = 3;
-            }
-            if (menu == 0) {
-                LCDwrite(spc,rarrow,spc,spc,G,spc,hif,spc,n3,T,H,spc,spc,spc,tdot,n1, 1);
-                in = input();
-                chord = G;
-                string = n3;
-                if (in != 0) menu = 4;
-            }
-            if (menu == 0) {
-                LCDwrite(spc,rarrow,spc,spc,B,spc,hif,spc,n2,T,H,spc,spc,spc,tdot,n1, 1);
-                in = input();
-                chord = B;
-                string = n2;
-                if (in != 0) menu = 5;
-            }
-            if (menu == 0) {
-                LCDwrite(spc,rarrow,spc,spc,E,spc,hif,spc,n1,T,H,spc,spc,spc,tdot,n1, 1);
-                in = input();
-                chord = E;
-                string = n1;
-                if (in != 0) menu = 6;
+            i = 1;
+            while (i <= 6) {
+                if (menu == 0) {
+                    chord = notes[i-1];
+                    string = 55 - i;
+                    LCDwrite(spc,rarrow,spc,spc,chord,spc,hif,spc,string,T,H,spc,spc,spc,tdot,n1, 1);
+                    in = input();
+                    if (in != 0) menu = i;
+                }
+                i = i + 1;
             }
             if (menu == 0) {
                 LCDwrite(spc,rarrow,spc,A,U,T,O,spc,T,U,N,E,spc,spc,tdot,n1, 1);
