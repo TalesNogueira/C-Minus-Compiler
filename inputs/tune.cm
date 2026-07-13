@@ -1,6 +1,5 @@
 int spc;
 int excl;
-int hash;
 int hif;
 int dot;
 int n1;
@@ -14,10 +13,8 @@ int larrow;
 int rarrow;
 int A;
 int B;
-int C;
 int D;
 int E;
-int F;
 int G;
 int H;
 int I;
@@ -47,10 +44,6 @@ void main(void)
     int bestDiff;
     int bestIdx;
 
-    int fold;
-    int letter;
-    int sharp;
-
     int rem;
     int tmp;
     int d1;
@@ -64,13 +57,9 @@ void main(void)
 
     int frequencies[6];
     int notes[6];
-    int scale[12];
-    int letterScale[12];
-    int sharpScale[12];
 
     spc = 32;
     excl = 33;
-    hash = 35;
     hif = 45;
     dot = 46;
 
@@ -87,10 +76,8 @@ void main(void)
 
     A = 65;
     B = 66;
-    C = 67;
     D = 68;
     E = 69;
-    F = 70;
     G = 71;
     H = 72;
     I = 73;
@@ -115,45 +102,6 @@ void main(void)
     notes[3] = G;
     notes[4] = B;
     notes[5] = E;
-
-    scale[0] = 824;
-    scale[1] = 873;
-    scale[2] = 925;
-    scale[3] = 980;
-    scale[4] = 1038;
-    scale[5] = 1100;
-    scale[6] = 1165;
-    scale[7] = 1235;
-    scale[8] = 1308;
-    scale[9] = 1386;
-    scale[10] = 1468;
-    scale[11] = 1556;
-
-    letterScale[0] = E;
-    letterScale[1] = F;
-    letterScale[2] = F;
-    letterScale[3] = G;
-    letterScale[4] = G;
-    letterScale[5] = A;
-    letterScale[6] = A;
-    letterScale[7] = B;
-    letterScale[8] = C;
-    letterScale[9] = C;
-    letterScale[10] = D;
-    letterScale[11] = D;
-
-    sharpScale[0] = spc;
-    sharpScale[1] = spc;
-    sharpScale[2] = hash;
-    sharpScale[3] = spc;
-    sharpScale[4] = hash;
-    sharpScale[5] = spc;
-    sharpScale[6] = hash;
-    sharpScale[7] = spc;
-    sharpScale[8] = spc;
-    sharpScale[9] = hash;
-    sharpScale[10] = spc;
-    sharpScale[11] = hash;
 
     exit = 0;
 
@@ -203,17 +151,13 @@ void main(void)
                     LCDwrite(spc,spc,spc,A,U,T,O,spc,T,U,N,E,spc,spc,spc,spc, 0);
                     LCDwrite(spc,spc,L,I,S,T,E,N,I,N,G,dot,dot,dot,spc,spc, 1);
                 } else {
-                    fold = listener;
-                    while (fold > 1647) { fold = fold / 2; }
-                    while (fold < 824) { fold = fold * 2; }
-
                     bestIdx = 0;
-                    bestDiff = fold - scale[0];
+                    bestDiff = listener - frequencies[0];
                     if (bestDiff < 0) bestDiff = 0 - bestDiff;
 
                     i = 1;
-                    while (i < 12) {
-                        diff = fold - scale[i];
+                    while (i < 6) {
+                        diff = listener - frequencies[i];
                         if (diff < 0) diff = 0 - diff;
                         if (diff < bestDiff) {
                             bestDiff = diff;
@@ -222,10 +166,14 @@ void main(void)
                         i = i + 1;
                     }
 
-                    letter = letterScale[bestIdx];
-                    sharp = sharpScale[bestIdx];
+                    if (bestIdx == 0) { chord = E; string = n1; }
+                    if (bestIdx == 1) { chord = B; string = n2; }
+                    if (bestIdx == 2) { chord = G; string = n3; }
+                    if (bestIdx == 3) { chord = D; string = n4; }
+                    if (bestIdx == 4) { chord = A; string = n5; }
+                    if (bestIdx == 5) { chord = E; string = n6; }
 
-                    LCDwrite(spc,spc,spc,A,U,T,O,spc,hif,spc,letter,sharp,spc,spc,spc,spc, 0);
+                    LCDwrite(spc,spc,A,U,T,O,spc,hif,spc,chord,spc,string,T,H,spc,spc, 0);
 
                     rem = listener;
                     d1 = rem / 1000;
@@ -243,11 +191,11 @@ void main(void)
                     f4 = d4 + 48;
                     if (d1 == 0) f1 = spc;
 
-                    tol = scale[bestIdx] / 200;
+                    tol = frequencies[bestIdx] / 200;
 
-                    if (fold < (scale[bestIdx] - tol)) {
+                    if (listener < (frequencies[bestIdx] - tol)) {
                         LCDwrite(T,I,G,H,T,spc,f1,f2,f3,f4,spc,rarrow,rarrow,rarrow,rarrow,spc, 1);
-                    } else if (fold > (scale[bestIdx] + tol)) {
+                    } else if (listener > (frequencies[bestIdx] + tol)) {
                         LCDwrite(spc,larrow,larrow,larrow,larrow,spc,f1,f2,f3,f4,spc,L,O,O,S,E, 1);
                     } else {
                         LCDwrite(spc,spc,spc,spc,spc,T,U,N,E,D,excl,spc,spc,spc,tdot,n1, 1);
