@@ -47,12 +47,9 @@ void main(void)
     int bestDiff;
     int bestIdx;
 
-    int chromIdx;
-    int oct;
-    int pos;
+    int fold;
     int letter;
     int sharp;
-    int octave;
 
     int rem;
     int tmp;
@@ -67,9 +64,9 @@ void main(void)
 
     int frequencies[6];
     int notes[6];
-    int freqAuto[32];
-    int letterPat[12];
-    int sharpPat[12];
+    int scale[12];
+    int letterScale[12];
+    int sharpScale[12];
 
     spc = 32;
     excl = 33;
@@ -119,64 +116,44 @@ void main(void)
     notes[4] = B;
     notes[5] = E;
 
-    freqAuto[0] = 824;
-    freqAuto[1] = 873;
-    freqAuto[2] = 925;
-    freqAuto[3] = 980;
-    freqAuto[4] = 1038;
-    freqAuto[5] = 1100;
-    freqAuto[6] = 1165;
-    freqAuto[7] = 1235;
-    freqAuto[8] = 1308;
-    freqAuto[9] = 1386;
-    freqAuto[10] = 1468;
-    freqAuto[11] = 1556;
-    freqAuto[12] = 1648;
-    freqAuto[13] = 1746;
-    freqAuto[14] = 1850;
-    freqAuto[15] = 1960;
-    freqAuto[16] = 2077;
-    freqAuto[17] = 2200;
-    freqAuto[18] = 2331;
-    freqAuto[19] = 2469;
-    freqAuto[20] = 2616;
-    freqAuto[21] = 2772;
-    freqAuto[22] = 2937;
-    freqAuto[23] = 3111;
-    freqAuto[24] = 3296;
-    freqAuto[25] = 3492;
-    freqAuto[26] = 3700;
-    freqAuto[27] = 3920;
-    freqAuto[28] = 4153;
-    freqAuto[29] = 4400;
-    freqAuto[30] = 4662;
-    freqAuto[31] = 4939;
+    scale[0] = 824;
+    scale[1] = 873;
+    scale[2] = 925;
+    scale[3] = 980;
+    scale[4] = 1038;
+    scale[5] = 1100;
+    scale[6] = 1165;
+    scale[7] = 1235;
+    scale[8] = 1308;
+    scale[9] = 1386;
+    scale[10] = 1468;
+    scale[11] = 1556;
 
-    letterPat[0] = C;
-    letterPat[1] = C;
-    letterPat[2] = D;
-    letterPat[3] = D;
-    letterPat[4] = E;
-    letterPat[5] = F;
-    letterPat[6] = F;
-    letterPat[7] = G;
-    letterPat[8] = G;
-    letterPat[9] = A;
-    letterPat[10] = A;
-    letterPat[11] = B;
+    letterScale[0] = E;
+    letterScale[1] = F;
+    letterScale[2] = F;
+    letterScale[3] = G;
+    letterScale[4] = G;
+    letterScale[5] = A;
+    letterScale[6] = A;
+    letterScale[7] = B;
+    letterScale[8] = C;
+    letterScale[9] = C;
+    letterScale[10] = D;
+    letterScale[11] = D;
 
-    sharpPat[0] = spc;
-    sharpPat[1] = hash;
-    sharpPat[2] = spc;
-    sharpPat[3] = hash;
-    sharpPat[4] = spc;
-    sharpPat[5] = spc;
-    sharpPat[6] = hash;
-    sharpPat[7] = spc;
-    sharpPat[8] = hash;
-    sharpPat[9] = spc;
-    sharpPat[10] = hash;
-    sharpPat[11] = spc;
+    sharpScale[0] = spc;
+    sharpScale[1] = spc;
+    sharpScale[2] = hash;
+    sharpScale[3] = spc;
+    sharpScale[4] = hash;
+    sharpScale[5] = spc;
+    sharpScale[6] = hash;
+    sharpScale[7] = spc;
+    sharpScale[8] = spc;
+    sharpScale[9] = hash;
+    sharpScale[10] = spc;
+    sharpScale[11] = hash;
 
     exit = 0;
 
@@ -226,13 +203,17 @@ void main(void)
                     LCDwrite(spc,spc,spc,A,U,T,O,spc,T,U,N,E,spc,spc,spc,spc, 0);
                     LCDwrite(spc,spc,L,I,S,T,E,N,I,N,G,dot,dot,dot,spc,spc, 1);
                 } else {
+                    fold = listener;
+                    while (fold > 1647) { fold = fold / 2; }
+                    while (fold < 824) { fold = fold * 2; }
+
                     bestIdx = 0;
-                    bestDiff = listener - freqAuto[0];
+                    bestDiff = fold - scale[0];
                     if (bestDiff < 0) bestDiff = 0 - bestDiff;
 
                     i = 1;
-                    while (i < 32) {
-                        diff = listener - freqAuto[i];
+                    while (i < 12) {
+                        diff = fold - scale[i];
                         if (diff < 0) diff = 0 - diff;
                         if (diff < bestDiff) {
                             bestDiff = diff;
@@ -241,15 +222,10 @@ void main(void)
                         i = i + 1;
                     }
 
-                    chromIdx = bestIdx + 4;
-                    oct = chromIdx / 12;
-                    pos = oct * 12;
-                    pos = chromIdx - pos;
-                    letter = letterPat[pos];
-                    sharp = sharpPat[pos];
-                    octave = 50 + oct;
+                    letter = letterScale[bestIdx];
+                    sharp = sharpScale[bestIdx];
 
-                    LCDwrite(spc,spc,spc,A,U,T,O,spc,hif,spc,letter,sharp,octave,spc,spc,spc, 0);
+                    LCDwrite(spc,spc,spc,A,U,T,O,spc,hif,spc,letter,sharp,spc,spc,spc,spc, 0);
 
                     rem = listener;
                     d1 = rem / 1000;
@@ -267,11 +243,11 @@ void main(void)
                     f4 = d4 + 48;
                     if (d1 == 0) f1 = spc;
 
-                    tol = freqAuto[bestIdx] / 200;
+                    tol = scale[bestIdx] / 200;
 
-                    if (listener < (freqAuto[bestIdx] - tol)) {
+                    if (fold < (scale[bestIdx] - tol)) {
                         LCDwrite(T,I,G,H,T,spc,f1,f2,f3,f4,spc,rarrow,rarrow,rarrow,rarrow,spc, 1);
-                    } else if (listener > (freqAuto[bestIdx] + tol)) {
+                    } else if (fold > (scale[bestIdx] + tol)) {
                         LCDwrite(spc,larrow,larrow,larrow,larrow,spc,f1,f2,f3,f4,spc,L,O,O,S,E, 1);
                     } else {
                         LCDwrite(spc,spc,spc,spc,spc,T,U,N,E,D,excl,spc,spc,spc,tdot,n1, 1);
